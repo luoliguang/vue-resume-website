@@ -1,0 +1,126 @@
+<template>
+  <section id="skills" class="section">
+    <div class="container">
+      <h2 class="section-title">核心能力</h2>
+      <div class="skills-grid">
+        <div class="skill-category">
+          <h3>业务流程优化</h3>
+          <div class="skill-tags">
+            <span class="skill-tag">供应链协调</span>
+            <span class="skill-tag">风险管控</span>
+            <span class="skill-tag">流程自动化</span>
+            <span class="skill-tag">WPS脚本</span>
+          </div>
+        </div>
+        <div class="skill-category">
+          <h3>全栈技术与AI应用</h3>
+          <div class="skill-tags">
+            <span class="skill-tag">Vue.js</span>
+            <span class="skill-tag">Node.js</span>
+            <span class="skill-tag">AI工具应用</span>
+            <span class="skill-tag">Web开发</span>
+            <span class="skill-tag">Git</span>
+          </div>
+        </div>
+        <div class="skill-category">
+          <h3>行业知识</h3>
+          <div class="skill-tags">
+            <span class="skill-tag">服装跟单</span>
+            <span class="skill-tag">面料知识</span>
+            <span class="skill-tag">生产排期</span>
+            <span class="skill-tag">客户沟通</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</template>
+
+<script setup>
+// 核心能力组件逻辑
+</script>
+
+<style scoped>
+.section {
+  padding: 80px 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  background: #f8f9fa;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  width: 100%;
+}
+
+.section-title {
+  text-align: center;
+  font-size: 2.5rem;
+  color: #2c3e50;
+  margin-bottom: 50px;
+  position: relative;
+}
+
+.section-title::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background: #3498db;
+}
+
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 40px;
+}
+
+.skill-category h3 {
+  font-size: 1.5rem;
+  color: #2c3e50;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.skill-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+.skill-tag {
+  background: #3498db;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .skills-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .section-title {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .section {
+    padding: 60px 0;
+  }
+
+  .section-title {
+    font-size: 1.8rem;
+  }
+}
+</style>
