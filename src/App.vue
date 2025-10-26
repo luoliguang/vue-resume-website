@@ -21,6 +21,7 @@ import ContactSection from './components/ContactSection.vue'
 <style scoped>
 .app {
   min-height: 100vh;
+  background: #ffffff;
 }
 
 .main-content {

@@ -42,8 +42,7 @@
 
 <style scoped>
 .section {
-  padding: 80px 0;
-  min-height: 100vh;
+  padding: 40px 0;
   display: flex;
   align-items: center;
   background: #f8f9fa;
@@ -60,7 +59,7 @@
   text-align: center;
   font-size: 2.5rem;
   color: #2c3e50;
-  margin-bottom: 50px;
+  margin-bottom: 30px;
   position: relative;
 }
 
@@ -78,7 +77,7 @@
 .skills-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 40px;
+  gap: 32px;
 }
 
 .skill-category h3 {
@@ -116,7 +115,7 @@
 
 @media (max-width: 480px) {
   .section {
-    padding: 60px 0;
+    padding: 40px 0;
   }
 
   .section-title {

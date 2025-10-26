@@ -1,52 +1,27 @@
 <template>
-  <section id="contact" class="section">
+  <section id="contact" class="contact-section">
     <div class="container">
-      <h2 class="section-title">联系方式</h2>
-      <div class="contact-content">
-        <div class="contact-info">
-          <div class="contact-item">
-            <div class="contact-icon">📧</div>
-            <div class="contact-details">
-              <h4>邮箱</h4>
-              <p>giluo@vip.qq.com</p>
-            </div>
+      <div class="contact-header">
+        <h2 class="section-title">联系方式</h2>
+        <p class="section-subtitle">期待与您合作</p>
+      </div>
+      
+      <div class="contact-grid">
+        <!-- 联系卡片 -->
+        <div 
+          v-for="(contact, key) in contactList" 
+          :key="key"
+          class="contact-card"
+          :class="{ 'clickable': contact.link }"
+          @click="handleContactClick(contact)"
+        >
+          <div class="contact-card-icon" :style="{ background: `linear-gradient(135deg, ${contact.color} 0%, ${adjustColor(contact.color)} 100%)` }">
+            <component :is="getIconComponent(contact.icon)" :size="28" stroke-width="2" />
           </div>
-          <div class="contact-item">
-            <div class="contact-icon">📱</div>
-            <div class="contact-details">
-              <h4>电话</h4>
-              <p>+86 17783386425</p>
-            </div>
+          <div class="contact-card-content">
+            <h4 class="contact-card-label">{{ contact.label }}</h4>
+            <p class="contact-card-value">{{ contact.value }}</p>
           </div>
-          <div class="contact-item">
-            <div class="contact-icon">📍</div>
-            <div class="contact-details">
-              <h4>地址</h4>
-              <p>广东省惠州市</p>
-            </div>
-          </div>
-          <div class="contact-item">
-            <div class="contact-icon">💼</div>
-            <div class="contact-details">
-              <h4>LinkedIn</h4>
-              <p>linkedin.com/in/yourprofile</p>
-            </div>
-          </div>
-        </div>
-        <div class="contact-form">
-          <h3>发送消息</h3>
-          <form @submit.prevent="submitForm">
-            <div class="form-group">
-              <input type="text" v-model="form.name" placeholder="您的姓名" required>
-            </div>
-            <div class="form-group">
-              <input type="email" v-model="form.email" placeholder="您的邮箱" required>
-            </div>
-            <div class="form-group">
-              <textarea v-model="form.message" placeholder="您的消息" rows="5" required></textarea>
-            </div>
-            <button type="submit" class="submit-btn">发送消息</button>
-          </form>
         </div>
       </div>
     </div>
@@ -54,170 +29,185 @@
 </template>
 
 <script setup>
-import { reactive } from 'vue'
+import { computed } from 'vue'
+import { contactInfo } from '../data/contact.js'
+import { 
+  Mail, 
+  Phone, 
+  MapPin, 
+  Github
+} from 'lucide-vue-next'
 
-const form = reactive({
-  name: '',
-  email: '',
-  message: ''
-})
+// 图标映射
+const iconMap = {
+  Mail,
+  Phone,
+  MapPin,
+  Github
+}
 
-const submitForm = () => {
-  console.log('表单提交:', form)
-  alert('消息发送成功！')
-  
-  // 重置表单
-  form.name = ''
-  form.email = ''
-  form.message = ''
+const contactList = computed(() => Object.values(contactInfo))
+
+const getIconComponent = (iconName) => {
+  return iconMap[iconName] || Mail
+}
+
+// 处理联系信息点击
+const handleContactClick = (contact) => {
+  if (contact.link) {
+    window.open(contact.link, '_blank')
+  }
+}
+
+// 调整颜色亮度
+const adjustColor = (hex) => {
+  // 简单的颜色调整，让渐变更自然
+  return hex
 }
 </script>
 
 <style scoped>
-.section {
-  padding: 80px 0;
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  background: #f8f9fa;
+.contact-section {
+  padding: 40px 20px;
+  background: linear-gradient(135deg, #f0f4ff 0%, #f8f0ff 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.contact-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd"><g fill="%23667eea" fill-opacity="0.03"><circle cx="30" cy="30" r="4"/></g></svg>');
+  opacity: 0.8;
 }
 
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 20px;
-  width: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+.contact-header {
+  text-align: center;
+  margin-bottom: 30px;
 }
 
 .section-title {
-  text-align: center;
-  font-size: 2.5rem;
+  font-size: 3rem;
+  font-weight: 700;
   color: #2c3e50;
-  margin-bottom: 50px;
-  position: relative;
+  margin-bottom: 16px;
+  letter-spacing: -0.02em;
 }
 
-.section-title::after {
-  content: '';
-  position: absolute;
-  bottom: -10px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 60px;
-  height: 3px;
-  background: #3498db;
+.section-subtitle {
+  font-size: 1.2rem;
+  color: #666;
+  font-weight: 300;
 }
 
-.contact-content {
+.contact-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 50px;
-  align-items: start;
-}
-
-.contact-info {
-  display: flex;
-  flex-direction: column;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 30px;
 }
 
-.contact-item {
+.contact-card {
+  background: white;
+  border-radius: 20px;
+  padding: 32px;
   display: flex;
   align-items: center;
   gap: 20px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
-.contact-icon {
-  font-size: 2rem;
-  width: 60px;
-  height: 60px;
-  background: #3498db;
-  border-radius: 50%;
+.contact-card.clickable {
+  cursor: pointer;
+}
+
+.contact-card.clickable:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+}
+
+.contact-card-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.contact-details h4 {
-  color: #2c3e50;
-  margin-bottom: 5px;
-  font-size: 1.1rem;
-}
-
-.contact-details p {
-  color: #666;
-  font-size: 1rem;
-}
-
-.contact-form {
-  background: white;
-  padding: 30px;
-  border-radius: 10px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-}
-
-.contact-form h3 {
-  color: #2c3e50;
-  margin-bottom: 25px;
-  font-size: 1.5rem;
-}
-
-.form-group {
-  margin-bottom: 20px;
-}
-
-.form-group input,
-.form-group textarea {
-  width: 100%;
-  padding: 12px 15px;
-  border: 2px solid #e9ecef;
-  border-radius: 5px;
-  font-size: 1rem;
-  transition: border-color 0.3s ease;
-}
-
-.form-group input:focus,
-.form-group textarea:focus {
-  outline: none;
-  border-color: #3498db;
-}
-
-.submit-btn {
-  background: #3498db;
   color: white;
-  padding: 12px 30px;
-  border: none;
-  border-radius: 5px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background 0.3s ease;
+  flex-shrink: 0;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
 }
 
-.submit-btn:hover {
-  background: #2980b9;
+.contact-card-content {
+  flex: 1;
+}
+
+.contact-card-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #718096;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.contact-card-value {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #2d3748;
+  margin: 0;
+  word-break: break-all;
+}
+
+/* 移动端响应式 */
+@media (max-width: 968px) {
+  .contact-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 @media (max-width: 768px) {
-  .contact-content {
-    grid-template-columns: 1fr;
+  .contact-section {
+    padding: 40px 20px;
   }
-
+  
   .section-title {
-    font-size: 2rem;
+    font-size: 2.25rem;
+  }
+  
+  .section-subtitle {
+    font-size: 1rem;
+  }
+  
+  .contact-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .contact-card {
+    padding: 24px;
+  }
+  
+  .contact-card-icon {
+    width: 56px;
+    height: 56px;
   }
 }
 
 @media (max-width: 480px) {
-  .section {
-    padding: 60px 0;
-  }
-
   .section-title {
-    font-size: 1.8rem;
-  }
-
-  .contact-form {
-    padding: 20px;
+    font-size: 1.875rem;
   }
 }
 </style>

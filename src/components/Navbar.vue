@@ -1,13 +1,13 @@
 <template>
   <nav class="navbar">
     <div class="nav-container">
-      <div class="nav-brand">
+      <div class="nav-brand" @click="scrollToTop">
         <h2>我的简历</h2>
       </div>
       <ul class="nav-menu" :class="{ active: isMobileMenuOpen }">
         <li><a href="#about" class="nav-link" @click="closeMobileMenu">关于我</a></li>
         <li><a href="#skills" class="nav-link" @click="closeMobileMenu">核心能力</a></li>
-        <li><a href="#projects" class="nav-link" @click="closeMobileMenu">项目经验</a></li>
+        <li><a href="#projects" class="nav-link" @click="closeMobileMenu">工作经历</a></li>
         <li><a href="#contact" class="nav-link" @click="closeMobileMenu">联系方式</a></li>
       </ul>
       <div class="hamburger" :class="{ active: isMobileMenuOpen }" @click="toggleMobileMenu">
@@ -30,6 +30,13 @@ const toggleMobileMenu = () => {
 
 const closeMobileMenu = () => {
   isMobileMenuOpen.value = false
+}
+
+const scrollToTop = () => {
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  })
 }
 </script>
 
@@ -56,10 +63,20 @@ const closeMobileMenu = () => {
   height: 70px;
 }
 
+.nav-brand {
+  cursor: pointer;
+  user-select: none;
+}
+
 .nav-brand h2 {
   color: #2c3e50;
   font-size: 1.5rem;
   font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.nav-brand:hover h2 {
+  color: #3498db;
 }
 
 .nav-menu {
