@@ -138,11 +138,21 @@ const scrollToTop = () => {
   transform: translateY(-8px) rotate(-45deg);
 }
 
+/* 移动端响应式 */
 @media (max-width: 768px) {
+  .nav-container {
+    padding: 0 16px;
+    height: 60px;
+  }
+  
+  .nav-brand h2 {
+    font-size: 1.25rem;
+  }
+  
   .nav-menu {
     position: fixed;
     left: -100%;
-    top: 70px;
+    top: 60px;
     flex-direction: column;
     background-color: white;
     width: 100%;
@@ -150,14 +160,43 @@ const scrollToTop = () => {
     transition: 0.3s;
     box-shadow: 0 10px 27px rgba(0, 0, 0, 0.05);
     padding: 20px 0;
+    gap: 0;
   }
 
   .nav-menu.active {
     left: 0;
   }
 
+  .nav-menu li {
+    padding: 12px 0;
+  }
+
+  .nav-link {
+    font-size: 1rem;
+    padding: 8px 0;
+    display: block;
+  }
+
   .hamburger {
     display: flex;
+  }
+}
+
+@media (max-width: 480px) {
+  .nav-container {
+    padding: 0 12px;
+  }
+  
+  .nav-brand h2 {
+    font-size: 1.125rem;
+  }
+  
+  .nav-menu li {
+    padding: 10px 0;
+  }
+  
+  .nav-link {
+    font-size: 0.9375rem;
   }
 }
 </style>

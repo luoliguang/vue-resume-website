@@ -42,7 +42,7 @@
 
 <style scoped>
 .section {
-  padding: 40px 0;
+  padding: 80px 0;
   display: flex;
   align-items: center;
   background: #f8f9fa;
@@ -103,23 +103,82 @@
   font-weight: 500;
 }
 
-@media (max-width: 768px) {
-  .skills-grid {
-    grid-template-columns: 1fr;
+/* 平板端 */
+@media (max-width: 968px) {
+  .section {
+    padding: 60px 0;
   }
-
+  
   .section-title {
-    font-size: 2rem;
+    font-size: 2.25rem;
+    margin-bottom: 24px;
+  }
+  
+  .skills-grid {
+    gap: 28px;
+  }
+  
+  .skill-category h3 {
+    font-size: 1.375rem;
+    margin-bottom: 18px;
+  }
+  
+  .skill-tag {
+    padding: 7px 14px;
+    font-size: 0.875rem;
   }
 }
 
-@media (max-width: 480px) {
-  .section {
-    padding: 40px 0;
+/* 移动端响应式 */
+@media (max-width: 768px) {
+  .skills-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
   }
 
   .section-title {
-    font-size: 1.8rem;
+    font-size: 1.875rem;
+    margin-bottom: 20px;
+  }
+  
+  .skill-category h3 {
+    font-size: 1.25rem;
+    margin-bottom: 16px;
+  }
+  
+  .skill-tags {
+    gap: 8px;
+  }
+  
+  .skill-tag {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+  }
+}
+
+/* 小屏幕手机 */
+@media (max-width: 480px) {
+  .section {
+    padding: 50px 0;
+  }
+
+  .section-title {
+    font-size: 1.625rem;
+    margin-bottom: 16px;
+  }
+  
+  .skills-grid {
+    gap: 20px;
+  }
+  
+  .skill-category h3 {
+    font-size: 1.125rem;
+    margin-bottom: 14px;
+  }
+  
+  .skill-tag {
+    padding: 5px 12px;
+    font-size: 0.8rem;
   }
 }
 </style>

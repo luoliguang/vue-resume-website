@@ -22,7 +22,7 @@ import ProjectCard from './ProjectCard.vue'
 
 <style scoped>
 .projects-section {
-  padding: 40px 20px;
+  padding: 80px 20px;
   background: #f8f9fa;
 }
 
@@ -52,23 +52,62 @@ import ProjectCard from './ProjectCard.vue'
   gap: 24px;
 }
 
-/* 移动端响应式 */
-@media (max-width: 768px) {
+/* 平板端 */
+@media (max-width: 968px) {
   .projects-section {
-    padding: 40px 20px;
+    padding: 60px 20px;
   }
   
   .section-title {
-    font-size: 2rem;
+    font-size: 2.25rem;
+    margin-bottom: 12px;
   }
   
   .section-subtitle {
-    font-size: 1rem;
+    font-size: 1.05rem;
     margin-bottom: 40px;
+  }
+}
+
+/* 移动端响应式 */
+@media (max-width: 768px) {
+  .projects-section {
+    padding: 50px 16px;
+  }
+  
+  .section-title {
+    font-size: 1.75rem;
+    margin-bottom: 10px;
+  }
+  
+  .section-subtitle {
+    font-size: 0.95rem;
+    margin-bottom: 32px;
+    line-height: 1.6;
   }
   
   .projects-grid {
-    gap: 24px;
+    gap: 20px;
+  }
+}
+
+/* 小屏幕手机 */
+@media (max-width: 480px) {
+  .projects-section {
+    padding: 40px 12px;
+  }
+  
+  .section-title {
+    font-size: 1.5rem;
+  }
+  
+  .section-subtitle {
+    font-size: 0.9rem;
+    margin-bottom: 28px;
+  }
+  
+  .projects-grid {
+    gap: 16px;
   }
 }
 </style>

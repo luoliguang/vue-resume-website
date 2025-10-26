@@ -68,7 +68,7 @@ const adjustColor = (hex) => {
 
 <style scoped>
 .contact-section {
-  padding: 40px 20px;
+  padding: 80px 20px;
   background: linear-gradient(135deg, #f0f4ff 0%, #f8f0ff 100%);
   position: relative;
   overflow: hidden;
@@ -170,20 +170,46 @@ const adjustColor = (hex) => {
   word-break: break-all;
 }
 
-/* 移动端响应式 */
+/* 平板端 */
 @media (max-width: 968px) {
-  .contact-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 768px) {
   .contact-section {
-    padding: 40px 20px;
+    padding: 60px 20px;
   }
   
   .section-title {
-    font-size: 2.25rem;
+    font-size: 2.5rem;
+    margin-bottom: 14px;
+  }
+  
+  .section-subtitle {
+    font-size: 1.1rem;
+  }
+  
+  .contact-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+  
+  .contact-card {
+    padding: 28px;
+    gap: 18px;
+  }
+  
+  .contact-card-icon {
+    width: 60px;
+    height: 60px;
+  }
+}
+
+/* 移动端响应式 */
+@media (max-width: 768px) {
+  .contact-section {
+    padding: 50px 16px;
+  }
+  
+  .section-title {
+    font-size: 2rem;
+    margin-bottom: 12px;
   }
   
   .section-subtitle {
@@ -197,17 +223,60 @@ const adjustColor = (hex) => {
   
   .contact-card {
     padding: 24px;
+    gap: 16px;
   }
   
   .contact-card-icon {
     width: 56px;
     height: 56px;
   }
+  
+  .contact-card-label {
+    font-size: 0.8125rem;
+    margin-bottom: 6px;
+  }
+  
+  .contact-card-value {
+    font-size: 1rem;
+  }
 }
 
+/* 小屏幕手机 */
 @media (max-width: 480px) {
+  .contact-section {
+    padding: 40px 12px;
+  }
+  
   .section-title {
-    font-size: 1.875rem;
+    font-size: 1.75rem;
+    margin-bottom: 10px;
+  }
+  
+  .section-subtitle {
+    font-size: 0.95rem;
+  }
+  
+  .contact-grid {
+    gap: 16px;
+  }
+  
+  .contact-card {
+    padding: 20px;
+    gap: 14px;
+  }
+  
+  .contact-card-icon {
+    width: 48px;
+    height: 48px;
+  }
+  
+  .contact-card-label {
+    font-size: 0.75rem;
+    margin-bottom: 4px;
+  }
+  
+  .contact-card-value {
+    font-size: 0.9375rem;
   }
 }
 </style>

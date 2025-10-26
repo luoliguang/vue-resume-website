@@ -6,7 +6,7 @@
         <div class="about-text">
           <p>我于2023年毕业于重庆电子科技职业大学。</p>
           <p>我目前拥有两年以上服装行业一线跟单经验，深刻理解从接单到生产的业务全流程。</p>
-          <p>我擅长发现工作流中的重复劳动和潜在风险点，并能主动运用WPS脚本、AI工具及全栈开发技术（Vue/Node.js）来构建解决方案，实现流程自动化与效率提升。</p>
+          <p>在工作中，我没有止步于执行标准流程，而是发现痛点，主动挖掘操作瓶颈。我通过快速自学并应用WPS脚本、Vue.js及Node.js，成功开发并部署了3个自动化工具，将一线的低效痛点转变为稳定的、高效率的数字化解决方案，显著降低了错误率并优化了工作流。</p>
         </div>
         <div class="about-image">
           <div class="avatar-container">
@@ -42,7 +42,7 @@ const handleImageError = () => {
 
 <style scoped>
 .section {
-  padding: 40px 0;
+  padding: 80px 0;
   display: flex;
   align-items: center;
   background: #ffffff;
@@ -127,29 +127,73 @@ const handleImageError = () => {
   font-size: 0.9rem;
 }
 
+/* 平板端 */
+@media (max-width: 968px) {
+  .section {
+    padding: 60px 0;
+  }
+  
+  .section-title {
+    font-size: 2.25rem;
+    margin-bottom: 24px;
+  }
+  
+  .about-content {
+    gap: 32px;
+  }
+  
+  .about-text p {
+    font-size: 1.05rem;
+    line-height: 1.75;
+    margin-bottom: 18px;
+  }
+}
+
+/* 移动端响应式 */
 @media (max-width: 768px) {
   .about-content {
     grid-template-columns: 1fr;
     text-align: center;
+    gap: 30px;
   }
 
   .section-title {
-    font-size: 2rem;
+    font-size: 1.875rem;
+    margin-bottom: 20px;
   }
-}
-
-@media (max-width: 480px) {
-  .section {
-    padding: 40px 0;
-  }
-
-  .section-title {
-    font-size: 1.8rem;
+  
+  .about-text p {
+    font-size: 1rem;
+    line-height: 1.7;
+    margin-bottom: 16px;
   }
   
   .avatar-container {
-    width: 200px;
-    height: 200px;
+    width: 220px;
+    height: 220px;
+  }
+}
+
+/* 小屏幕手机 */
+@media (max-width: 480px) {
+  .section {
+    padding: 50px 0;
+  }
+
+  .section-title {
+    font-size: 1.625rem;
+    margin-bottom: 16px;
+  }
+  
+  .about-text p {
+    font-size: 0.95rem;
+    line-height: 1.65;
+    margin-bottom: 14px;
+  }
+  
+  .avatar-container {
+    width: 180px;
+    height: 180px;
   }
 }
 </style>

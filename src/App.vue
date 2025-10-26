@@ -27,4 +27,10 @@ import ContactSection from './components/ContactSection.vue'
 .main-content {
   margin-top: 70px;
 }
+
+@media (max-width: 768px) {
+  .main-content {
+    margin-top: 60px;
+  }
+}
 </style>

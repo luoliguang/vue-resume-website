@@ -449,7 +449,7 @@ onUnmounted(() => {
   font-weight: 500;
 }
 
-/* 移动端响应式 */
+/* 平板端 */
 @media (max-width: 968px) {
   .project-layout {
     grid-template-columns: 1fr;
@@ -466,8 +466,22 @@ onUnmounted(() => {
   .project-title {
     font-size: 1.5rem;
   }
+  
+  .project-icon {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .detail-label {
+    font-size: 0.875rem;
+  }
+  
+  .detail-text {
+    font-size: 0.95rem;
+  }
 }
 
+/* 移动端响应式 */
 @media (max-width: 768px) {
   .project-content {
     padding: 24px;
@@ -480,10 +494,78 @@ onUnmounted(() => {
   .project-icon {
     width: 56px;
     height: 56px;
+    margin-bottom: 12px;
+  }
+  
+  .project-header {
+    margin-bottom: 20px;
+  }
+  
+  .detail-item {
+    margin-bottom: 20px;
+  }
+  
+  .detail-label {
+    font-size: 0.8125rem;
+    margin-bottom: 6px;
   }
   
   .detail-text {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
+    line-height: 1.65;
+  }
+  
+  .project-tech {
+    padding-top: 20px;
+  }
+  
+  .tech-tag {
+    padding: 5px 12px;
+    font-size: 0.8rem;
+  }
+}
+
+/* 小屏幕手机 */
+@media (max-width: 480px) {
+  .project-content {
+    padding: 20px;
+  }
+  
+  .project-title {
+    font-size: 1.15rem;
+  }
+  
+  .project-icon {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 10px;
+  }
+  
+  .project-header {
+    margin-bottom: 16px;
+  }
+  
+  .detail-item {
+    margin-bottom: 16px;
+  }
+  
+  .detail-label {
+    font-size: 0.75rem;
+    margin-bottom: 5px;
+  }
+  
+  .detail-text {
+    font-size: 0.875rem;
+    line-height: 1.6;
+  }
+  
+  .project-tech {
+    padding-top: 16px;
+  }
+  
+  .tech-tag {
+    padding: 4px 10px;
+    font-size: 0.75rem;
   }
 }
 
