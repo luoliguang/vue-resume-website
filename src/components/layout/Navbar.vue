@@ -10,8 +10,8 @@
           <li><a href="#about" class="nav-link" @click="closeMobileMenu">{{ t('nav.about') }}</a></li>
           <li><a href="#experience" class="nav-link" @click="closeMobileMenu">{{ t('nav.experience') }}</a></li>
           <li><a href="#projects" class="nav-link" @click="closeMobileMenu">{{ t('nav.projects') }}</a></li>
-          <li><a href="#skills" class="nav-link" @click="closeMobileMenu">{{ t('nav.skills') }}</a></li>
           <li><a href="#journey" class="nav-link" @click="closeMobileMenu">{{ t('nav.journey') }}</a></li>
+          <li><a href="#skills" class="nav-link" @click="closeMobileMenu">{{ t('nav.skills') }}</a></li>
           <li><a href="#contact" class="nav-link" @click="closeMobileMenu">{{ t('nav.contact') }}</a></li>
         </ul>
         <div class="nav-actions">
@@ -57,6 +57,8 @@ const closeMobileMenu = () => {
 }
 
 const scrollToTop = () => {
+  // 清空 URL 中的 hash
+  window.history.pushState('', '', window.location.pathname)
   window.scrollTo({
     top: 0,
     behavior: 'smooth'
