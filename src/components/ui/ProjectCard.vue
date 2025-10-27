@@ -16,7 +16,7 @@
           
           <!-- GIF 动图 -->
           <img 
-            v-else-if="project.media.type === 'image' && isGif" 
+            v-else-if="(project.media.type === 'image' || project.media.type === 'gif') && isGif" 
             :src="project.media.src" 
             :alt="project.title"
             class="media-content gif-image"
@@ -58,7 +58,7 @@
               :stroke-width="2"
             />
           </div>
-          <h3 class="project-title">{{ project.title }}</h3>
+          <h3 class="project-title">{{ project.title[isChinese ? 'zh' : 'en'] }}</h3>
         </div>
         
         <div class="project-details">
@@ -67,8 +67,8 @@
             :key="index" 
             class="detail-item"
           >
-            <div class="detail-label">{{ detail.label }}</div>
-            <p class="detail-text">{{ detail.text }}</p>
+            <div class="detail-label">{{ detail.label[isChinese ? 'zh' : 'en'] }}</div>
+            <p class="detail-text">{{ detail.text[isChinese ? 'zh' : 'en'] }}</p>
           </div>
         </div>
         
@@ -127,13 +127,17 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { isChinese } from '../../composables/useI18n.js'
 import { 
   FileCheck, 
   BarChart3, 
   Smartphone,
   Code,
   Database,
-  Zap
+  Zap,
+  Globe,
+  Terminal,
+  Server
 } from 'lucide-vue-next'
 
 const props = defineProps({
@@ -149,20 +153,21 @@ const videos = ref([])
 const videoPreview = ref(null)
 const videoDuration = ref('')
 
-// 根据项目ID映射图标
+// 根据项目类型映射图标
 const getIconComponent = computed(() => {
   const iconMap = {
-    1: FileCheck,
-    2: BarChart3,
-    3: Smartphone
+    website: Globe,
+    script: Terminal,
+    system: Server
   }
-  return iconMap[props.project.id]
+  return iconMap[props.project.type] || Code
 })
 
 // 检测是否为 GIF 图片
 const isGif = computed(() => {
-  return props.project.media?.type === 'image' && 
-         props.project.media?.src?.toLowerCase().endsWith('.gif')
+  return props.project.media?.type === 'gif' || 
+         (props.project.media?.type === 'image' && 
+          props.project.media?.src?.toLowerCase().endsWith('.gif'))
 })
 
 // 判断是否为可点击的媒体（普通图片）

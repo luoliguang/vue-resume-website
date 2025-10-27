@@ -2,8 +2,8 @@
   <section id="contact" class="contact-section">
     <div class="container">
       <div class="contact-header">
-        <h2 class="section-title">联系方式</h2>
-        <p class="section-subtitle">期待与您合作</p>
+        <h2 class="section-title">{{ t('contact.title') }}</h2>
+        <p class="section-subtitle">{{ t('contact.subtitle') }}</p>
       </div>
       
       <div class="contact-grid">
@@ -19,8 +19,8 @@
             <component :is="getIconComponent(contact.icon)" :size="28" stroke-width="2" />
           </div>
           <div class="contact-card-content">
-            <h4 class="contact-card-label">{{ contact.label }}</h4>
-            <p class="contact-card-value">{{ contact.value }}</p>
+            <h4 class="contact-card-label">{{ contact.label[isChinese ? 'zh' : 'en'] }}</h4>
+            <p class="contact-card-value">{{ getContactValue(contact) }}</p>
           </div>
         </div>
       </div>
@@ -30,7 +30,9 @@
 
 <script setup>
 import { computed } from 'vue'
-import { contactInfo } from '../data/contact.js'
+import { contactInfo } from '../../data/contact.js'
+import { t, isChinese } from '../../composables/useI18n.js'
+import { deobfuscatePhone } from '../../utils/crypto.js'
 import { 
   Mail, 
   Phone, 
@@ -52,10 +54,29 @@ const getIconComponent = (iconName) => {
   return iconMap[iconName] || Mail
 }
 
+// 获取联系信息的值（支持多语言和加密）
+const getContactValue = (contact) => {
+  if (typeof contact.value === 'object') {
+    return contact.value[isChinese.value ? 'zh' : 'en']
+  }
+  // 如果是加密字段，解密显示
+  if (contact.encrypted && contact.value) {
+    try {
+      return deobfuscatePhone(contact.value)
+    } catch (e) {
+      console.error('Failed to decrypt phone:', e)
+      return '隐私保护'
+    }
+  }
+  return contact.value
+}
+
 // 处理联系信息点击
 const handleContactClick = (contact) => {
-  if (contact.link) {
-    window.open(contact.link, '_blank')
+  // 使用 rawLink 或 link
+  const link = contact.rawLink || contact.link
+  if (link) {
+    window.open(link, '_blank')
   }
 }
 
@@ -69,7 +90,7 @@ const adjustColor = (hex) => {
 <style scoped>
 .contact-section {
   padding: 80px 20px;
-  background: linear-gradient(135deg, #f0f4ff 0%, #f8f0ff 100%);
+  background: linear-gradient(180deg, #e8eaf0 0%, #f0f2f5 100%);
   position: relative;
   overflow: hidden;
 }
@@ -81,8 +102,22 @@ const adjustColor = (hex) => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: url('data:image/svg+xml,<svg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd"><g fill="%23667eea" fill-opacity="0.03"><circle cx="30" cy="30" r="4"/></g></svg>');
+  background: 
+    radial-gradient(circle at 20% 20%, rgba(52, 152, 219, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(155, 89, 182, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 40% 60%, rgba(46, 204, 113, 0.06) 0%, transparent 50%);
   opacity: 0.8;
+}
+
+.contact-section::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="%233498db" stroke-width="0.5" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+  opacity: 0.3;
 }
 
 .container {
@@ -103,12 +138,14 @@ const adjustColor = (hex) => {
   color: #2c3e50;
   margin-bottom: 16px;
   letter-spacing: -0.02em;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .section-subtitle {
   font-size: 1.2rem;
   color: #666;
   font-weight: 300;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .contact-grid {
@@ -118,14 +155,16 @@ const adjustColor = (hex) => {
 }
 
 .contact-card {
-  background: white;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
   border-radius: 20px;
   padding: 32px;
   display: flex;
   align-items: center;
   gap: 20px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .contact-card.clickable {
@@ -134,19 +173,25 @@ const adjustColor = (hex) => {
 
 .contact-card.clickable:hover {
   transform: translateY(-8px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.15);
+  background: rgba(255, 255, 255, 0.98);
 }
 
 .contact-card-icon {
   width: 64px;
   height: 64px;
-  border-radius: 16px;
+  border-radius: 18px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
   flex-shrink: 0;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s ease;
+}
+
+.contact-card:hover .contact-card-icon {
+  transform: scale(1.05);
 }
 
 .contact-card-content {

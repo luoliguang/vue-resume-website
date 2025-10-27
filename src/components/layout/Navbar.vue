@@ -2,27 +2,51 @@
   <nav class="navbar">
     <div class="nav-container">
       <div class="nav-brand" @click="scrollToTop">
-        <h2>我的简历</h2>
+        <h2>{{ t('hero.title') }}</h2>
       </div>
-      <ul class="nav-menu" :class="{ active: isMobileMenuOpen }">
-        <li><a href="#about" class="nav-link" @click="closeMobileMenu">关于我</a></li>
-        <li><a href="#skills" class="nav-link" @click="closeMobileMenu">核心能力</a></li>
-        <li><a href="#projects" class="nav-link" @click="closeMobileMenu">工作经历</a></li>
-        <li><a href="#contact" class="nav-link" @click="closeMobileMenu">联系方式</a></li>
-      </ul>
-      <div class="hamburger" :class="{ active: isMobileMenuOpen }" @click="toggleMobileMenu">
-        <span class="bar"></span>
-        <span class="bar"></span>
-        <span class="bar"></span>
+      <div class="nav-right">
+        <ul class="nav-menu" :class="{ active: isMobileMenuOpen }">
+          <li><a href="#home" class="nav-link" @click="closeMobileMenu">{{ t('nav.home') }}</a></li>
+          <li><a href="#about" class="nav-link" @click="closeMobileMenu">{{ t('nav.about') }}</a></li>
+          <li><a href="#experience" class="nav-link" @click="closeMobileMenu">{{ t('nav.experience') }}</a></li>
+          <li><a href="#projects" class="nav-link" @click="closeMobileMenu">{{ t('nav.projects') }}</a></li>
+          <li><a href="#skills" class="nav-link" @click="closeMobileMenu">{{ t('nav.skills') }}</a></li>
+          <li><a href="#journey" class="nav-link" @click="closeMobileMenu">{{ t('nav.journey') }}</a></li>
+          <li><a href="#contact" class="nav-link" @click="closeMobileMenu">{{ t('nav.contact') }}</a></li>
+        </ul>
+        <div class="nav-actions">
+          <GlassToggle 
+            v-model="currentLanguage"
+            :items="languageOptions"
+            color="#3498db"
+            @change="handleLanguageChange"
+          />
+          <div class="hamburger" :class="{ active: isMobileMenuOpen }" @click="toggleMobileMenu">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+          </div>
+        </div>
       </div>
     </div>
   </nav>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
+import GlassToggle from '../ui/GlassToggle.vue'
+import { t, currentLanguage, setLanguage } from '../../composables/useI18n.js'
 
 const isMobileMenuOpen = ref(false)
+
+const languageOptions = computed(() => [
+  { value: 'zh', label: '中文' },
+  { value: 'en', label: 'English' }
+])
+
+const handleLanguageChange = (lang) => {
+  setLanguage(lang)
+}
 
 const toggleMobileMenu = () => {
   isMobileMenuOpen.value = !isMobileMenuOpen.value
@@ -79,6 +103,12 @@ const scrollToTop = () => {
   color: #3498db;
 }
 
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
 .nav-menu {
   display: flex;
   list-style: none;
@@ -110,6 +140,12 @@ const scrollToTop = () => {
 
 .nav-link:hover::after {
   width: 100%;
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
 }
 
 .hamburger {
@@ -177,6 +213,10 @@ const scrollToTop = () => {
     display: block;
   }
 
+  .nav-actions {
+    gap: 10px;
+  }
+  
   .hamburger {
     display: flex;
   }
