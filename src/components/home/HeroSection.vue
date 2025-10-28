@@ -92,7 +92,7 @@ const scrollToProjects = () => {
 
 <style scoped>
 .hero-section {
-  min-height: 100vh;
+  min-height: 600px;
   background: linear-gradient(180deg, #fefcf3 0%, #f5f7fa 100%);
   display: flex;
   align-items: center;
