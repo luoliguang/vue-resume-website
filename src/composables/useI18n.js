@@ -101,7 +101,7 @@ const translations = {
     // 底部
     footer: {
       quote: '比别人慢一点没关系，但我从不停止改进。',
-      copyright: '© 2025 Luoliguang. All Rights Reserved.'
+      copyright: '© 2025 Luoyangyang. All Rights Reserved.'
     }
   },
   en: {
@@ -206,7 +206,7 @@ const translations = {
     // Footer
     footer: {
       quote: 'It\'s okay to be a little slower than others, but I never stop improving.',
-      copyright: '© 2025 Luoliguang. All Rights Reserved.'
+      copyright: '© 2025 Luoyangyang. All Rights Reserved.'
     }
   }
 }
