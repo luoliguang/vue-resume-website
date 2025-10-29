@@ -20,7 +20,8 @@ const translations = {
       subtitle: '懂服装供应链的流程优化者',
       description: '我是一名来自供应商的一线服装客服跟单，有2年以上经验。熟悉客户沟通、面料印花、生产跟进等全流程工作，持续学习前端和数码印花技术，探索传统工厂与数字化的结合。',
       cta: '了解我',
-      cta2: '查看项目'
+      cta2: '查看项目',
+      cta3: '15秒熟悉我'
     },
     // 关于我
     about: {
@@ -122,7 +123,8 @@ const translations = {
       subtitle: 'Garment Merchandiser',
       description: 'I am a first-line garment customer service merchandiser from a supplier with more than 2 years of experience. Familiar with customer communication, fabric printing, production follow-up and other full-process work, continuously learning frontend and digital printing technology, exploring the combination of traditional factories and digitalization.',
       cta: 'About Me',
-      cta2: 'View Projects'
+      cta2: 'View Projects',
+      cta3: '15 Seconds to Get to Know Me'
     },
     // About Section
     about: {

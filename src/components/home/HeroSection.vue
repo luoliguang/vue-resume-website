@@ -31,45 +31,24 @@
         <p class="nickname">「 {{ t('hero.nickname') }} 」</p>
         <p class="description">{{ t('hero.description') }}</p>
         <div class="action-buttons">
-          <button class="animated-button btn-primary" @click="scrollToAbout">
-            <svg viewBox="0 0 24 24" class="arr-2" xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"
-              ></path>
-            </svg>
-            <span class="text">{{ t('hero.cta') }}</span>
-            <span class="circle"></span>
-            <svg viewBox="0 0 24 24" class="arr-1" xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"
-              ></path>
-            </svg>
-          </button>
-          <button class="animated-button btn-secondary" @click="scrollToProjects">
-            <svg viewBox="0 0 24 24" class="arr-2" xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"
-              ></path>
-            </svg>
-            <span class="text">{{ t('hero.cta2') }}</span>
-            <span class="circle"></span>
-            <svg viewBox="0 0 24 24" class="arr-1" xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"
-              ></path>
-            </svg>
-          </button>
+          <AnimatedButton theme="primary" @click="scrollToAbout">{{ t('hero.cta') }}</AnimatedButton>
+          <AnimatedButton theme="secondary" @click="scrollToProjects">{{ t('hero.cta2') }}</AnimatedButton>
+          <AnimatedButton theme="primary" @click="openQuickResume">{{ t('hero.cta3') }}</AnimatedButton>
         </div>
       </div>
     </div>
+    <QuickResumeOverlay v-model="showQuickResume" src="/pdf.html" />
   </section>
 </template>
 
 <script setup>
 import { ref } from 'vue'
 import { t } from '../../composables/useI18n.js'
+import AnimatedButton from '../ui/AnimatedButton.vue'
+import QuickResumeOverlay from '../ui/QuickResumeOverlay.vue'
 
 const imageError = ref(false)
+const showQuickResume = ref(false)
 
 const handleImageError = () => {
   imageError.value = true
@@ -86,6 +65,18 @@ const scrollToProjects = () => {
   const projectsSection = document.getElementById('projects')
   if (projectsSection) {
     projectsSection.scrollIntoView({ behavior: 'smooth' })
+  }
+}
+
+const openQuickResume = () => {
+  showQuickResume.value = true
+}
+
+// 切换PDF页面语言
+const switchPDFLanguage = (lang) => {
+  const iframe = document.querySelector('.qr-frame')
+  if (iframe && iframe.contentWindow) {
+    iframe.contentWindow.postMessage({ action: 'switchLanguage', lang }, '*')
   }
 }
 </script>
@@ -204,121 +195,6 @@ const scrollToProjects = () => {
   gap: 16px;
 }
 
-/* 动画按钮基础样式 */
-.animated-button {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 16px 36px;
-  border: 4px solid;
-  border-color: transparent;
-  font-size: 16px;
-  background-color: inherit;
-  border-radius: 100px;
-  font-weight: 600;
-  cursor: pointer;
-  overflow: hidden;
-  transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
-}
-
-.animated-button svg {
-  position: absolute;
-  width: 24px;
-  z-index: 9;
-  transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
-}
-
-.animated-button .arr-1 {
-  right: 16px;
-}
-
-.animated-button .arr-2 {
-  left: -25%;
-}
-
-.animated-button .circle {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  opacity: 0;
-  transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
-}
-
-.animated-button .text {
-  position: relative;
-  z-index: 1;
-  transform: translateX(-12px);
-  transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
-}
-
-.animated-button:hover {
-  box-shadow: 0 0 0 12px transparent;
-  color: #212121;
-  border-radius: 12px;
-}
-
-.animated-button:hover .arr-1 {
-  right: -25%;
-}
-
-.animated-button:hover .arr-2 {
-  left: 16px;
-}
-
-.animated-button:hover .text {
-  transform: translateX(12px);
-}
-
-.animated-button:active {
-  scale: 0.95;
-}
-
-.animated-button:hover .circle {
-  width: 220px;
-  height: 220px;
-  opacity: 1;
-}
-
-/* 主按钮样式 - 蓝色主题 */
-.btn-primary {
-  color: #3498db;
-  box-shadow: 0 0 0 2px #3498db;
-}
-
-.btn-primary svg {
-  fill: #3498db;
-}
-
-.btn-primary .circle {
-  background-color: #3498db;
-}
-
-.btn-primary:active {
-  box-shadow: 0 0 0 4px #3498db;
-}
-
-/* 次按钮样式 - 绿色主题 */
-.btn-secondary {
-  color: #27ae60;
-  box-shadow: 0 0 0 2px #27ae60;
-}
-
-.btn-secondary svg {
-  fill: #27ae60;
-}
-
-.btn-secondary .circle {
-  background-color: #27ae60;
-}
-
-.btn-secondary:active {
-  box-shadow: 0 0 0 4px #27ae60;
-}
 
 /* 平板端 */
 @media (max-width: 968px) {
@@ -433,13 +309,6 @@ const scrollToProjects = () => {
     height: 180px;
   }
   
-  .animated-button {
-    padding: 12px 28px;
-    font-size: 0.9rem;
-  }
-  
-  .animated-button svg {
-    width: 20px;
-  }
+  /* 按钮尺寸在移动端由组件自适应 */
 }
 </style>
