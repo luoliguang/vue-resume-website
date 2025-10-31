@@ -24,12 +24,13 @@
           v-for="project in filteredProjects" 
           :key="project.id"
           class="project-card"
+          :data-project-id="project.id"
           :class="{ 'status-developing': project.status === 'developing' }"
         >
             <!-- 项目预览图 -->
           <div class="project-image" 
-               :class="{ 'clickable': project.demoType === 'media' && project.modalContent }"
-               @click="project.demoType === 'media' && project.modalContent ? openModal(project) : null">
+               :class="{ 'clickable': (project.demoType === 'media' && project.modalContent) || (project.demoType === 'link' && project.link && project.link !== '#') }"
+               @click="handleThumbnailClick(project)">
             <img 
               :src="project.image" 
               :alt="project.title"
@@ -182,6 +183,23 @@ const setActiveCategory = (categoryId) => {
 const handleImageError = (event) => {
   const projectId = event.target.closest('.project-card').dataset.projectId
   imageErrors.value[projectId] = true
+}
+
+const handleThumbnailClick = (project) => {
+  // 优先展示媒体内容
+  if (project.demoType === 'media' && project.modalContent) {
+    openModal(project)
+    return
+  }
+  // 链接类型则跳转新窗口
+  if (project.demoType === 'link' && project.link && project.link !== '#') {
+    try {
+      window.open(project.link, '_blank', 'noopener,noreferrer')
+    } catch (e) {
+      // 兜底：如果 window.open 被阻止，直接设置 location（仍可能被拦截）
+      window.location.href = project.link
+    }
+  }
 }
 
 const getActionText = (project) => {
