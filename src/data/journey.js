@@ -2,7 +2,7 @@
 export const journeyMilestones = [
   {
     id: 1,
-    year: "2023年9月",
+    year: "2023年6月",
     title: {
       zh: "毕业于重庆电子科技职业大学",
       en: "Graduated from Chongqing Vocational University of Electronic Science and Technology"
@@ -54,7 +54,7 @@ export const journeyMilestones = [
       en: "Independent design and development of material website, laying the foundation for subsequent career development."
     },
     icon: "code",
-    status: "in-progress"
+    status: "completed"
   },
   {
     id: 5,

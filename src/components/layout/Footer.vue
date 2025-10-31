@@ -53,8 +53,8 @@ const scrollToSection = (sectionId) => {
 .footer {
   background: linear-gradient(180deg, #f0f2f5 0%, #e8eaf0 100%);
   border-top: 1px solid #e9ecef;
-  padding: 50px 0;
-  margin-top: 80px;
+  padding: 130px 0 50px; /* 将原先用于与上方拉开距离的 margin-top 改为 padding-top，这样背景可覆盖过渡区域 */
+  margin-top: 0;
   position: relative;
 }
 
@@ -180,8 +180,8 @@ const scrollToSection = (sectionId) => {
 /* 响应式设计 */
 @media (max-width: 768px) {
   .footer {
-    padding: 30px 0;
-    margin-top: 60px;
+    padding: 90px 0 30px; /* 同理在移动端用 padding 实现上方留白 */
+    margin-top: 0;
   }
   
   .footer-content {
@@ -210,8 +210,8 @@ const scrollToSection = (sectionId) => {
 
 @media (max-width: 480px) {
   .footer {
-    padding: 25px 0;
-    margin-top: 50px;
+    padding: 75px 0 25px;
+    margin-top: 0;
   }
   
   .footer-nav {

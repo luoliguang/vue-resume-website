@@ -1,5 +1,5 @@
 <template>
-  <nav class="navbar">
+  <nav class="navbar" :class="{ hidden: isNavbarHidden }">
     <div class="nav-container">
       <div class="nav-brand" @click="scrollToTop">
         <h2>{{ t('hero.title') }}</h2>
@@ -33,11 +33,50 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 import GlassToggle from '../ui/GlassToggle.vue'
 import { t, currentLanguage, setLanguage } from '../../composables/useI18n.js'
 
 const isMobileMenuOpen = ref(false)
+const isNavbarHidden = ref(false)
+
+let lastScrollY = 0
+let ticking = false
+
+const updateNavbarVisibility = () => {
+  const currentY = window.scrollY || 0
+
+  // 菜单展开时强制显示导航栏
+  if (isMobileMenuOpen.value) {
+    isNavbarHidden.value = false
+    lastScrollY = currentY
+    ticking = false
+    return
+  }
+
+  const delta = currentY - lastScrollY
+
+  if (currentY <= 0) {
+    // 回到顶部时显示
+    isNavbarHidden.value = false
+  } else if (delta > 0 && currentY > 50) {
+    // 下滑且离开顶部一定距离后隐藏
+    isNavbarHidden.value = true
+  } else if (delta < 0) {
+    // 上滑显示
+    isNavbarHidden.value = false
+  }
+
+  lastScrollY = currentY
+  ticking = false
+}
+
+const onScroll = () => {
+  if (!ticking) {
+    ticking = true
+    window.requestAnimationFrame(updateNavbarVisibility)
+  }
+}
 
 const languageOptions = computed(() => [
   { value: 'zh', label: '中文' },
@@ -64,6 +103,22 @@ const scrollToTop = () => {
     behavior: 'smooth'
   })
 }
+
+onMounted(() => {
+  lastScrollY = window.scrollY || 0
+  window.addEventListener('scroll', onScroll, { passive: true })
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('scroll', onScroll)
+})
+
+watch(isMobileMenuOpen, (open) => {
+  if (open) {
+    // 打开菜单时确保导航栏可见
+    isNavbarHidden.value = false
+  }
+})
 </script>
 
 <style scoped>
@@ -77,6 +132,10 @@ const scrollToTop = () => {
   border-bottom: 1px solid #e0e0e0;
   z-index: 1000;
   transition: all 0.3s ease;
+}
+
+.navbar.hidden {
+  transform: translateY(-100%);
 }
 
 .nav-container {

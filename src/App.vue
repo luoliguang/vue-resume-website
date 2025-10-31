@@ -29,7 +29,8 @@ import ContactSection from './components/sections/ContactSection.vue'
 <style scoped>
 .app {
   min-height: 100vh;
-  background: #ffffff;
+  /* 使用全局背景，避免白色底导致区块过渡断层 */
+  background: transparent;
 }
 
 .main-content {

@@ -3,6 +3,7 @@ import App from './App.vue'
 import { scrollFadeIn } from './directives/scrollFadeIn.js'
 import ArcoVue from '@arco-design/web-vue'
 import '@arco-design/web-vue/dist/arco.css'
+import './styles/global.css'
 import { initLanguage } from './composables/useI18n.js'
 
 const app = createApp(App)
