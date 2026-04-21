@@ -29,7 +29,7 @@ import ContactSection from './components/sections/ContactSection.vue'
 <style scoped>
 .app {
   min-height: 100vh;
-  background: #ffffff;
+  background: transparent;
 }
 
 .main-content {

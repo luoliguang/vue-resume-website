@@ -1,0 +1,98 @@
+/* 全局背景与基础配色变量 */
+:root {
+  --bg-base: #f7f9fc;              /* 页面主体背景 */
+  --bg-gradient-start: #f7f9fc;    /* 渐变起点（浅） */
+  --bg-gradient-end: #eef2f7;      /* 渐变终点（略深） */
+  --bg-accent: rgba(52, 152, 219, 0.08); /* 轻微点缀层 */
+
+  --surface: #ffffff;              /* 卡片/区域底色 */
+  --surface-border: rgba(0, 0, 0, 0.06);
+  --surface-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+/* 全站背景：柔和渐变 + 细微图案（可选） */
+html, body, #app {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(60rem 60rem at 10% -10%, var(--bg-accent), transparent 50%),
+    radial-gradient(50rem 50rem at 90% 10%, var(--bg-accent), transparent 50%),
+    linear-gradient(180deg, var(--bg-gradient-start), var(--bg-gradient-end));
+  background-attachment: fixed;
+  color: #2c3e50;
+}
+
+/* 统一段落区域的默认透明背景，避免与全局底色冲突 */
+section, main, .section-block {
+  background: transparent;
+}
+
+/* 尽量将常见容器背景设为透明，减少“白边”露出 */
+.container, .container-max, .content, .wrapper,
+.arco-layout, .arco-card, .arco-card-body,
+.arco-page-header, .arco-space, .arco-list {
+  background: transparent !important;
+}
+
+/* 标准页面分区：统一内边距与间距，默认透明，衔接全局底色 */
+.section {
+  padding: 60px 0;
+  background: transparent;
+}
+
+/* 渐变分隔：用于区块与区块之间的柔和过渡 */
+.section-divider {
+  height: 48px;
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(0, 0, 0, 0.04) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
+  opacity: 0.6;
+}
+
+/* 提供统一“浮层/卡片”外观：可在局部包裹使用 */
+.surface {
+  background: var(--surface);
+  border: 1px solid var(--surface-border);
+  box-shadow: var(--surface-shadow);
+  border-radius: 12px;
+}
+
+/* 半透明浮层：能看到底层背景的过渡，更柔和 */
+.surface-translucent {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: saturate(120%) blur(6px);
+  -webkit-backdrop-filter: saturate(120%) blur(6px);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+/* 可选的内容最大宽度容器（按需添加到页面容器） */
+.container-max {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* 暗色模式（如后续需要，可通过给 html/body 加 .dark 启用） */
+.dark {
+  --bg-base: #0f141b;
+  --bg-gradient-start: #0f141b;
+  --bg-gradient-end: #151c25;
+  --bg-accent: rgba(52, 152, 219, 0.12);
+
+  --surface: #161d27;
+  --surface-border: rgba(255, 255, 255, 0.08);
+  --surface-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+
+  color: #e8eef6;
+}
+
+
