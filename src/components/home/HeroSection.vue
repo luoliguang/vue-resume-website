@@ -81,23 +81,30 @@
     <Teleport to="body">
       <div v-if="isQuickIntroOpen" class="quick-intro-overlay" @click.self="closeQuickIntro">
         <div class="quick-intro-card">
-          <button class="quick-intro-close" @click="closeQuickIntro" aria-label="Close quick intro">×</button>
-          <p class="quick-intro-kicker">{{ t('hero.cta3') }}</p>
-          <h2 class="quick-intro-title">{{ t('hero.title') }}</h2>
-          <p class="quick-intro-brand">{{ t('hero.nickname') }}</p>
-          <p class="quick-intro-text">我是一名数码印花服装跟单，同时在学习全栈开发。我的优势是能把业务沟通、生产跟进和数字化工具结合起来，让流程更清晰、效率更高。</p>
-          <div class="quick-intro-highlights">
-            <div class="highlight-item">
-              <span class="highlight-label">我现在在做</span>
-              <span class="highlight-value">数码印花服装跟单 + 全栈学习 + Vibe Coding</span>
+          <button class="quick-intro-close" @click="closeQuickIntro" aria-label="Close">×</button>
+
+          <div class="qi-header">
+            <span class="qi-badge">{{ t('hero.cta3') }}</span>
+            <h2 class="qi-name">{{ t('hero.title') }}</h2>
+            <p class="qi-brand">{{ t('hero.nickname') }}</p>
+          </div>
+
+          <p class="qi-text">{{ t('hero.quickIntro.text') }}</p>
+
+          <div class="qi-divider"></div>
+
+          <div class="qi-highlights">
+            <div class="qi-highlight">
+              <span class="qi-hlabel">{{ t('hero.quickIntro.label1') }}</span>
+              <span class="qi-hvalue">{{ t('hero.quickIntro.value1') }}</span>
             </div>
-            <div class="highlight-item">
-              <span class="highlight-label">我擅长</span>
-              <span class="highlight-value">沟通协调、流程推进、问题落地</span>
+            <div class="qi-highlight">
+              <span class="qi-hlabel">{{ t('hero.quickIntro.label2') }}</span>
+              <span class="qi-hvalue">{{ t('hero.quickIntro.value2') }}</span>
             </div>
-            <div class="highlight-item">
-              <span class="highlight-label">我希望成为</span>
-              <span class="highlight-value">懂业务、懂技术的流程优化者</span>
+            <div class="qi-highlight">
+              <span class="qi-hlabel">{{ t('hero.quickIntro.label3') }}</span>
+              <span class="qi-hvalue">{{ t('hero.quickIntro.value3') }}</span>
             </div>
           </div>
         </div>
@@ -107,7 +114,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { t } from '../../composables/useI18n.js'
 
 const imageError = ref(false)
@@ -119,25 +126,33 @@ const handleImageError = () => {
 
 const scrollToAbout = () => {
   const aboutSection = document.getElementById('about')
-  if (aboutSection) {
-    aboutSection.scrollIntoView({ behavior: 'smooth' })
-  }
+  if (aboutSection) aboutSection.scrollIntoView({ behavior: 'smooth' })
 }
 
 const scrollToProjects = () => {
   const projectsSection = document.getElementById('projects')
-  if (projectsSection) {
-    projectsSection.scrollIntoView({ behavior: 'smooth' })
-  }
+  if (projectsSection) projectsSection.scrollIntoView({ behavior: 'smooth' })
 }
 
 const openQuickIntro = () => {
   isQuickIntroOpen.value = true
+  document.body.style.overflow = 'hidden'
 }
 
 const closeQuickIntro = () => {
   isQuickIntroOpen.value = false
+  document.body.style.overflow = ''
 }
+
+const handleKeydown = (e) => {
+  if (e.key === 'Escape' && isQuickIntroOpen.value) closeQuickIntro()
+}
+
+onMounted(() => window.addEventListener('keydown', handleKeydown))
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleKeydown)
+  document.body.style.overflow = ''
+})
 </script>
 
 <style scoped>
@@ -372,10 +387,10 @@ const closeQuickIntro = () => {
 
 .quick-intro-card {
   position: relative;
-  width: min(640px, 100%);
+  width: min(620px, 100%);
   border-radius: 24px;
-  padding: 32px;
-  background: rgba(255, 255, 255, 0.96);
+  padding: 36px;
+  background: rgba(255, 255, 255, 0.97);
   box-shadow: 0 24px 80px rgba(15, 23, 42, 0.25);
   border: 1px solid rgba(102, 126, 234, 0.12);
   max-height: calc(100vh - 48px);
@@ -386,67 +401,100 @@ const closeQuickIntro = () => {
   position: absolute;
   top: 16px;
   right: 16px;
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   border: none;
   border-radius: 50%;
-  background: rgba(102, 126, 234, 0.1);
+  background: rgba(102, 126, 234, 0.08);
   color: #2c3e50;
-  font-size: 24px;
+  font-size: 22px;
   cursor: pointer;
+  line-height: 1;
+  transition: background 0.2s;
 }
 
-.quick-intro-kicker {
-  margin: 0 0 8px;
+.quick-intro-close:hover {
+  background: rgba(102, 126, 234, 0.18);
+}
+
+/* Header */
+.qi-header {
+  margin-bottom: 20px;
+}
+
+.qi-badge {
+  display: inline-block;
+  padding: 3px 12px;
+  border-radius: 999px;
+  background: rgba(102, 126, 234, 0.1);
   color: #667eea;
   font-weight: 700;
-  letter-spacing: 2px;
+  font-size: 0.72rem;
+  letter-spacing: 1.5px;
   text-transform: uppercase;
-  font-size: 0.82rem;
+  margin-bottom: 14px;
 }
 
-.quick-intro-title {
-  margin: 0;
+.qi-name {
+  margin: 0 0 4px;
   font-size: 2rem;
+  font-weight: 700;
   color: #2c3e50;
+  line-height: 1.2;
 }
 
-.quick-intro-brand {
-  margin: 6px 0 18px;
+.qi-brand {
+  margin: 0;
   color: #667eea;
   font-weight: 600;
   letter-spacing: 3px;
+  font-size: 0.88rem;
 }
 
-.quick-intro-text {
-  margin: 0 0 24px;
+/* Bio */
+.qi-text {
+  margin: 0 0 20px;
   color: #4a5568;
   line-height: 1.8;
+  font-size: 0.97rem;
 }
 
-.quick-intro-highlights {
+.qi-divider {
+  height: 1px;
+  background: linear-gradient(90deg, rgba(102, 126, 234, 0.3), transparent);
+  margin-bottom: 20px;
+}
+
+/* Highlights grid */
+.qi-highlights {
   display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 12px;
 }
 
-.highlight-item {
+.qi-highlight {
   display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 14px 16px;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
   border-radius: 16px;
-  background: linear-gradient(180deg, rgba(102, 126, 234, 0.06), rgba(102, 126, 234, 0.02));
+  background: linear-gradient(160deg, rgba(102, 126, 234, 0.07), rgba(102, 126, 234, 0.02));
+  border: 1px solid rgba(102, 126, 234, 0.1);
 }
 
-.highlight-label {
+.qi-hlabel {
+  font-size: 0.7rem;
   font-weight: 700;
-  color: #2c3e50;
-  flex: 0 0 auto;
+  letter-spacing: 0.5px;
+  color: #667eea;
+  text-transform: uppercase;
 }
 
-.highlight-value {
-  color: #4a5568;
-  text-align: right;
+.qi-hvalue {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #2c3e50;
+  line-height: 1.5;
 }
 
 /* 主按钮样式 - 蓝色主题 */
@@ -575,24 +623,16 @@ const closeQuickIntro = () => {
 
   .quick-intro-card {
     width: min(100%, 520px);
-    padding: 24px;
+    padding: 28px;
   }
 
-  .quick-intro-title {
+  .qi-name {
     font-size: 1.75rem;
   }
 
-  .quick-intro-highlights {
+  .qi-highlights {
+    grid-template-columns: 1fr;
     gap: 10px;
-  }
-
-  .highlight-item {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .highlight-value {
-    text-align: left;
   }
 }
 
@@ -645,32 +685,16 @@ const closeQuickIntro = () => {
     border-radius: 20px;
   }
 
-  .quick-intro-close {
-    top: 12px;
-    right: 12px;
-    width: 36px;
-    height: 36px;
-    font-size: 22px;
-  }
-
-  .quick-intro-kicker {
-    letter-spacing: 1px;
-  }
-
-  .quick-intro-title {
+  .qi-name {
     font-size: 1.5rem;
   }
 
-  .quick-intro-brand {
-    letter-spacing: 2px;
-  }
-
-  .quick-intro-text {
-    font-size: 0.95rem;
+  .qi-text {
+    font-size: 0.93rem;
     line-height: 1.7;
   }
 
-  .highlight-item {
+  .qi-highlight {
     padding: 12px 14px;
   }
 }

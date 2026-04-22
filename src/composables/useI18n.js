@@ -18,15 +18,24 @@ const translations = {
       title: '罗洋洋',
       nickname: 'giluoo',
       subtitle: '懂服装供应链的流程优化者',
-      description: '我是一名来自供应商的一线服装客服跟单，有2年以上经验。熟悉客户沟通、面料印花、生产跟进等全流程工作，持续学习前端和数码印花技术，探索传统工厂与数字化的结合。',
+      description: '我是一名来自供应商的一线服装跟单，有 2 年以上经验。熟悉客户沟通、面料印花、生产跟进的全流程，同时自学前端与 Node.js，并将它们直接用在自己每天的工作里。',
       cta: '了解我',
       cta2: '查看项目',
-      cta3: '15秒熟悉我'
+      cta3: '15秒熟悉我',
+      quickIntro: {
+        text: '我在纺织供应链一线做了 2 年跟单，同时自学全栈开发。我做的事是：发现工厂里的效率问题，然后用代码把它解决掉。',
+        label1: '我现在在做',
+        value1: '数码印花跟单 / 独立开发企业内部工具',
+        label2: '我擅长',
+        value2: '把模糊需求变成可执行方案，跨职能落地',
+        label3: '我适合什么',
+        value3: '需要「懂业务的技术人」或「懂技术的业务人」的岗位或合作'
+      }
     },
     // 关于我
     about: {
       title: '关于我',
-      description: '我是一名专业的服装跟单，同时也在学习前端开发技术。我热爱将传统行业与现代技术相结合，通过数字化手段提升工作效率。',
+      description: '我在纺织供应链里做跟单，发现很多重复低效的工作可以用工具解决。这驱使我开始学前端和 Node.js，并把它直接用在自己每天的工作里。',
       skills: '核心技能',
       skillTags: ['服装跟单', '客户沟通', '生产协调', 'Vue.js', 'Node.js', 'WPS脚本']
     },
@@ -101,7 +110,7 @@ const translations = {
     },
     // 底部
     footer: {
-      quote: '比别人慢一点没关系，但我从不停止改进。',
+      quote: '在别人只看业务的地方，我多看了一层技术。',
       copyright: '© 2025 Luoyangyang. All Rights Reserved.'
     }
   },
@@ -120,16 +129,25 @@ const translations = {
     hero: {
       title: 'Luo Yangyang',
       nickname: 'giluoo',
-      subtitle: 'Garment Merchandiser',
-      description: 'I am a first-line garment customer service merchandiser from a supplier with more than 2 years of experience. Familiar with customer communication, fabric printing, production follow-up and other full-process work, continuously learning frontend and digital printing technology, exploring the combination of traditional factories and digitalization.',
+      subtitle: 'Supply Chain Merchandiser & Process Builder',
+      description: 'Garment merchandiser with 2+ years on the supplier side — managing client communication, fabric printing, and production tracking end-to-end. Now self-teaching full-stack development and applying it directly to the workflows I work in every day.',
       cta: 'About Me',
       cta2: 'View Projects',
-      cta3: '15 Seconds to Get to Know Me'
+      cta3: '15 Seconds to Know Me',
+      quickIntro: {
+        text: '2 years as a garment merchandiser on the supplier side, now self-teaching full-stack development. What I actually do: spot inefficiencies in factory workflows, then build tools to fix them.',
+        label1: 'Currently',
+        value1: 'Digital printing merchandising / Building internal tooling',
+        label2: 'Good at',
+        value2: 'Turning vague requirements into executable plans, cross-functional delivery',
+        label3: 'Best fit for',
+        value3: 'Roles or collaborations that need someone who speaks both business and tech'
+      }
     },
     // About Section
     about: {
       title: 'About Me',
-      description: 'I am a professional garment merchandiser who is also learning frontend development technologies. I love combining traditional industries with modern technology to improve work efficiency through digital means.',
+      description: 'Working in garment supply chain, I kept noticing repetitive, inefficient processes that could be solved with the right tools. That pushed me to learn frontend and Node.js — and apply them directly to my own daily work.',
       skills: 'Core Skills',
       skillTags: ['Garment Merchandising', 'Client Communication', 'Production Coordination', 'Vue.js', 'Node.js', 'WPS Scripting']
     },
@@ -207,7 +225,7 @@ const translations = {
     },
     // Footer
     footer: {
-      quote: 'It\'s okay to be a little slower than others, but I never stop improving.',
+      quote: 'Where others see only business, I also look for the technical layer.',
       copyright: '© 2025 Luoyangyang. All Rights Reserved.'
     }
   }
