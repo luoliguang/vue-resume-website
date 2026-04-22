@@ -6,7 +6,7 @@
         <div class="profile-section">
           <div class="avatar-container">
             <img 
-              src="/images/me.webp" 
+              src="/images/me.jpg" 
               :alt="t('hero.title')" 
               class="avatar-img"
               @error="handleImageError"
@@ -60,9 +60,49 @@
               ></path>
             </svg>
           </button>
+          <button class="animated-button btn-quick" @click="openQuickIntro">
+            <svg viewBox="0 0 24 24" class="arr-2" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M12 2a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2zm1 14.93V18h-2v-1.07a6.002 6.002 0 0 1-4.93-4.93H6v-2h1.07A6.002 6.002 0 0 1 12 5.07V4h2v1.07a6.002 6.002 0 0 1 4.93 4.93H20v2h-1.07A6.002 6.002 0 0 1 13 16.93z"
+              ></path>
+            </svg>
+            <span class="text">{{ t('hero.cta3') }}</span>
+            <span class="circle"></span>
+            <svg viewBox="0 0 24 24" class="arr-1" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M12 2a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2zm1 14.93V18h-2v-1.07a6.002 6.002 0 0 1-4.93-4.93H6v-2h1.07A6.002 6.002 0 0 1 12 5.07V4h2v1.07a6.002 6.002 0 0 1 4.93 4.93H20v2h-1.07A6.002 6.002 0 0 1 13 16.93z"
+              ></path>
+            </svg>
+          </button>
         </div>
       </div>
     </div>
+
+    <Teleport to="body">
+      <div v-if="isQuickIntroOpen" class="quick-intro-overlay" @click.self="closeQuickIntro">
+        <div class="quick-intro-card">
+          <button class="quick-intro-close" @click="closeQuickIntro" aria-label="Close quick intro">×</button>
+          <p class="quick-intro-kicker">{{ t('hero.cta3') }}</p>
+          <h2 class="quick-intro-title">{{ t('hero.title') }}</h2>
+          <p class="quick-intro-brand">{{ t('hero.nickname') }}</p>
+          <p class="quick-intro-text">我是一名数码印花服装跟单，同时在学习全栈开发。我的优势是能把业务沟通、生产跟进和数字化工具结合起来，让流程更清晰、效率更高。</p>
+          <div class="quick-intro-highlights">
+            <div class="highlight-item">
+              <span class="highlight-label">我现在在做</span>
+              <span class="highlight-value">数码印花服装跟单 + 全栈学习 + Vibe Coding</span>
+            </div>
+            <div class="highlight-item">
+              <span class="highlight-label">我擅长</span>
+              <span class="highlight-value">沟通协调、流程推进、问题落地</span>
+            </div>
+            <div class="highlight-item">
+              <span class="highlight-label">我希望成为</span>
+              <span class="highlight-value">懂业务、懂技术的流程优化者</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Teleport>
   </section>
 </template>
 
@@ -71,6 +111,7 @@ import { ref } from 'vue'
 import { t } from '../../composables/useI18n.js'
 
 const imageError = ref(false)
+const isQuickIntroOpen = ref(false)
 
 const handleImageError = () => {
   imageError.value = true
@@ -88,6 +129,14 @@ const scrollToProjects = () => {
   if (projectsSection) {
     projectsSection.scrollIntoView({ behavior: 'smooth' })
   }
+}
+
+const openQuickIntro = () => {
+  isQuickIntroOpen.value = true
+}
+
+const closeQuickIntro = () => {
+  isQuickIntroOpen.value = false
 }
 </script>
 
@@ -292,6 +341,114 @@ const scrollToProjects = () => {
   opacity: 1;
 }
 
+.btn-quick {
+  color: #8e44ad;
+  box-shadow: 0 0 0 2px #8e44ad;
+}
+
+.btn-quick svg {
+  fill: #8e44ad;
+}
+
+.btn-quick .circle {
+  background-color: #8e44ad;
+}
+
+.btn-quick:active {
+  box-shadow: 0 0 0 4px #8e44ad;
+}
+
+.quick-intro-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 2000;
+}
+
+.quick-intro-card {
+  position: relative;
+  width: min(640px, 100%);
+  border-radius: 24px;
+  padding: 32px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 24px 80px rgba(15, 23, 42, 0.25);
+  border: 1px solid rgba(102, 126, 234, 0.12);
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+}
+
+.quick-intro-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(102, 126, 234, 0.1);
+  color: #2c3e50;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.quick-intro-kicker {
+  margin: 0 0 8px;
+  color: #667eea;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-size: 0.82rem;
+}
+
+.quick-intro-title {
+  margin: 0;
+  font-size: 2rem;
+  color: #2c3e50;
+}
+
+.quick-intro-brand {
+  margin: 6px 0 18px;
+  color: #667eea;
+  font-weight: 600;
+  letter-spacing: 3px;
+}
+
+.quick-intro-text {
+  margin: 0 0 24px;
+  color: #4a5568;
+  line-height: 1.8;
+}
+
+.quick-intro-highlights {
+  display: grid;
+  gap: 12px;
+}
+
+.highlight-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(102, 126, 234, 0.06), rgba(102, 126, 234, 0.02));
+}
+
+.highlight-label {
+  font-weight: 700;
+  color: #2c3e50;
+  flex: 0 0 auto;
+}
+
+.highlight-value {
+  color: #4a5568;
+  text-align: right;
+}
+
 /* 主按钮样式 - 蓝色主题 */
 .btn-primary {
   color: #3498db;
@@ -339,7 +496,7 @@ const scrollToProjects = () => {
     margin-bottom: 6px;
   }
   
-  .nickname {
+  .brand-name {
     font-size: 1.15rem;
     margin-bottom: 20px;
   }
@@ -415,6 +572,28 @@ const scrollToProjects = () => {
     justify-content: center;
     flex-wrap: wrap;
   }
+
+  .quick-intro-card {
+    width: min(100%, 520px);
+    padding: 24px;
+  }
+
+  .quick-intro-title {
+    font-size: 1.75rem;
+  }
+
+  .quick-intro-highlights {
+    gap: 10px;
+  }
+
+  .highlight-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .highlight-value {
+    text-align: left;
+  }
 }
 
 /* 小屏幕手机 */
@@ -428,7 +607,7 @@ const scrollToProjects = () => {
     margin-bottom: 4px;
   }
   
-  .nickname {
+  .brand-name {
     font-size: 1rem;
     margin-bottom: 12px;
     letter-spacing: 1px;
@@ -454,6 +633,45 @@ const scrollToProjects = () => {
   
   .animated-button svg {
     width: 20px;
+  }
+
+  .quick-intro-overlay {
+    padding: 16px;
+  }
+
+  .quick-intro-card {
+    width: 100%;
+    padding: 20px;
+    border-radius: 20px;
+  }
+
+  .quick-intro-close {
+    top: 12px;
+    right: 12px;
+    width: 36px;
+    height: 36px;
+    font-size: 22px;
+  }
+
+  .quick-intro-kicker {
+    letter-spacing: 1px;
+  }
+
+  .quick-intro-title {
+    font-size: 1.5rem;
+  }
+
+  .quick-intro-brand {
+    letter-spacing: 2px;
+  }
+
+  .quick-intro-text {
+    font-size: 0.95rem;
+    line-height: 1.7;
+  }
+
+  .highlight-item {
+    padding: 12px 14px;
   }
 }
 </style>
