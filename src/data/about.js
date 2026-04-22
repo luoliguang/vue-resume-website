@@ -34,7 +34,7 @@ export const aboutData = {
   ],
   // 头像图片路径
   avatar: {
-    src: '/images/me.jpg',
+    src: '/images/me.webp',
     alt: {
       zh: '罗力广',
       en: 'Luo Liguang'
