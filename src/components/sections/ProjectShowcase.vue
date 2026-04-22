@@ -3,10 +3,10 @@
     <div class="container">
       <h2 class="section-title">{{ t('projects.title') }}</h2>
       <p class="section-subtitle">{{ t('projects.subtitle') }}</p>
-      
+
       <!-- 项目分类筛选 -->
       <div class="filter-wrapper">
-        <GlassToggle 
+        <GlassToggle
           v-model="activeCategory"
           :items="projectCategories.map(cat => ({
             value: cat.id,
@@ -18,26 +18,25 @@
         />
       </div>
 
-      <!-- 项目展示网格 -->
+      <!-- 项目卡片网格 -->
       <div class="projects-grid">
-        <div 
-          v-for="project in filteredProjects" 
+        <div
+          v-for="project in filteredProjects"
           :key="project.id"
           class="project-card"
           :data-project-id="project.id"
           :class="{ 'status-developing': project.status === 'developing' }"
+          @click="openDetail(project)"
         >
-            <!-- 项目预览图 -->
-          <div class="project-image" 
-               :class="{ 'clickable': (project.demoType === 'media' && project.modalContent) || (project.demoType === 'link' && project.link && project.link !== '#') }"
-               @click="handleThumbnailClick(project)">
-            <img 
-              :src="project.image" 
-              :alt="project.title"
+          <!-- 封面图 -->
+          <div class="project-image">
+            <img
+              :src="project.image"
+              :alt="project.title[isChinese ? 'zh' : 'en']"
               @error="handleImageError"
             >
             <div v-if="imageErrors[project.id]" class="image-placeholder">
-              <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
                 <circle cx="8.5" cy="8.5" r="1.5"/>
                 <polyline points="21,15 16,10 5,21"/>
@@ -46,80 +45,26 @@
             <div v-if="project.status === 'developing'" class="status-badge">
               {{ isChinese ? '开发中' : 'Developing' }}
             </div>
-            <!-- 模态框提示图标 -->
-            <div v-if="project.demoType === 'media' && project.modalContent" class="demo-indicator">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
-                <path d="M8 5v14l11-7z"/>
+            <div class="card-hover-hint">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="white">
+                <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
               </svg>
+              <span>{{ isChinese ? '查看详情' : 'View Details' }}</span>
             </div>
           </div>
 
-          <!-- 项目信息 -->
+          <!-- 精简卡片内容 -->
           <div class="project-content">
             <h3 class="project-title">{{ project.title[isChinese ? 'zh' : 'en'] }}</h3>
             <p class="project-description">{{ project.description[isChinese ? 'zh' : 'en'] }}</p>
-
-            <!-- 技术标签 -->
             <div class="tech-tags">
-              <span 
-                v-for="tech in project.technologies" 
-                :key="tech"
-                class="tech-tag"
-              >
+              <span v-for="tech in project.technologies" :key="tech" class="tech-tag">
                 {{ tech }}
               </span>
             </div>
-
-            <!-- Before & After 对比展示 -->
-            <div v-if="project.before && project.after" class="before-after-section">
-              <div class="comparison-item before">
-                <div class="comparison-label">{{ isChinese ? 'Before' : 'Before' }}</div>
-                <div class="comparison-content">{{ project.before[isChinese ? 'zh' : 'en'] }}</div>
-              </div>
-              <div class="comparison-item after">
-                <div class="comparison-label">{{ isChinese ? 'After' : 'After' }}</div>
-                <div class="comparison-content">{{ project.after[isChinese ? 'zh' : 'en'] }}</div>
-              </div>
-            </div>
-
-            <!-- 三段式展示：痛点 → 解决方案 → 成果 -->
-            <div v-if="project.challenge || project.solution || project.result" class="project-process">
-              <!-- 痛点 -->
-              <div v-if="project.challenge" class="process-item challenge">
-                <h4 class="process-title">{{ isChinese ? '痛点' : 'Challenge' }}</h4>
-                <p class="process-text">{{ project.challenge[isChinese ? 'zh' : 'en'] }}</p>
-              </div>
-
-              <!-- 解决方案 -->
-              <div v-if="project.solution" class="process-item solution">
-                <h4 class="process-title">{{ isChinese ? '解决方案' : 'Solution' }}</h4>
-                <p class="process-text">{{ project.solution[isChinese ? 'zh' : 'en'] }}</p>
-              </div>
-
-              <!-- 成果 -->
-              <div v-if="project.result" class="process-item result">
-                <h4 class="process-title">{{ isChinese ? '成果' : 'Result' }}</h4>
-                <p class="process-text">{{ project.result[isChinese ? 'zh' : 'en'] }}</p>
-              </div>
-            </div>
-
-            <!-- 查看详情按钮 - 根据项目类型显示不同文案 -->
             <div class="project-action">
-              <a 
-                v-if="project.demoType === 'link' && project.link !== '#'" 
-                :href="project.link" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                class="view-more-btn"
-              >
-                {{ getActionText(project) }} →
-              </a>
-              <button 
-                v-else-if="project.demoType === 'media' && project.modalContent"
-                @click="openModal(project)"
-                class="view-more-btn"
-              >
-                {{ getActionText(project) }} →
+              <button class="view-more-btn" @click.stop="openDetail(project)">
+                {{ isChinese ? '查看详情' : 'View Details' }} →
               </button>
             </div>
           </div>
@@ -127,29 +72,146 @@
       </div>
     </div>
 
-    <!-- 模态框 - 用于展示GIF、视频、图片 -->
+    <!-- 项目详情弹窗 -->
     <Teleport to="body">
-      <div v-if="isModalOpen" class="modal-overlay" @click="closeModal">
-        <div class="modal-content" @click.stop>
-          <button class="modal-close" @click="closeModal">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
-              <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
-            </svg>
-          </button>
-          <!-- GIF/图片展示 -->
-          <img 
-            v-if="currentModalContent?.type === 'gif' || currentModalContent?.type === 'image'" 
-            :src="currentModalContent?.src" 
-            :alt="currentModalContent?.title"
-            class="modal-media"
-          />
-          <!-- 视频展示 -->
-          <video 
-            v-if="currentModalContent?.type === 'video'" 
-            :src="currentModalContent?.src" 
-            controls 
-            autoplay
-            class="modal-media"
+      <div v-if="isDetailOpen" class="detail-overlay" @click.self="closeDetail">
+        <div class="detail-modal">
+          <button class="detail-close" @click="closeDetail" aria-label="Close">×</button>
+
+          <!-- 弹窗标题 + 标签 -->
+          <div class="detail-header">
+            <h2 class="detail-title">{{ currentDetailProject?.title[isChinese ? 'zh' : 'en'] }}</h2>
+            <div class="tech-tags">
+              <span v-for="tech in currentDetailProject?.technologies" :key="tech" class="tech-tag">
+                {{ tech }}
+              </span>
+            </div>
+          </div>
+
+          <!-- 多图预览（画廊模式） -->
+          <div v-if="currentDetailProject?.detailImages?.length" class="detail-gallery">
+            <img
+              v-for="(src, i) in currentDetailProject.detailImages"
+              :key="i"
+              :src="src"
+              :alt="`${currentDetailProject.title[isChinese ? 'zh' : 'en']} ${i + 1}`"
+              class="gallery-img"
+              :style="currentDetailProject.imageRatio ? { aspectRatio: currentDetailProject.imageRatio } : {}"
+              @click.stop="openLightbox(currentDetailProject.detailImages, i)"
+            />
+          </div>
+
+          <!-- 单媒体预览：GIF / 视频 / 图片 -->
+          <div v-else-if="currentDetailProject?.modalContent" class="detail-media">
+            <img
+              v-if="currentDetailProject.modalContent.type === 'gif' || currentDetailProject.modalContent.type === 'image'"
+              :src="currentDetailProject.modalContent.src"
+              :alt="currentDetailProject.title[isChinese ? 'zh' : 'en']"
+              class="detail-media-content"
+            />
+            <video
+              v-else-if="currentDetailProject.modalContent.type === 'video'"
+              :src="currentDetailProject.modalContent.src"
+              controls
+              class="detail-media-content"
+            />
+          </div>
+
+          <!-- 项目描述 -->
+          <p class="detail-desc">{{ currentDetailProject?.description[isChinese ? 'zh' : 'en'] }}</p>
+
+          <!-- Before / After 对比 -->
+          <div v-if="currentDetailProject?.before && currentDetailProject?.after" class="detail-ba">
+            <div class="ba-item before">
+              <div class="ba-label">Before</div>
+              <div class="ba-content">{{ currentDetailProject.before[isChinese ? 'zh' : 'en'] }}</div>
+            </div>
+            <div class="ba-item after">
+              <div class="ba-label">After</div>
+              <div class="ba-content">{{ currentDetailProject.after[isChinese ? 'zh' : 'en'] }}</div>
+            </div>
+          </div>
+
+          <!-- 三段式：痛点 → 解决方案 → 成果 -->
+          <div v-if="currentDetailProject?.challenge" class="detail-process">
+            <div class="dp-item challenge">
+              <span class="dp-label">{{ isChinese ? '痛点' : 'Challenge' }}</span>
+              <span class="dp-text">{{ currentDetailProject.challenge[isChinese ? 'zh' : 'en'] }}</span>
+            </div>
+            <div class="dp-item solution">
+              <span class="dp-label">{{ isChinese ? '解决方案' : 'Solution' }}</span>
+              <span class="dp-text">{{ currentDetailProject.solution?.[isChinese ? 'zh' : 'en'] }}</span>
+            </div>
+            <div class="dp-item result">
+              <span class="dp-label">{{ isChinese ? '成果' : 'Result' }}</span>
+              <span class="dp-text">{{ currentDetailProject.result?.[isChinese ? 'zh' : 'en'] }}</span>
+            </div>
+          </div>
+
+          <!-- 访问链接 -->
+          <div v-if="currentDetailProject?.link && currentDetailProject.link !== '#'" class="detail-action">
+            <a
+              :href="currentDetailProject.link"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="detail-link-btn"
+            >
+              {{ isChinese ? '访问项目' : 'Visit Project' }} →
+            </a>
+          </div>
+        </div>
+      </div>
+    </Teleport>
+
+    <!-- Lightbox 全屏预览 -->
+    <Teleport to="body">
+      <div v-if="isLightboxOpen" class="lightbox-overlay" @click.self="closeLightbox">
+
+        <!-- 关闭 -->
+        <button class="lightbox-close" @click="closeLightbox" aria-label="Close">×</button>
+
+        <!-- 计数器 -->
+        <div class="lightbox-counter">{{ lightboxIndex + 1 }} / {{ lightboxImages.length }}</div>
+
+        <!-- 上一张 -->
+        <button
+          v-if="lightboxImages.length > 1"
+          class="lightbox-arrow lightbox-prev"
+          @click.stop="prevImage"
+          aria-label="Previous"
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+            <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+          </svg>
+        </button>
+
+        <!-- 图片 -->
+        <img
+          :src="lightboxImages[lightboxIndex]"
+          :alt="`preview ${lightboxIndex + 1}`"
+          class="lightbox-img"
+        />
+
+        <!-- 下一张 -->
+        <button
+          v-if="lightboxImages.length > 1"
+          class="lightbox-arrow lightbox-next"
+          @click.stop="nextImage"
+          aria-label="Next"
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+            <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+          </svg>
+        </button>
+
+        <!-- 缩略图导航 -->
+        <div v-if="lightboxImages.length > 1" class="lightbox-dots">
+          <button
+            v-for="(_, i) in lightboxImages"
+            :key="i"
+            class="lightbox-dot"
+            :class="{ active: i === lightboxIndex }"
+            @click.stop="lightboxIndex = i"
           />
         </div>
       </div>
@@ -165,13 +227,18 @@ import GlassToggle from '../ui/GlassToggle.vue'
 
 const activeCategory = ref('all')
 const imageErrors = ref({})
-const isModalOpen = ref(false)
-const currentModalContent = ref(null)
+
+// 详情弹窗
+const isDetailOpen = ref(false)
+const currentDetailProject = ref(null)
+
+// Lightbox
+const isLightboxOpen = ref(false)
+const lightboxImages = ref([])
+const lightboxIndex = ref(0)
 
 const filteredProjects = computed(() => {
-  if (activeCategory.value === 'all') {
-    return projectShowcase
-  }
+  if (activeCategory.value === 'all') return projectShowcase
   return projectShowcase.filter(project => project.category === activeCategory.value)
 })
 
@@ -181,68 +248,53 @@ const setActiveCategory = (categoryId) => {
 
 const handleImageError = (event) => {
   const projectId = event.target.closest('.project-card')?.dataset.projectId
-  if (projectId) {
-    imageErrors.value[projectId] = true
-  }
+  if (projectId) imageErrors.value[projectId] = true
 }
 
-const handleThumbnailClick = (project) => {
-  // 优先展示媒体内容
-  if (project.demoType === 'media' && project.modalContent) {
-    openModal(project)
-    return
-  }
-  // 链接类型则跳转新窗口
-  if (project.demoType === 'link' && project.link && project.link !== '#') {
-    try {
-      window.open(project.link, '_blank', 'noopener,noreferrer')
-    } catch (e) {
-      // 兜底：如果 window.open 被拦截，直接设置 location（仍可能被拦截）
-      window.location.href = project.link
-    }
-  }
+const openDetail = (project) => {
+  currentDetailProject.value = project
+  isDetailOpen.value = true
+  document.body.style.overflow = 'hidden'
 }
 
-const getActionText = (project) => {
-  // 根据项目类型和媒体类型决定按钮文案
-  if (project.demoType === 'media') {
-    // 有视频/GIF等演示内容
-    return isChinese.value ? '查看演示' : 'View Demo'
-  } else if (project.demoType === 'link') {
-    // 网站项目，直接访问
-    return isChinese.value ? '查看详情' : 'View Details'
-  }
-  // 默认
-  return isChinese.value ? '了解更多' : 'Learn More'
-}
-
-const openModal = (project) => {
-  if (project.modalContent) {
-    currentModalContent.value = project.modalContent
-    isModalOpen.value = true
-    document.body.style.overflow = 'hidden'
-  }
-}
-
-const closeModal = () => {
-  isModalOpen.value = false
-  currentModalContent.value = null
+const closeDetail = () => {
+  isDetailOpen.value = false
+  currentDetailProject.value = null
   document.body.style.overflow = ''
 }
 
-// ESC 键关闭模态框
-const handleEscape = (e) => {
-  if (e.key === 'Escape' && isModalOpen.value) {
-    closeModal()
-  }
+const openLightbox = (images, index) => {
+  lightboxImages.value = images
+  lightboxIndex.value = index
+  isLightboxOpen.value = true
 }
 
-onMounted(() => {
-  document.addEventListener('keydown', handleEscape)
-})
+const closeLightbox = () => {
+  isLightboxOpen.value = false
+}
 
+const prevImage = () => {
+  lightboxIndex.value = (lightboxIndex.value - 1 + lightboxImages.value.length) % lightboxImages.value.length
+}
+
+const nextImage = () => {
+  lightboxIndex.value = (lightboxIndex.value + 1) % lightboxImages.value.length
+}
+
+const handleKeydown = (e) => {
+  if (isLightboxOpen.value) {
+    if (e.key === 'Escape') closeLightbox()
+    if (e.key === 'ArrowLeft') prevImage()
+    if (e.key === 'ArrowRight') nextImage()
+    return
+  }
+  if (e.key === 'Escape' && isDetailOpen.value) closeDetail()
+}
+
+onMounted(() => document.addEventListener('keydown', handleKeydown))
 onUnmounted(() => {
-  document.removeEventListener('keydown', handleEscape)
+  document.removeEventListener('keydown', handleKeydown)
+  document.body.style.overflow = ''
 })
 </script>
 
@@ -279,35 +331,39 @@ onUnmounted(() => {
   margin-bottom: 40px;
 }
 
-/* 项目网格 */
+/* ── 卡片网格 ── */
 .projects-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 25px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
 }
 
 .project-card {
   background: white;
-  border-radius: 12px;
+  border-radius: 14px;
   overflow: hidden;
-  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s ease;
+  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.07);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
 }
 
 .project-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+  transform: translateY(-4px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
 }
 
 .project-card.status-developing {
   border: 2px solid #f39c12;
 }
 
-/* 项目图片 */
+/* ── 封面图 ── */
 .project-image {
   position: relative;
-  height: 160px;
+  height: 180px;
   overflow: hidden;
+  background: #f8f9fa;
 }
 
 .project-image img {
@@ -315,35 +371,11 @@ onUnmounted(() => {
   height: 100%;
   object-fit: cover;
   transition: transform 0.3s ease;
+  display: block;
 }
 
 .project-card:hover .project-image img {
   transform: scale(1.05);
-}
-
-.project-image.clickable {
-  cursor: pointer;
-}
-
-/* 演示指示器 */
-.demo-indicator {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 50px;
-  height: 50px;
-  background: rgba(52, 152, 219, 0.9);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.project-image.clickable:hover .demo-indicator {
-  opacity: 1;
 }
 
 .image-placeholder {
@@ -352,435 +384,500 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f8f9fa;
-  color: #6c757d;
+  color: #adb5bd;
 }
 
 .status-badge {
   position: absolute;
-  top: 12px;
-  right: 12px;
+  top: 10px;
+  right: 10px;
   background: #f39c12;
   color: white;
-  padding: 4px 10px;
-  border-radius: 12px;
-  font-size: 0.75rem;
-  font-weight: 500;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 600;
 }
 
-/* 项目内容 */
+.card-hover-hint {
+  position: absolute;
+  inset: 0;
+  background: rgba(44, 62, 80, 0.52);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: white;
+  font-size: 0.85rem;
+  font-weight: 600;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.project-card:hover .card-hover-hint {
+  opacity: 1;
+}
+
+/* ── 卡片内容（精简） ── */
 .project-content {
-  padding: 20px;
+  padding: 18px 20px 16px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 .project-title {
-  font-size: 1.2rem;
-  font-weight: 600;
+  font-size: 1.05rem;
+  font-weight: 700;
   color: #2c3e50;
-  margin-bottom: 4px;
-}
-
-.project-subtitle {
-  font-size: 0.85rem;
-  color: #666;
-  margin-bottom: 12px;
-  font-style: italic;
+  margin: 0 0 8px;
 }
 
 .project-description {
-  font-size: 0.9rem;
-  line-height: 1.5;
-  color: #555;
-  margin-bottom: 15px;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: #666;
+  margin: 0 0 12px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
-/* 技术标签 */
 .tech-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 15px;
+  gap: 5px;
+  margin-bottom: 14px;
 }
 
 .tech-tag {
   background: #e3f2fd;
   color: #1976d2;
-  padding: 3px 10px;
-  border-radius: 12px;
-  font-size: 0.75rem;
+  padding: 3px 9px;
+  border-radius: 20px;
+  font-size: 0.72rem;
   font-weight: 500;
 }
 
-/* 项目亮点 */
-.project-highlights {
-  margin-bottom: 15px;
-}
-
-.highlights-title {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: #2c3e50;
-  margin-bottom: 8px;
-}
-
-.highlights-list {
-  list-style: none;
-  padding: 0;
-}
-
-.highlights-list li {
-  position: relative;
-  padding-left: 12px;
-  margin-bottom: 4px;
-  font-size: 0.85rem;
-  color: #555;
-}
-
-.highlights-list li::before {
-  content: "•";
-  position: absolute;
-  left: 0;
-  color: #3498db;
-  font-weight: bold;
-}
-
-/* 项目结果 */
-.project-result {
-  margin-bottom: 15px;
-}
-
-.result-title {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: #2c3e50;
-  margin-bottom: 6px;
-}
-
-.result-text {
-  font-size: 0.85rem;
-  line-height: 1.4;
-  color: #555;
-}
-
-/* 查看详情按钮 */
 .project-action {
-  text-align: right;
+  margin-top: auto;
 }
 
 .view-more-btn {
   color: #3498db;
-  text-decoration: none;
-  font-weight: 500;
-  font-size: 0.85rem;
-  transition: color 0.3s ease;
   background: transparent;
   border: none;
-  cursor: pointer;
   padding: 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.2s;
 }
 
 .view-more-btn:hover {
   color: #2980b9;
 }
 
-/* Before & After 对比展示 - 新的简洁样式 */
-.before-after-section {
+/* ── 详情弹窗 ── */
+.detail-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(8px);
   display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 2000;
+}
+
+.detail-modal {
+  position: relative;
+  width: min(680px, 100%);
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 24px 80px rgba(15, 23, 42, 0.25);
+  padding: 36px;
+}
+
+.detail-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(44, 62, 80, 0.08);
+  color: #2c3e50;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.detail-close:hover {
+  background: rgba(44, 62, 80, 0.15);
+}
+
+.detail-header {
+  padding-right: 32px;
+  margin-bottom: 20px;
+}
+
+.detail-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin: 0 0 12px;
+}
+
+/* 媒体区域 */
+.detail-media {
+  margin-bottom: 20px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #f8f9fa;
+}
+
+.detail-media-content {
+  width: 100%;
+  max-height: 360px;
+  object-fit: contain;
+  display: block;
+}
+
+/* 多图画廊 */
+.detail-gallery {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.gallery-img {
+  width: calc(50% - 8px);
+  max-width: 180px;
+  aspect-ratio: 9 / 16;
+  object-fit: cover;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
+  display: block;
+  flex-shrink: 0;
+  cursor: zoom-in;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.gallery-img:hover {
+  transform: scale(1.03);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.22);
+}
+
+/* 描述 */
+.detail-desc {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: #4a5568;
+  margin: 0 0 20px;
+}
+
+/* Before / After */
+.detail-ba {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 12px;
   margin-bottom: 20px;
 }
 
-.comparison-item {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 10px;
-  border-radius: 6px;
+.ba-item {
+  padding: 12px 14px;
+  border-radius: 10px;
   border: 1px solid;
 }
 
-.comparison-item.before {
+.ba-item.before {
   background: #fff5f5;
   border-color: #fecaca;
 }
 
-.comparison-item.after {
+.ba-item.after {
   background: #f0fdf4;
   border-color: #86efac;
 }
 
-.comparison-label {
-  font-size: 0.7rem;
-  font-weight: 600;
+.ba-label {
+  font-size: 0.68rem;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.3px;
-  margin-bottom: 0;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
 }
 
-.comparison-item.before .comparison-label {
-  color: #dc2626;
-}
+.ba-item.before .ba-label { color: #dc2626; }
+.ba-item.after .ba-label  { color: #16a34a; }
 
-.comparison-item.after .comparison-label {
-  color: #16a34a;
-}
-
-.comparison-content {
-  font-size: 0.8rem;
-  line-height: 1.4;
+.ba-content {
+  font-size: 0.84rem;
+  line-height: 1.5;
   color: #555;
 }
 
-/* 三段式展示样式 - 改为简洁的标签样式 */
-.project-process {
+/* 三段式 */
+.detail-process {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
-.process-item {
+.dp-item {
   display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 10px 12px;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 12px 14px;
+  border-radius: 10px;
   background: #f8f9fa;
-  border-radius: 6px;
   border-left: 3px solid;
 }
 
-.process-item.challenge {
-  border-color: #f39c12;
-}
+.dp-item.challenge { border-color: #f39c12; }
+.dp-item.solution  { border-color: #3498db; }
+.dp-item.result    { border-color: #27ae60; }
 
-.process-item.solution {
-  border-color: #3498db;
-}
-
-.process-item.result {
-  border-color: #27ae60;
-}
-
-.process-title {
+.dp-label {
+  flex: 0 0 56px;
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 700;
   color: #2c3e50;
-  margin: 0;
+  padding-top: 2px;
 }
 
-.process-text {
-  font-size: 0.8rem;
-  line-height: 1.4;
+.dp-text {
+  font-size: 0.875rem;
+  line-height: 1.55;
   color: #555;
-  margin: 0;
 }
 
-/* 平板端 */
+/* 访问按钮 */
+.detail-action {
+  padding-top: 16px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.detail-link-btn {
+  display: inline-block;
+  color: #3498db;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: color 0.2s;
+}
+
+.detail-link-btn:hover {
+  color: #2980b9;
+}
+
+/* ── 平板端 ── */
 @media (max-width: 968px) {
   .projects-section {
     padding: 60px 20px;
   }
-  
+
   .section-title {
     font-size: 2.25rem;
     margin-bottom: 12px;
   }
-  
-  .section-subtitle {
-    font-size: 1.05rem;
-    margin-bottom: 40px;
-  }
-  
+
   .projects-grid {
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
     gap: 20px;
   }
-  
-  .project-content {
-    padding: 18px;
-  }
-  
+
   .project-image {
-    height: 140px;
+    height: 160px;
   }
 }
 
-/* 移动端响应式 */
+/* ── 移动端 ── */
 @media (max-width: 768px) {
   .projects-section {
     padding: 50px 16px;
   }
-  
+
   .section-title {
     font-size: 1.75rem;
     margin-bottom: 10px;
   }
-  
+
   .section-subtitle {
     font-size: 0.95rem;
     margin-bottom: 32px;
     line-height: 1.6;
   }
-  
+
   .projects-grid {
     grid-template-columns: 1fr;
-    gap: 18px;
+    gap: 16px;
   }
-  
+
   .project-image {
-    height: 120px;
+    height: 160px;
   }
-  
-  .project-content {
+
+  .detail-overlay {
     padding: 16px;
+    align-items: flex-end;
   }
-  
-  .project-title {
-    font-size: 1.1rem;
+
+  .detail-modal {
+    width: 100%;
+    border-radius: 20px 20px 0 0;
+    max-height: 88vh;
+    padding: 28px 20px;
+  }
+
+  .detail-ba {
+    grid-template-columns: 1fr;
   }
 }
 
-/* 小屏幕手机 */
+/* ── 小屏手机 ── */
 @media (max-width: 480px) {
   .projects-section {
     padding: 40px 12px;
   }
-  
-  .section-title {
-    font-size: 1.5rem;
-  }
-  
-  .section-subtitle {
-    font-size: 0.9rem;
-    margin-bottom: 28px;
-  }
-  
-  .project-content {
-    padding: 14px;
-  }
-  
-  .project-title {
-    font-size: 1rem;
-  }
-  
+
   .project-image {
-    height: 100px;
-  }
-  
-  .tech-tag {
-    font-size: 0.7rem;
-    padding: 2px 8px;
+    height: 140px;
   }
 
-  .before-after-section {
+  .detail-modal {
+    padding: 24px 16px;
+  }
+
+  .detail-title {
+    font-size: 1.25rem;
+  }
+
+  .dp-item {
     flex-direction: column;
-    gap: 8px;
+    gap: 4px;
   }
 
-  .process-item {
-    padding: 8px 10px;
-  }
-
-  .process-title {
-    font-size: 0.7rem;
-  }
-
-  .process-text {
-    font-size: 0.75rem;
+  .dp-label {
+    flex: none;
   }
 }
 
-/* 模态框样式 */
-.modal-overlay {
+/* ── Lightbox ── */
+.lightbox-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   background: rgba(0, 0, 0, 0.95);
-  backdrop-filter: blur(10px);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 9999;
-  animation: fadeIn 0.3s ease;
-  padding: 20px;
+  z-index: 3000;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-.modal-content {
-  position: relative;
+.lightbox-img {
   max-width: 90vw;
-  max-height: 90vh;
-  width: auto;
-  height: auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  max-height: 88vh;
+  object-fit: contain;
+  border-radius: 8px;
+  display: block;
+  user-select: none;
 }
 
-.modal-close {
-  position: absolute;
+.lightbox-close {
+  position: fixed;
   top: 20px;
   right: 20px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  color: white;
+  font-size: 24px;
+  line-height: 1;
   cursor: pointer;
-  padding: 12px;
+  transition: background 0.2s;
+  z-index: 1;
+}
+
+.lightbox-close:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.lightbox-counter {
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.lightbox-arrow {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.lightbox-arrow:hover {
+  background: rgba(255, 255, 255, 0.24);
+}
+
+.lightbox-prev { left: 20px; }
+.lightbox-next { right: 20px; }
+
+.lightbox-dots {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+}
+
+.lightbox-dot {
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
-  transition: all 0.3s ease;
-  z-index: 10000;
-  width: 44px;
-  height: 44px;
+  border: none;
+  background: rgba(255, 255, 255, 0.35);
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.2s, transform 0.2s;
 }
 
-.modal-close:hover {
-  background: rgba(255, 255, 255, 0.2);
-  border-color: rgba(255, 255, 255, 0.5);
-  transform: scale(1.1);
+.lightbox-dot.active {
+  background: white;
+  transform: scale(1.25);
 }
 
-.modal-media {
-  max-width: 100%;
-  max-height: 90vh;
-  display: block;
-  border-radius: 12px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-  object-fit: contain;
-}
-
-/* 移动端模态框 */
 @media (max-width: 768px) {
-  .modal-overlay {
-    padding: 10px;
-  }
-
-  .modal-content {
-    max-width: 95vw;
-  }
-
-  .modal-close {
-    top: 10px;
-    right: 10px;
+  .lightbox-arrow {
     width: 36px;
     height: 36px;
-    padding: 8px;
   }
 
-  .modal-media {
-    border-radius: 8px;
-  }
+  .lightbox-prev { left: 10px; }
+  .lightbox-next { right: 10px; }
 }
 </style>

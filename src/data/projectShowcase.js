@@ -116,13 +116,49 @@ export const projectShowcase = [
       en: 'Order processing efficiency improved by 90%, error rate reduced from 15% to below 0.1%, missed order probability趋近于0'
     },
     status: 'completed',
-    link: '#', // 模态框演示项目不需要外部链接
+    link: '#',
     category: 'personal',
-    demoType: 'media', // media: 使用模态框展示
+    demoType: 'media',
     modalContent: {
-      type: 'gif', // 模态框内容类型
-      src: '/images/projects/wps-script-demo.gif' // 要展示的内容
+      type: 'gif',
+      src: '/images/projects/wps-script-demo.gif'
     }
+  },
+  {
+    id: 4,
+    type: 'miniprogram',
+    title: {
+      zh: 'FabricGo 面料小程序',
+      en: 'FabricGo Mini Program'
+    },
+    description: {
+      zh: '供客户自助查看面料库与常用款式效果图，告别一张张发图的沟通方式，让客户随时随地浏览所需信息。',
+      en: 'A WeChat mini program letting clients browse fabric catalogs and style previews on their own — replacing scattered image sharing with a clean, always-available reference.'
+    },
+    image: '/images/projects/weixin-fabric.jpg',
+    technologies: ['微信小程序', '微信云开发'],
+    challenge: {
+      zh: '客户常需了解全部面料与效果图，但只能靠逐张发图，查找慢、沟通效率低',
+      en: 'Clients needed to browse all fabrics and style references, but the only option was sending images one by one — slow and inefficient'
+    },
+    solution: {
+      zh: '开发微信小程序，集中展示面料库与常用款式效果图，客户可随时自助查阅',
+      en: 'Built a WeChat mini program to centralize fabric and style references, enabling clients to self-serve anytime'
+    },
+    result: {
+      zh: '已稳定服务 100+ 客户，客户获取面料信息无需等待，沟通效率显著提升',
+      en: 'Serving 100+ clients steadily — customers get fabric information instantly without waiting for a response'
+    },
+    status: 'completed',
+    link: '#',
+    category: 'personal',
+    demoType: 'media',
+    detailImages: [
+      '/images/projects/weixin-fabric.jpg',
+      '/images/projects/weixin-clothes.jpg',
+      '/images/projects/weixin-code.jpg',
+    ],
+    imageRatio: '9/16'
   }
 ]
 
