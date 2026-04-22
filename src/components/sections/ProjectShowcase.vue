@@ -440,6 +440,7 @@ onUnmounted(() => {
   margin: 0 0 12px;
   display: -webkit-box;
   -webkit-line-clamp: 3;
+  line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -720,23 +721,76 @@ onUnmounted(() => {
 
   .projects-grid {
     grid-template-columns: 1fr;
-    gap: 16px;
+    gap: 12px;
+  }
+
+  /* 横排卡片：左图右文 */
+  .project-card {
+    flex-direction: row;
+    align-items: stretch;
+    border-radius: 14px;
   }
 
   .project-image {
-    height: 160px;
+    width: 120px;
+    min-height: 120px;
+    height: auto;
+    flex-shrink: 0;
+    border-radius: 14px 0 0 14px;
   }
 
+  /* 移动端无 hover，隐藏遮罩改为永久显示小指示器 */
+  .card-hover-hint {
+    display: none;
+  }
+
+  .project-content {
+    padding: 12px 14px 12px;
+  }
+
+  .project-title {
+    font-size: 0.95rem;
+    margin-bottom: 5px;
+  }
+
+  .project-description {
+    font-size: 0.82rem;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    margin-bottom: 8px;
+  }
+
+  .tech-tags {
+    gap: 4px;
+    margin-bottom: 8px;
+  }
+
+  .tech-tag {
+    font-size: 0.68rem;
+    padding: 2px 7px;
+  }
+
+  /* 按钮改为圆角边框样式，触摸目标更明显 */
+  .view-more-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 12px;
+    border: 1.5px solid #3498db;
+    border-radius: 20px;
+    font-size: 0.78rem;
+  }
+
+  /* 详情弹窗从底部弹出 */
   .detail-overlay {
-    padding: 16px;
+    padding: 0;
     align-items: flex-end;
   }
 
   .detail-modal {
     width: 100%;
     border-radius: 20px 20px 0 0;
-    max-height: 88vh;
-    padding: 28px 20px;
+    max-height: 90vh;
+    padding: 28px 20px 32px;
   }
 
   .detail-ba {
@@ -751,11 +805,16 @@ onUnmounted(() => {
   }
 
   .project-image {
-    height: 140px;
+    width: 105px;
+    min-height: 105px;
+  }
+
+  .project-content {
+    padding: 10px 12px 10px;
   }
 
   .detail-modal {
-    padding: 24px 16px;
+    padding: 24px 16px 28px;
   }
 
   .detail-title {
@@ -769,6 +828,18 @@ onUnmounted(() => {
 
   .dp-label {
     flex: none;
+  }
+
+  .gallery-img {
+    max-width: 140px;
+  }
+}
+
+/* ── 触屏设备：轻触反馈替代 hover ── */
+@media (hover: none) {
+  .project-card:active {
+    transform: scale(0.98);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   }
 }
 
