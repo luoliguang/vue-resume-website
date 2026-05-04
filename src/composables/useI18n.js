@@ -17,19 +17,19 @@ const translations = {
     hero: {
       title: '罗洋洋',
       nickname: 'giluoo',
-      subtitle: '懂服装供应链的流程优化者',
-      description: '我是一名来自供应商的一线服装跟单，有 2 年以上经验。熟悉客户沟通、面料印花、生产跟进的全流程，同时自学前端与 Node.js，并将它们直接用在自己每天的工作里。',
+      subtitle: '服装供应链流程优化 | 服装跟单',
+      description: '我在服装供应链一线从事跟单工作超过 2 年，熟悉客户沟通、面料印花与生产推进全流程。同时持续自学前端与 Node.js，并将技术能力用于优化日常业务协同与执行效率。',
       cta: '了解我',
       cta2: '查看项目',
-      cta3: '15秒熟悉我',
+      cta3: '30秒认识我',
       quickIntro: {
-        text: '我在纺织供应链一线做了 2 年跟单，同时自学全栈开发。我做的事是：发现工厂里的效率问题，然后用代码把它解决掉。',
-        label1: '我现在在做',
-        value1: '数码印花跟单 / 独立开发企业内部工具',
+        text: '我的核心优势是把业务理解与技术实现结合起来：先定位流程中的低效环节，再用可落地的工具方案持续改进。',
+        label1: '我正在做',
+        value1: '数码印花跟单 / 企业内部效率工具开发',
         label2: '我擅长',
-        value2: '把模糊需求变成可执行方案，跨职能落地',
-        label3: '我适合什么',
-        value3: '需要「懂业务的技术人」或「懂技术的业务人」的岗位或合作'
+        value2: '将模糊需求结构化，并推动跨角色协同落地',
+        label3: '我希望加入',
+        value3: '重视业务理解与技术落地并重的团队或合作项目'
       }
     },
     // 关于我
@@ -110,8 +110,8 @@ const translations = {
     },
     // 底部
     footer: {
-      quote: '在别人只看业务的地方，我多看了一层技术。',
-      copyright: '© 2025 Luoyangyang. All Rights Reserved.'
+      quote: '时间不在于你拥有多少，而在于你怎样使用。',
+      copyright: '© 2025 Luo Liguang. All Rights Reserved.'
     }
   },
   en: {
@@ -129,19 +129,19 @@ const translations = {
     hero: {
       title: 'Luo Yangyang',
       nickname: 'giluoo',
-      subtitle: 'Supply Chain Merchandiser & Process Builder',
-      description: 'Garment merchandiser with 2+ years on the supplier side — managing client communication, fabric printing, and production tracking end-to-end. Now self-teaching full-stack development and applying it directly to the workflows I work in every day.',
+      subtitle: 'Apparel Supply Chain Process Optimizer · Frontend Practitioner',
+      description: 'I have 2+ years of frontline experience in apparel supply-chain merchandising, covering client communication, fabric printing coordination, and production follow-through. In parallel, I continuously study frontend and Node.js, and apply those skills to improve real operational workflows and team efficiency.',
       cta: 'About Me',
       cta2: 'View Projects',
-      cta3: '15 Seconds to Know Me',
+      cta3: 'Know Me in 30 Seconds',
       quickIntro: {
-        text: '2 years as a garment merchandiser on the supplier side, now self-teaching full-stack development. What I actually do: spot inefficiencies in factory workflows, then build tools to fix them.',
-        label1: 'Currently',
-        value1: 'Digital printing merchandising / Building internal tooling',
-        label2: 'Good at',
-        value2: 'Turning vague requirements into executable plans, cross-functional delivery',
-        label3: 'Best fit for',
-        value3: 'Roles or collaborations that need someone who speaks both business and tech'
+        text: 'My core value is bridging business context and technical execution: identify workflow bottlenecks first, then deliver practical tools that create measurable improvements.',
+        label1: 'Current Focus',
+        value1: 'Digital printing merchandising / Internal productivity tools',
+        label2: 'What I Do Well',
+        value2: 'Structuring ambiguous requirements and driving cross-functional delivery',
+        label3: 'Best Team Fit',
+        value3: 'Teams that value both business understanding and technical execution'
       }
     },
     // About Section

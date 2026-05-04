@@ -1,5 +1,5 @@
 <template>
-  <section id="about" class="section">
+  <section id="about" class="section" ref="aboutRoot">
     <div class="container">
       <div class="about-card">
         <div class="about-content">
@@ -40,15 +40,69 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
+import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { aboutData } from '../../data/about.js'
 import { isChinese } from '../../composables/useI18n.js'
 
+gsap.registerPlugin(ScrollTrigger)
+
 const imageError = ref(false)
+const aboutRoot = ref(null)
 
 const handleImageError = () => {
   imageError.value = true
 }
+
+onMounted(() => {
+  const root = aboutRoot.value
+  if (!root) return
+
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  const isMobile = window.matchMedia('(max-width: 768px)').matches
+  if (prefersReducedMotion || isMobile) return
+
+  const hero = document.getElementById('home')
+  const left = root.querySelector('.about-text')
+  const right = root.querySelector('.about-image')
+  const title = root.querySelector('.about-title')
+  const desc = root.querySelector('.about-description')
+  const tags = root.querySelectorAll('.skill-tag')
+  const image = root.querySelector('.image-container')
+
+  const rootRect = root.getBoundingClientRect()
+  const heroRect = hero?.getBoundingClientRect()
+  const fromTop = heroRect ? (heroRect.bottom - rootRect.top) * 0.35 : -160
+
+  gsap.set([left, title, desc], { x: -180, y: fromTop })
+  gsap.set([right, image], { x: 180, y: fromTop })
+  gsap.set(tags, { x: -120, y: fromTop * 0.8 })
+
+  const tl = gsap.timeline({
+    scrollTrigger: {
+      trigger: root,
+      start: 'top 95%',
+      end: 'top 45%',
+      scrub: 1.1,
+      invalidateOnRefresh: true
+    }
+  })
+
+  tl.to(left, { x: 0, y: 0, ease: 'none' }, 0)
+    .to(right, { x: 0, y: 0, ease: 'none' }, 0)
+    .to(title, { x: 0, y: 0, ease: 'none' }, 0.08)
+    .to(desc, { x: 0, y: 0, ease: 'none' }, 0.14)
+    .to(tags, { x: 0, y: 0, stagger: 0.03, ease: 'none' }, 0.2)
+    .to(image, { x: 0, y: 0, ease: 'none' }, 0.06)
+
+  root._aboutTimeline = tl
+})
+
+onUnmounted(() => {
+  aboutRoot.value?._aboutTimeline?.scrollTrigger?.kill()
+  aboutRoot.value?._aboutTimeline?.kill()
+})
 </script>
 
 <style scoped>

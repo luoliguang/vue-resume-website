@@ -1,8 +1,8 @@
 <template>
-  <section id="home" class="hero-section">
+  <section id="home" class="hero-section" :class="{ 'hero-ready': hasMounted }">
     <div class="hero-container">
       <!-- 左侧面板 -->
-      <div class="hero-left">
+      <div class="hero-left hero-animate hero-animate-left">
         <div class="profile-section">
           <div class="avatar-container">
             <img 
@@ -26,12 +26,12 @@
       </div>
 
       <!-- 右侧面板 -->
-      <div class="hero-right">
-        <h1 class="main-title">{{ t('hero.title') }}</h1>
-        <p class="brand-name">{{ t('hero.nickname') }}</p>
-        <div class="title-divider"></div>
-        <p class="description">{{ t('hero.description') }}</p>
-        <div class="action-buttons">
+      <div class="hero-right hero-animate hero-animate-right">
+        <h1 class="main-title hero-stagger hero-stagger-1">{{ t('hero.title') }}</h1>
+        <p class="brand-name hero-stagger hero-stagger-2">{{ t('hero.nickname') }}</p>
+        <div class="title-divider hero-stagger hero-stagger-3"></div>
+        <p class="description hero-stagger hero-stagger-4">{{ t('hero.description') }}</p>
+        <div class="action-buttons hero-stagger hero-stagger-5">
           <button class="animated-button btn-primary" @click="scrollToAbout">
             <svg viewBox="0 0 24 24" class="arr-2" xmlns="http://www.w3.org/2000/svg">
               <path
@@ -115,10 +115,15 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
+import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { t } from '../../composables/useI18n.js'
+
+gsap.registerPlugin(ScrollTrigger)
 
 const imageError = ref(false)
 const isQuickIntroOpen = ref(false)
+const hasMounted = ref(false)
 
 const handleImageError = () => {
   imageError.value = true
@@ -148,7 +153,80 @@ const handleKeydown = (e) => {
   if (e.key === 'Escape' && isQuickIntroOpen.value) closeQuickIntro()
 }
 
-onMounted(() => window.addEventListener('keydown', handleKeydown))
+const runHeroCinematicAnimation = () => {
+  const isMobile = window.matchMedia('(max-width: 768px)').matches
+  const tl = gsap.timeline({ defaults: { ease: 'power3.out' } })
+
+  tl.fromTo(
+    '.avatar-container',
+    { opacity: 0, y: 40, scale: 0.92, rotate: -2 },
+    { opacity: 1, y: 0, scale: 1, rotate: 0, duration: isMobile ? 0.9 : 1.1 }
+  )
+    .fromTo(
+      '.tagline-line',
+      { opacity: 0, y: 18 },
+      { opacity: 1, y: 0, duration: 0.8 },
+      '-=0.7'
+    )
+    .fromTo(
+      ['.main-title', '.brand-name', '.title-divider', '.description'],
+      { opacity: 0, y: 28 },
+      { opacity: 1, y: 0, duration: isMobile ? 0.68 : 0.8, stagger: 0.12 },
+      '-=0.55'
+    )
+    .fromTo(
+      '.action-buttons .animated-button',
+      { opacity: 0, y: 18, scale: 0.96 },
+      { opacity: 1, y: 0, scale: 1, duration: 0.72, stagger: 0.08 },
+      '-=0.45'
+    )
+}
+
+onMounted(() => {
+  hasMounted.value = true
+  window.addEventListener('keydown', handleKeydown)
+
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  if (!prefersReducedMotion) {
+    runHeroCinematicAnimation()
+
+    const isMobile = window.matchMedia('(max-width: 768px)').matches
+    if (!isMobile) {
+      gsap.to('.hero-left', {
+        y: -34,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: '.hero-section',
+          start: 'top top',
+          end: 'bottom top',
+          scrub: 0.8
+        }
+      })
+
+      gsap.to('.hero-right', {
+        y: -18,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: '.hero-section',
+          start: 'top top',
+          end: 'bottom top',
+          scrub: 0.8
+        }
+      })
+
+      gsap.to('.hero-section', {
+        backgroundPosition: '50% 42%',
+        ease: 'none',
+        scrollTrigger: {
+          trigger: '.hero-section',
+          start: 'top top',
+          end: 'bottom top',
+          scrub: 1
+        }
+      })
+    }
+  }
+})
 onUnmounted(() => {
   window.removeEventListener('keydown', handleKeydown)
   document.body.style.overflow = ''
@@ -158,19 +236,41 @@ onUnmounted(() => {
 <style scoped>
 .hero-section {
   min-height: 600px;
-  background: linear-gradient(180deg, #fefcf3 0%, #f5f7fa 100%);
+  background: radial-gradient(120% 120% at 50% 0%, #fffdf6 0%, #f6f8fb 45%, #eef2f8 100%);
+  background-size: 100% 130%;
+  background-position: 50% 50%;
   display: flex;
   align-items: center;
   padding: 0 20px;
+  overflow: hidden;
 }
+
+.hero-animate {
+  opacity: 1;
+}
+
+.hero-stagger {
+  opacity: 1;
+}
+
+.hero-ready .hero-animate,
+.hero-ready .hero-stagger {
+  opacity: 1;
+}
+
+.hero-stagger-1 { animation-delay: 280ms; }
+.hero-stagger-2 { animation-delay: 340ms; }
+.hero-stagger-3 { animation-delay: 400ms; }
+.hero-stagger-4 { animation-delay: 460ms; }
+.hero-stagger-5 { animation-delay: 520ms; }
 
 .hero-container {
   max-width: 1200px;
   margin: 0 auto;
   width: 100%;
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 60px;
+  grid-template-columns: minmax(320px, 1fr) minmax(360px, 1fr);
+  gap: clamp(20px, 4vw, 60px);
   align-items: center;
 }
 
@@ -178,9 +278,14 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
 }
 
 .profile-section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
 }
 
@@ -224,7 +329,8 @@ onUnmounted(() => {
 }
 
 .tagline {
-  text-align: left;
+  text-align: center;
+  width: 100%;
 }
 
 .tagline-line {
@@ -233,10 +339,14 @@ onUnmounted(() => {
   color: #2c3e50;
   line-height: 1.3;
   margin-bottom: 8px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
 }
 
 .hero-right {
-  padding-left: 20px;
+  padding-left: clamp(0px, 2vw, 20px);
+  min-width: 0;
 }
 
 .main-title {
@@ -265,15 +375,19 @@ onUnmounted(() => {
 }
 
 .description {
-  font-size: 1.1rem;
-  line-height: 1.7;
+  font-size: clamp(0.96rem, 1.5vw, 1.1rem);
+  line-height: 1.75;
   color: #555;
   margin-bottom: 32px;
+  max-width: 56ch;
+  text-wrap: pretty;
 }
 
 .action-buttons {
   display: flex;
-  gap: 16px;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
 }
 
 /* 动画按钮基础样式 */
@@ -534,6 +648,64 @@ onUnmounted(() => {
 }
 
 /* 平板端 */
+@keyframes heroEnterLeft {
+  from {
+    opacity: 0;
+    transform: translate3d(-16px, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes heroEnterRight {
+  from {
+    opacity: 0;
+    transform: translate3d(16px, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes heroStaggerIn {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 12px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@media (max-width: 1100px) {
+  .hero-container {
+    grid-template-columns: minmax(300px, 1fr) minmax(320px, 1fr);
+    gap: 28px;
+  }
+
+  .main-title {
+    font-size: 2.4rem;
+  }
+
+  .brand-name {
+    font-size: 1.05rem;
+    letter-spacing: 2.4px;
+  }
+
+  .description {
+    max-width: 48ch;
+  }
+
+  .animated-button {
+    padding: 13px 24px;
+    font-size: 0.95rem;
+  }
+}
+
 @media (max-width: 968px) {
   .hero-container {
     gap: 40px;

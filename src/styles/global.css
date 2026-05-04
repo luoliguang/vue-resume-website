@@ -23,6 +23,7 @@ body {
     linear-gradient(180deg, var(--bg-gradient-start), var(--bg-gradient-end));
   background-attachment: fixed;
   color: #2c3e50;
+  overflow-x: hidden;
 }
 
 /* 统一段落区域的默认透明背景，避免与全局底色冲突 */
@@ -79,6 +80,16 @@ section, main, .section-block {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px;
+}
+
+/* 动效无障碍：尊重系统“减少动态效果”设置 */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 /* 暗色模式（如后续需要，可通过给 html/body 加 .dark 启用） */

@@ -58,7 +58,21 @@ export const journeyMilestones = [
   },
   {
     id: 5,
-    year: "2025年11月",
+    year: "2026年3月",
+    title: {
+      zh: "开发微信小程序",
+      en: "Developing a WeChat Mini Program"
+    },
+    description: {
+      zh: "开发微信小程序，为后续职业发展奠定基础。",
+      en: "Developing a WeChat Mini Program, laying the foundation for subsequent career development."
+    },
+    icon: "code",
+    status: "completed"
+  },
+  {
+    id: 6,
+    year: "2026年4月",
     title: {
       zh: "展望未来",
       en: "Looking Forward"

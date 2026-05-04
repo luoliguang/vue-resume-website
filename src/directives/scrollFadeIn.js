@@ -1,49 +1,83 @@
-// 滚动触发淡入动画指令
+import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+
+gsap.registerPlugin(ScrollTrigger)
+
+// GSAP ScrollTrigger 版：二段式“先标题，后内容”滚动归位
 export const scrollFadeIn = {
   mounted(el, binding) {
-    // 设置初始状态
-    el.style.opacity = '0'
-    el.style.transform = 'translateY(30px)'
-    el.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out'
-    
-    // 创建 Intersection Observer
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            // 元素进入视口时触发动画
-            el.style.opacity = '1'
-            el.style.transform = 'translateY(0)'
-            
-            // 动画完成后停止观察（可选）
-            if (binding.value?.once !== false) {
-              observer.unobserve(el)
-            }
-          } else if (binding.value?.once === false) {
-            // 如果设置为重复触发，离开视口时重置
-            el.style.opacity = '0'
-            el.style.transform = 'translateY(30px)'
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const options = binding.value || {}
+
+    const distance = options.distance ?? 60
+    const scrub = options.scrub ?? 0.9
+    const start = options.start ?? 'top 92%'
+    const end = options.end ?? 'top 62%'
+    const titleSelector = options.titleSelector ?? 'h1, h2, h3, .section-title, .title'
+    const contentSelector = options.contentSelector ?? 'p, li, .card, .item, .content, .section-content, .project-card'
+
+    if (prefersReducedMotion) {
+      gsap.set(el, { y: 0, clearProps: 'transform' })
+      return
+    }
+
+    const titles = Array.from(el.querySelectorAll(titleSelector)).slice(0, 2)
+    const contents = Array.from(el.querySelectorAll(contentSelector)).slice(0, 6)
+
+    gsap.set(el, { y: distance, willChange: 'transform' })
+    if (titles.length) gsap.set(titles, { y: distance * 0.42, willChange: 'transform' })
+    if (contents.length) gsap.set(contents, { y: distance * 0.72, willChange: 'transform' })
+
+    const wrapperTween = gsap.to(el, {
+      y: 0,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: el,
+        start,
+        end,
+        scrub,
+        invalidateOnRefresh: true
+      }
+    })
+
+    const titleTween = titles.length
+      ? gsap.to(titles, {
+          y: 0,
+          ease: 'none',
+          stagger: 0.03,
+          scrollTrigger: {
+            trigger: el,
+            start,
+            end: 'top 70%',
+            scrub,
+            invalidateOnRefresh: true
           }
         })
-      },
-      {
-        threshold: 0.1, // 当元素10%可见时触发
-        rootMargin: '0px 0px -50px 0px' // 提前50px触发
-      }
-    )
-    
-    // 开始观察元素
-    observer.observe(el)
-    
-    // 将observer保存到元素上，以便在unmounted时清理
-    el._scrollObserver = observer
+      : null
+
+    const contentTween = contents.length
+      ? gsap.to(contents, {
+          y: 0,
+          ease: 'none',
+          stagger: 0.05,
+          scrollTrigger: {
+            trigger: el,
+            start: 'top 90%',
+            end,
+            scrub: scrub + 0.15,
+            invalidateOnRefresh: true
+          }
+        })
+      : null
+
+    el._gsapTweens = [wrapperTween, titleTween, contentTween].filter(Boolean)
   },
-  
+
   unmounted(el) {
-    // 清理observer
-    if (el._scrollObserver) {
-      el._scrollObserver.disconnect()
-      delete el._scrollObserver
-    }
+    el._gsapTweens?.forEach((tween) => {
+      tween?.scrollTrigger?.kill()
+      tween?.kill()
+    })
+    delete el._gsapTweens
   }
 }

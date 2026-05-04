@@ -1,5 +1,5 @@
 <template>
-  <section id="experience" class="experience-section">
+  <section id="experience" class="experience-section" ref="projectsRoot">
     <div class="container">
       <h2 class="section-title">{{ t('experience.title') }}</h2>
       
@@ -94,11 +94,16 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
+import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { workExperiences, achievements } from '../../data/experience.js'
 import { t, isChinese } from '../../composables/useI18n.js'
 
+gsap.registerPlugin(ScrollTrigger)
+
 const selectedExperienceId = ref(1)
+const projectsRoot = ref(null)
 
 const selectExperience = (id) => {
   selectedExperienceId.value = id
@@ -107,6 +112,55 @@ const selectExperience = (id) => {
     exp.isActive = exp.id === id
   })
 }
+
+onMounted(() => {
+  const root = projectsRoot.value
+  if (!root) return
+
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  const isMobile = window.matchMedia('(max-width: 768px)').matches
+  if (prefersReducedMotion || isMobile) return
+
+  const about = document.getElementById('about')
+  const rootRect = root.getBoundingClientRect()
+  const aboutRect = about?.getBoundingClientRect()
+  const fromTop = aboutRect ? (aboutRect.bottom - rootRect.top) * 0.28 : -140
+
+  const title = root.querySelector('.section-title')
+  const timeline = root.querySelector('.timeline-sidebar')
+  const details = root.querySelector('.experience-details')
+  const achievementsTitle = root.querySelector('.achievements-title')
+  const achievementCards = root.querySelectorAll('.achievement-card')
+
+  gsap.set(title, { x: -220, y: fromTop })
+  gsap.set(timeline, { x: -180, y: fromTop * 0.85 })
+  gsap.set(details, { x: 220, y: fromTop })
+  gsap.set(achievementsTitle, { x: -120, y: fromTop * 0.55 })
+  gsap.set(achievementCards, { x: 140, y: fromTop * 0.45 })
+
+  const tl = gsap.timeline({
+    scrollTrigger: {
+      trigger: root,
+      start: 'top 96%',
+      end: 'top 42%',
+      scrub: 1.05,
+      invalidateOnRefresh: true
+    }
+  })
+
+  tl.to(title, { x: 0, y: 0, ease: 'none' }, 0)
+    .to(timeline, { x: 0, y: 0, ease: 'none' }, 0.1)
+    .to(details, { x: 0, y: 0, ease: 'none' }, 0.12)
+    .to(achievementsTitle, { x: 0, y: 0, ease: 'none' }, 0.2)
+    .to(achievementCards, { x: 0, y: 0, stagger: 0.04, ease: 'none' }, 0.24)
+
+  root._projectsTimeline = tl
+})
+
+onUnmounted(() => {
+  projectsRoot.value?._projectsTimeline?.scrollTrigger?.kill()
+  projectsRoot.value?._projectsTimeline?.kill()
+})
 </script>
 
 <style scoped>
