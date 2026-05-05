@@ -150,7 +150,7 @@ watch(isMobileMenuOpen, (open) => {
   right: 0;
   background: rgba(0, 0, 0, 0.82);
   backdrop-filter: blur(12px);
-  border-bottom: 1px solid #333336;
+  border-bottom: 1px solid var(--surface-border-dark-strong);
   z-index: 1000;
   transition: transform 0.3s ease;
 }
@@ -234,21 +234,21 @@ watch(isMobileMenuOpen, (open) => {
 }
 
 .theme-toggle {
-  border: 1px solid #424245;
-  background: #1d1d1f;
-  color: #f5f5f7;
+  border: 1px solid var(--surface-border-dark-strong);
+  background: var(--surface-card-dark);
+  color: var(--text-on-dark);
   border-radius: 999px;
   padding: 6px 12px;
   font-size: 12px;
   font-weight: 600;
   letter-spacing: -0.2px;
   cursor: pointer;
-  transition: background 0.2s ease, border-color 0.2s ease;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
 .theme-toggle:hover {
-  background: #333336;
-  border-color: #5a5a5f;
+  background: var(--surface-card-darker);
+  border-color: var(--text-on-dark-subtle);
 }
 
 .hamburger {
@@ -259,10 +259,11 @@ watch(isMobileMenuOpen, (open) => {
 
 .bar {
   width: 25px;
-  height: 3px;
-  background: #333;
+  height: 2.5px;
+  background: var(--text-on-dark);
   margin: 3px 0;
-  transition: 0.3s;
+  border-radius: 2px;
+  transition: background 0.2s ease, transform 0.3s ease, opacity 0.3s ease;
 }
 
 .hamburger.active .bar:nth-child(2) {
@@ -293,11 +294,12 @@ watch(isMobileMenuOpen, (open) => {
     left: -100%;
     top: 60px;
     flex-direction: column;
-    background-color: white;
+    background: var(--surface-card-dark);
+    border-bottom: 1px solid var(--surface-border-dark-strong);
     width: 100%;
     text-align: center;
-    transition: 0.3s;
-    box-shadow: 0 10px 27px rgba(0, 0, 0, 0.05);
+    transition: left 0.3s ease;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
     padding: 20px 0;
     gap: 0;
   }

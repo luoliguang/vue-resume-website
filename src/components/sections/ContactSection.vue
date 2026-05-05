@@ -116,8 +116,9 @@ const handleContactClick = (contact) => {
 
 .section-subtitle {
   font-size: var(--text-subheading);
-  color: #c7c7cc;
+  color: var(--text-on-dark-muted);
   font-weight: 400;
+  letter-spacing: var(--tracking-subheading);
 }
 
 .contact-grid {
@@ -127,14 +128,14 @@ const handleContactClick = (contact) => {
 }
 
 .contact-card {
-  background: var(--color-space-gray);
+  background: var(--surface-card-dark);
   border-radius: var(--radius-cards);
   padding: 28px;
   display: flex;
   align-items: center;
   gap: 20px;
   transition: background 0.25s ease, border-color 0.25s ease;
-  border: 1px solid #333336;
+  border: 1px solid var(--surface-border-dark-strong);
 }
 
 .contact-card.clickable {
@@ -142,7 +143,7 @@ const handleContactClick = (contact) => {
 }
 
 .contact-card.clickable:hover {
-  background: #2a2a2d;
+  background: var(--surface-card-darker);
   border-color: rgba(41, 151, 255, 0.55);
 }
 
@@ -153,7 +154,7 @@ const handleContactClick = (contact) => {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-cloud-white);
+  color: #ffffff;
   flex-shrink: 0;
   background: var(--color-interactive-blue);
 }
@@ -163,22 +164,23 @@ const handleContactClick = (contact) => {
 }
 
 .contact-card-label {
-  font-size: 0.875rem;
+  font-size: var(--text-caption);
   font-weight: 600;
-  color: #718096;
+  color: var(--text-on-dark-subtle);
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-bottom: 8px;
 }
 
 .contact-card-value {
-  font-size: 1.125rem;
+  font-size: var(--text-body);
   font-weight: 600;
-  color: var(--color-cloud-white);
+  color: var(--text-on-dark-strong);
   margin: 0;
   word-break: break-word;
   overflow-wrap: break-word;
   line-height: 1.35;
+  letter-spacing: var(--tracking-body);
 }
 
 .contact-card-value.is-phone {
@@ -187,113 +189,52 @@ const handleContactClick = (contact) => {
   overflow-wrap: normal;
 }
 
-/* 平板端 */
 @media (max-width: 968px) {
   .contact-section {
     padding: 60px 20px;
   }
-  
-  .section-title {
-    font-size: 2.5rem;
-    margin-bottom: 14px;
-  }
-  
-  .section-subtitle {
-    font-size: 1.1rem;
-  }
-  
+
   .contact-grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 24px;
-  }
-  
-  .contact-card {
-    padding: 28px;
-    gap: 18px;
-  }
-  
-  .contact-card-icon {
-    width: 60px;
-    height: 60px;
-  }
-}
-
-/* 移动端响应式 */
-@media (max-width: 768px) {
-  .contact-section {
-    padding: 50px 16px;
-  }
-  
-  .section-title {
-    font-size: 2rem;
-    margin-bottom: 12px;
-  }
-  
-  .section-subtitle {
-    font-size: 1rem;
-  }
-  
-  .contact-grid {
-    grid-template-columns: 1fr;
     gap: 20px;
   }
-  
-  .contact-card {
-    padding: 24px;
-    gap: 16px;
-  }
-  
-  .contact-card-icon {
-    width: 56px;
-    height: 56px;
-  }
-  
-  .contact-card-label {
-    font-size: 0.8125rem;
-    margin-bottom: 6px;
-  }
-  
-  .contact-card-value {
-    font-size: 1rem;
-  }
 }
 
-/* 小屏幕手机 */
-@media (max-width: 480px) {
+@media (max-width: 768px) {
   .contact-section {
-    padding: 40px 12px;
+    padding: 48px 16px;
   }
-  
-  .section-title {
-    font-size: 1.75rem;
-    margin-bottom: 10px;
-  }
-  
-  .section-subtitle {
-    font-size: 0.95rem;
-  }
-  
+
   .contact-grid {
+    grid-template-columns: 1fr;
     gap: 16px;
   }
-  
+
   .contact-card {
-    padding: 20px;
-    gap: 14px;
+    padding: 22px;
+    gap: 16px;
   }
-  
+
   .contact-card-icon {
     width: 48px;
     height: 48px;
   }
-  
-  .contact-card-label {
-    font-size: 0.75rem;
-    margin-bottom: 4px;
+}
+
+@media (max-width: 480px) {
+  .contact-section {
+    padding: 40px 12px;
   }
-  
-  .contact-card-value {
-    font-size: 0.9375rem;
+
+  .contact-card {
+    padding: 18px;
+    gap: 14px;
+  }
+
+  .contact-card-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
   }
 }
 </style>

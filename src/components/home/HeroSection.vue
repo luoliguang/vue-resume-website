@@ -301,9 +301,13 @@ onUnmounted(() => {
 .tagline-line {
   font-size: 20px;
   font-weight: 400;
-  color: #f5f5f7;
+  color: var(--text-on-dark);
   line-height: 1.25;
   letter-spacing: -0.2px;
+}
+
+html[data-theme='legacy'] .tagline-line {
+  color: var(--text-on-light) !important;
 }
 
 .hero-right {

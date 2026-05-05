@@ -119,9 +119,9 @@ onUnmounted(() => {
 }
 
 .about-card {
-  background: var(--color-space-gray);
+  background: var(--surface-card-dark);
   border-radius: var(--radius-cards);
-  border: 1px solid #333336;
+  border: 1px solid var(--surface-border-dark-strong);
   overflow: hidden;
 }
 
@@ -161,28 +161,30 @@ onUnmounted(() => {
 }
 
 .skill-tag {
-  background: #2a2a2d;
-  color: #f5f5f7;
+  background: var(--surface-card-darker);
+  color: var(--text-on-dark);
   padding: 8px 14px;
   border-radius: var(--radius-buttons);
   font-size: var(--text-body-sm);
   font-weight: 400;
-  border: 1px solid #424245;
-  transition: background 0.25s ease, border-color 0.25s ease;
+  border: 1px solid var(--surface-border-dark-strong);
+  letter-spacing: var(--tracking-body-sm);
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
 .skill-tag:hover {
-  background: #333336;
-  border-color: #55555a;
+  background: var(--surface-card-dark);
+  border-color: var(--text-on-dark-subtle);
+  color: var(--text-on-dark-strong);
 }
 
 .about-image {
-  background: #161617;
+  background: var(--surface-card-darker);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 40px;
-  border-left: 1px solid #333336;
+  border-left: 1px solid var(--surface-border-dark-strong);
 }
 
 .image-container {
@@ -190,7 +192,7 @@ onUnmounted(() => {
   height: 300px;
   border-radius: var(--radius-cards);
   overflow: hidden;
-  border: 1px solid #424245;
+  border: 1px solid var(--surface-border-dark-strong);
 }
 
 .profile-img {

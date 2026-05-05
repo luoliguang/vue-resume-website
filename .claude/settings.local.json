@@ -10,7 +10,8 @@
       "Bash(find /d/Data/Data/GitHub/order-workflow -type f -exec ls -lh {} \\\\;)",
       "Bash(awk '{print $5, $9}')",
       "Bash(cat)",
-      "Bash(python /tmp/tree_report.py)"
+      "Bash(python /tmp/tree_report.py)",
+      "Bash(node -e \"console.log\\('Project OK'\\)\")"
     ]
   }
 }

@@ -349,6 +349,63 @@ html[data-theme='legacy'] .btn-quick {
   }
 }
 
+/* ===== Legacy theme: component-level overrides ===== */
+
+/* Hero: replace hardcoded #101012 mid-stop with adaptive gradient */
+html[data-theme='legacy'] .hero-section {
+  background: radial-gradient(110% 140% at 50% 0%, var(--color-space-gray) 0%, var(--color-pitch-black) 100%) !important;
+}
+
+/* Hero: avatar container background */
+html[data-theme='legacy'] .avatar-container {
+  background: var(--surface-card-darker) !important;
+  border-color: var(--surface-border-dark-strong) !important;
+}
+
+/* Hero: animated button SVG icons on legacy light background */
+html[data-theme='legacy'] .animated-button svg {
+  fill: currentColor !important;
+}
+
+/* Hero: btn-secondary and btn-quick text on light background */
+html[data-theme='legacy'] .btn-secondary,
+html[data-theme='legacy'] .btn-quick {
+  color: var(--text-on-dark-strong) !important;
+}
+
+/* Quick intro modal */
+html[data-theme='legacy'] .quick-intro-overlay {
+  background: rgba(0, 0, 0, 0.4) !important;
+}
+
+html[data-theme='legacy'] .quick-intro-card {
+  background: var(--surface-card-dark) !important;
+  border-color: var(--surface-border-dark-strong) !important;
+}
+
+html[data-theme='legacy'] .quick-intro-close {
+  background: var(--surface-card-darker) !important;
+  color: var(--text-on-dark-strong) !important;
+}
+
+html[data-theme='legacy'] .quick-intro-close:hover {
+  border-color: var(--surface-border-dark-strong) !important;
+}
+
+html[data-theme='legacy'] .qi-highlight {
+  background: var(--surface-card-darker) !important;
+  border-color: var(--surface-border-dark-strong) !important;
+}
+
+html[data-theme='legacy'] .qi-divider {
+  background: var(--surface-border-dark-strong) !important;
+}
+
+/* Navbar mobile menu link color */
+html[data-theme='legacy'] .nav-menu .nav-link {
+  color: var(--text-on-dark-strong) !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;

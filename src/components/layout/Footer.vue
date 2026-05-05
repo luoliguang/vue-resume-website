@@ -52,7 +52,7 @@ const scrollToSection = (sectionId) => {
 <style scoped>
 .footer {
   background: var(--color-pitch-black);
-  border-top: 1px solid #333336;
+  border-top: 1px solid var(--surface-border-dark-strong);
   padding: 96px 0 44px;
   margin-top: 0;
   position: relative;
@@ -125,16 +125,17 @@ const scrollToSection = (sectionId) => {
 }
 
 .nav-link {
-  color: #6c757d;
+  color: var(--text-on-dark-subtle);
   text-decoration: none;
-  font-size: 0.95rem;
+  font-size: var(--text-body-sm);
   font-weight: 500;
-  transition: color 0.3s ease;
+  letter-spacing: var(--tracking-body-sm);
+  transition: color 0.25s ease;
   position: relative;
 }
 
 .nav-link:hover {
-  color: #3498db;
+  color: var(--text-link);
 }
 
 .nav-link::after {
@@ -144,8 +145,9 @@ const scrollToSection = (sectionId) => {
   left: 0;
   width: 0;
   height: 2px;
-  background: #3498db;
-  transition: width 0.3s ease;
+  background: var(--text-link);
+  border-radius: 999px;
+  transition: width 0.25s ease;
 }
 
 .nav-link:hover::after {
@@ -163,17 +165,19 @@ const scrollToSection = (sectionId) => {
 }
 
 .quote-text {
-  font-size: 0.95rem;
-  color: #6c757d;
+  font-size: var(--text-body-sm);
+  color: var(--text-on-dark-muted);
   font-style: italic;
   line-height: 1.5;
   margin: 0;
+  letter-spacing: var(--tracking-body-sm);
 }
 
 .copyright {
-  font-size: 0.85rem;
-  color: #adb5bd;
+  font-size: var(--text-caption);
+  color: var(--text-on-dark-subtle);
   margin: 0;
+  letter-spacing: var(--tracking-caption);
 }
 
 @media (max-width: 768px) {
