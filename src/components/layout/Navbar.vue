@@ -15,6 +15,9 @@
           <li><a href="#contact" class="nav-link" @click="closeMobileMenu">{{ t('nav.contact') }}</a></li>
         </ul>
         <div class="nav-actions">
+          <button class="theme-toggle" type="button" @click="toggleTheme">
+            {{ isLegacyTheme ? 'Modern' : 'Legacy' }}
+          </button>
           <GlassToggle 
             v-model="currentLanguage"
             :items="languageOptions"
@@ -39,6 +42,7 @@ import { t, currentLanguage, setLanguage } from '../../composables/useI18n.js'
 
 const isMobileMenuOpen = ref(false)
 const isNavbarHidden = ref(false)
+const isLegacyTheme = ref(false)
 
 let lastScrollY = 0
 let ticking = false
@@ -95,6 +99,17 @@ const closeMobileMenu = () => {
   isMobileMenuOpen.value = false
 }
 
+const toggleTheme = () => {
+  isLegacyTheme.value = !isLegacyTheme.value
+  if (isLegacyTheme.value) {
+    document.documentElement.setAttribute('data-theme', 'legacy')
+    localStorage.setItem('resume-theme', 'legacy')
+  } else {
+    document.documentElement.removeAttribute('data-theme')
+    localStorage.setItem('resume-theme', 'modern')
+  }
+}
+
 const scrollToTop = () => {
   // 清空 URL 中的 hash
   window.history.pushState('', '', window.location.pathname)
@@ -107,6 +122,12 @@ const scrollToTop = () => {
 onMounted(() => {
   lastScrollY = window.scrollY || 0
   window.addEventListener('scroll', onScroll, { passive: true })
+
+  const savedTheme = localStorage.getItem('resume-theme')
+  if (savedTheme === 'legacy') {
+    isLegacyTheme.value = true
+    document.documentElement.setAttribute('data-theme', 'legacy')
+  }
 })
 
 onBeforeUnmount(() => {
@@ -209,7 +230,25 @@ watch(isMobileMenuOpen, (open) => {
 .nav-actions {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 12px;
+}
+
+.theme-toggle {
+  border: 1px solid #424245;
+  background: #1d1d1f;
+  color: #f5f5f7;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.theme-toggle:hover {
+  background: #333336;
+  border-color: #5a5a5f;
 }
 
 .hamburger {
