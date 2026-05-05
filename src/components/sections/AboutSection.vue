@@ -108,31 +108,26 @@ onUnmounted(() => {
 <style scoped>
 .section {
   padding: 80px 0;
-  background: linear-gradient(180deg, #f5f7fa 0%, #f0f2f5 100%);
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
+  background: transparent;
 }
 
 .container {
-  max-width: 1200px;
+  max-width: var(--page-max-width);
   margin: 0 auto;
   padding: 0 20px;
   width: 100%;
 }
 
 .about-card {
-  background: white;
-  border-radius: 20px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  background: var(--color-space-gray);
+  border-radius: var(--radius-cards);
+  border: 1px solid #333336;
   overflow: hidden;
-  min-height: 500px;
 }
 
 .about-content {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  min-height: 500px;
 }
 
 .about-text {
@@ -143,56 +138,59 @@ onUnmounted(() => {
 }
 
 .about-title {
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: #2c3e50;
-  margin-bottom: 30px;
-  line-height: 1.2;
+  font-size: var(--text-heading);
+  font-weight: 600;
+  color: var(--color-cloud-white);
+  margin-bottom: 24px;
+  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-heading);
 }
 
 .about-description {
-  font-size: 1.1rem;
-  line-height: 1.8;
-  color: #555;
-  margin-bottom: 40px;
+  font-size: var(--text-body);
+  line-height: 1.5;
+  color: #c7c7cc;
+  margin-bottom: 32px;
+  letter-spacing: var(--tracking-body);
 }
 
 .skill-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 10px;
 }
 
 .skill-tag {
-  background: #f8f9fa;
-  color: #555;
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  border: 1px solid #e9ecef;
-  transition: all 0.3s ease;
+  background: #2a2a2d;
+  color: #f5f5f7;
+  padding: 8px 14px;
+  border-radius: var(--radius-buttons);
+  font-size: var(--text-body-sm);
+  font-weight: 400;
+  border: 1px solid #424245;
+  transition: background 0.25s ease, border-color 0.25s ease;
 }
 
 .skill-tag:hover {
-  background: #e9ecef;
-  transform: translateY(-2px);
+  background: #333336;
+  border-color: #55555a;
 }
 
 .about-image {
-  background: #baa3c2;
+  background: #161617;
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
+  padding: 40px;
+  border-left: 1px solid #333336;
 }
 
 .image-container {
   width: 300px;
   height: 300px;
-  border-radius: 15px;
+  border-radius: var(--radius-cards);
   overflow: hidden;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  border: 1px solid #424245;
 }
 
 .profile-img {
@@ -208,116 +206,77 @@ onUnmounted(() => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: #f8f9fa;
-  color: #6c757d;
+  background: var(--color-ghost-white);
+  color: var(--color-cool-gray);
 }
 
-.image-placeholder svg {
-  margin-bottom: 8px;
-}
-
-.image-placeholder span {
-  font-size: 0.9rem;
-}
-
-/* 平板端 */
 @media (max-width: 968px) {
-  .section {
-    padding: 60px 0;
-  }
-  
   .about-text {
-    padding: 50px 40px;
+    padding: 48px 36px;
   }
-  
+
   .about-title {
-    font-size: 2.25rem;
-    margin-bottom: 25px;
+    font-size: 36px;
   }
-  
-  .about-description {
-    font-size: 1.05rem;
-    margin-bottom: 35px;
-  }
-  
+
   .image-container {
     width: 250px;
     height: 250px;
   }
 }
 
-/* 移动端响应式 */
 @media (max-width: 768px) {
   .section {
-    padding: 40px 0;
+    padding: 56px 0;
   }
-  
+
   .about-content {
     grid-template-columns: 1fr;
-    min-height: auto;
   }
-  
+
   .about-text {
-    padding: 40px 30px;
+    padding: 36px 28px;
     text-align: center;
   }
-  
+
   .about-title {
-    font-size: 2rem;
-    margin-bottom: 20px;
+    font-size: 32px;
+    margin-bottom: 16px;
   }
-  
+
   .about-description {
-    font-size: 1rem;
-    margin-bottom: 30px;
+    margin-bottom: 24px;
   }
-  
+
   .about-image {
-    padding: 40px 30px;
+    padding: 28px;
   }
-  
+
   .image-container {
     width: 200px;
     height: 200px;
   }
-  
+
   .skill-tags {
     justify-content: center;
   }
 }
 
-/* 小屏幕手机 */
 @media (max-width: 480px) {
   .section {
-    padding: 30px 0;
+    padding: 44px 0;
   }
-  
+
   .about-text {
-    padding: 30px 20px;
+    padding: 28px 20px;
   }
-  
+
   .about-title {
-    font-size: 1.75rem;
-    margin-bottom: 16px;
+    font-size: 28px;
   }
-  
+
   .about-description {
-    font-size: 0.95rem;
-    margin-bottom: 25px;
-  }
-  
-  .about-image {
-    padding: 30px 20px;
-  }
-  
-  .image-container {
-    width: 180px;
-    height: 180px;
-  }
-  
-  .skill-tag {
-    font-size: 0.85rem;
-    padding: 6px 12px;
+    font-size: 16px;
   }
 }
 </style>

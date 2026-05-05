@@ -1,16 +1,110 @@
-/* 全局背景与基础配色变量 */
-:root {
-  --bg-base: #f7f9fc;              /* 页面主体背景 */
-  --bg-gradient-start: #f7f9fc;    /* 渐变起点（浅） */
-  --bg-gradient-end: #eef2f7;      /* 渐变终点（略深） */
-  --bg-accent: rgba(52, 152, 219, 0.08); /* 轻微点缀层 */
+/* =========================================================
+   Global Design System
+   目标：把“颜色/文字对比”集中在这里，后续只改变量即可全站生效
+   ========================================================= */
 
-  --surface: #ffffff;              /* 卡片/区域底色 */
-  --surface-border: rgba(0, 0, 0, 0.06);
-  --surface-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+:root {
+  /* ---------- Core Palette ---------- */
+  --color-pitch-black: #000000;
+  --color-space-gray: #1d1d1f;
+  --color-cloud-white: #ffffff;
+  --color-ghost-white: #f5f5f7;
+  --color-cool-gray: #86868b;
+  --color-deep-graphite: #161617;
+  --color-storm-gray: #333336;
+  --color-dark-charcoal: #424245;
+
+  --color-highlight-blue: #0066cc;
+  --color-vivid-blue: #2997ff;
+  --color-interactive-blue: #0071e3;
+
+  /* ---------- Typography Scale ---------- */
+  --text-caption: 12px;
+  --text-body-sm: 14px;
+  --text-body: 17px;
+  --text-subheading: 20px;
+  --text-heading-sm: 24px;
+  --text-heading: 44px;
+  --text-heading-lg: 56px;
+  --text-display: 80px;
+
+  --leading-caption: 1.5;
+  --leading-body: 1.5;
+  --leading-heading: 1.05;
+
+  --tracking-caption: -0.48px;
+  --tracking-body: -0.32px;
+  --tracking-heading: -0.13px;
+
+  /* ---------- Radius & Layout ---------- */
+  --radius-cards: 28px;
+  --radius-inputs: 210px;
+  --radius-buttons: 999px;
+  --radius-standard: 10px;
+
+  --page-max-width: 980px;
+  --section-gap: 40px;
+  --card-padding: 28px;
+  --element-gap: 10px;
+
+  /* ---------- Surface Tokens ---------- */
+  --surface-canvas: var(--color-pitch-black);
+  --surface-section-dark: var(--color-pitch-black);
+  --surface-section-light: var(--color-ghost-white);
+  --surface-card-dark: var(--color-space-gray);
+  --surface-card-darker: var(--color-deep-graphite);
+  --surface-card-light: var(--color-cloud-white);
+
+  --surface-border-dark: rgba(255, 255, 255, 0.12);
+  --surface-border-strong-dark: #424245;
+  --surface-border-light: rgba(29, 29, 31, 0.12);
+
+  /* ---------- Semantic Text Tokens (最重要) ---------- */
+  /* Dark surface text */
+  --text-on-dark-strong: #ffffff;
+  --text-on-dark: #f5f5f7;
+  --text-on-dark-muted: #c7c7cc;
+  --text-on-dark-subtle: #86868b;
+
+  /* Light surface text */
+  --text-on-light-strong: #1d1d1f;
+  --text-on-light: #2f2f31;
+  --text-on-light-muted: #515154;
+  --text-on-light-subtle: #6e6e73;
+
+  /* Interactive text */
+  --text-link: var(--color-highlight-blue);
+  --text-link-hover: var(--color-vivid-blue);
+  --text-accent: var(--color-vivid-blue);
+
+  /* ---------- Button Semantic Tokens ---------- */
+  --btn-primary-bg: var(--color-interactive-blue);
+  --btn-primary-bg-hover: #0a84ff;
+  --btn-primary-text: #ffffff;
+  --btn-primary-border: rgba(255, 255, 255, 0.2);
+
+  --btn-ghost-bg: rgba(29, 29, 31, 0.86);
+  --btn-ghost-bg-hover: rgba(51, 51, 54, 0.92);
+  --btn-ghost-text: rgba(255, 255, 255, 0.9);
+  --btn-ghost-border: #424245;
+
+  --btn-subtle-bg: rgba(22, 22, 23, 0.86);
+  --btn-subtle-bg-hover: #2a2a2d;
+  --btn-subtle-text: #f5f5f7;
+  --btn-subtle-border: #333336;
+
+  /* ---------- Background aliases (compat) ---------- */
+  --bg-base: var(--surface-canvas);
+  --bg-gradient-start: var(--color-space-gray);
+  --bg-gradient-end: var(--color-pitch-black);
+  --bg-accent: rgba(41, 151, 255, 0.12);
+
+  --surface: var(--surface-card-dark);
+  --surface-border: var(--surface-border-dark);
+  --surface-shadow: none;
 }
 
-/* 全站背景：柔和渐变 + 细微图案（可选） */
+/* ---------- Base ---------- */
 html, body, #app {
   height: 100%;
 }
@@ -19,70 +113,120 @@ body {
   margin: 0;
   background:
     radial-gradient(60rem 60rem at 10% -10%, var(--bg-accent), transparent 50%),
-    radial-gradient(50rem 50rem at 90% 10%, var(--bg-accent), transparent 50%),
+    radial-gradient(50rem 50rem at 90% 10%, rgba(0, 102, 204, 0.08), transparent 50%),
     linear-gradient(180deg, var(--bg-gradient-start), var(--bg-gradient-end));
   background-attachment: fixed;
-  color: #2c3e50;
+  color: var(--text-on-dark);
+  font-family: 'SF Pro Text', Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   overflow-x: hidden;
 }
 
-/* 统一段落区域的默认透明背景，避免与全局底色冲突 */
+/* ---------- Layout reset ---------- */
 section, main, .section-block {
   background: transparent;
 }
 
-/* 尽量将常见容器背景设为透明，减少“白边”露出 */
 .container, .container-max, .content, .wrapper,
 .arco-layout, .arco-card, .arco-card-body,
 .arco-page-header, .arco-space, .arco-list {
   background: transparent !important;
 }
 
-/* 标准页面分区：统一内边距与间距，默认透明，衔接全局底色 */
 .section {
   padding: 60px 0;
   background: transparent;
 }
 
-/* 渐变分隔：用于区块与区块之间的柔和过渡 */
-.section-divider {
-  height: 48px;
-  background:
-    linear-gradient(
-      to bottom,
-      rgba(255, 255, 255, 0) 0%,
-      rgba(0, 0, 0, 0.04) 50%,
-      rgba(255, 255, 255, 0) 100%
-    );
-  opacity: 0.6;
-}
-
-/* 提供统一“浮层/卡片”外观：可在局部包裹使用 */
-.surface {
-  background: var(--surface);
-  border: 1px solid var(--surface-border);
-  box-shadow: var(--surface-shadow);
-  border-radius: 12px;
-}
-
-/* 半透明浮层：能看到底层背景的过渡，更柔和 */
-.surface-translucent {
-  background: rgba(255, 255, 255, 0.6);
-  backdrop-filter: saturate(120%) blur(6px);
-  -webkit-backdrop-filter: saturate(120%) blur(6px);
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
-}
-
-/* 可选的内容最大宽度容器（按需添加到页面容器） */
 .container-max {
-  max-width: 1200px;
+  max-width: var(--page-max-width);
   margin: 0 auto;
   padding: 0 20px;
 }
 
-/* 动效无障碍：尊重系统“减少动态效果”设置 */
+/* ---------- Shared Surface Utilities ---------- */
+.surface {
+  background: var(--surface);
+  border: 1px solid var(--surface-border);
+  box-shadow: var(--surface-shadow);
+  border-radius: var(--radius-standard);
+}
+
+.surface-dark {
+  background: var(--surface-card-dark);
+  border: 1px solid var(--surface-border-dark);
+}
+
+.surface-darker {
+  background: var(--surface-card-darker);
+  border: 1px solid var(--surface-border-strong-dark);
+}
+
+.surface-light {
+  background: var(--surface-card-light);
+  border: 1px solid var(--surface-border-light);
+}
+
+/* ---------- Text Utilities（后续快速调色重点） ---------- */
+.text-strong-dark { color: var(--text-on-dark-strong); }
+.text-body-dark { color: var(--text-on-dark); }
+.text-muted-dark { color: var(--text-on-dark-muted); }
+.text-subtle-dark { color: var(--text-on-dark-subtle); }
+
+.text-strong-light { color: var(--text-on-light-strong); }
+.text-body-light { color: var(--text-on-light); }
+.text-muted-light { color: var(--text-on-light-muted); }
+.text-subtle-light { color: var(--text-on-light-subtle); }
+
+.text-link {
+  color: var(--text-link);
+  transition: color 0.2s ease;
+}
+
+.text-link:hover {
+  color: var(--text-link-hover);
+}
+
+/* ---------- Generic Buttons ---------- */
+.btn-primary,
+.btn-ghost,
+.btn-subtle {
+  border-radius: var(--radius-buttons);
+  border: 1px solid transparent;
+  font-size: var(--text-body);
+  line-height: 1.2;
+  letter-spacing: var(--tracking-body);
+  transition: background 0.25s ease, border-color 0.25s ease, transform 0.2s ease;
+}
+
+.btn-primary {
+  background: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
+  border-color: var(--btn-primary-border);
+}
+
+.btn-primary:hover { background: var(--btn-primary-bg-hover); }
+
+.btn-ghost {
+  background: var(--btn-ghost-bg);
+  color: var(--btn-ghost-text);
+  border-color: var(--btn-ghost-border);
+}
+
+.btn-ghost:hover {
+  background: var(--btn-ghost-bg-hover);
+}
+
+.btn-subtle {
+  background: var(--btn-subtle-bg);
+  color: var(--btn-subtle-text);
+  border-color: var(--btn-subtle-border);
+}
+
+.btn-subtle:hover {
+  background: var(--btn-subtle-bg-hover);
+}
+
+/* ---------- Motion Accessibility ---------- */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -92,18 +236,14 @@ section, main, .section-block {
   }
 }
 
-/* 暗色模式（如后续需要，可通过给 html/body 加 .dark 启用） */
-.dark {
-  --bg-base: #0f141b;
-  --bg-gradient-start: #0f141b;
-  --bg-gradient-end: #151c25;
-  --bg-accent: rgba(52, 152, 219, 0.12);
+/* ---------- Optional light-mode namespace (future extension) ---------- */
+.theme-light {
+  --surface-canvas: #f5f5f7;
+  --bg-gradient-start: #ffffff;
+  --bg-gradient-end: #f5f5f7;
 
-  --surface: #161d27;
-  --surface-border: rgba(255, 255, 255, 0.08);
-  --surface-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-
-  color: #e8eef6;
+  --text-on-dark-strong: #1d1d1f;
+  --text-on-dark: #2f2f31;
+  --text-on-dark-muted: #515154;
+  --text-on-dark-subtle: #6e6e73;
 }
-
-

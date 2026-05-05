@@ -301,19 +301,19 @@ onUnmounted(() => {
 <style scoped>
 .projects-section {
   padding: 80px 20px;
-  background: linear-gradient(180deg, #e8eaf0 0%, #f0f2f5 100%);
+  background: transparent;
   min-height: 100vh;
 }
 
 .container {
-  max-width: 1200px;
+  max-width: var(--page-max-width);
   margin: 0 auto;
 }
 
 .section-title {
   text-align: center;
-  font-size: 2.5rem;
-  color: #2c3e50;
+  font-size: var(--text-heading);
+  color: var(--color-cloud-white);
   margin-bottom: 16px;
   font-weight: 600;
 }
@@ -321,7 +321,7 @@ onUnmounted(() => {
 .section-subtitle {
   text-align: center;
   font-size: 1.1rem;
-  color: #666;
+  color: #c7c7cc;
   margin-bottom: 40px;
 }
 
@@ -339,7 +339,7 @@ onUnmounted(() => {
 }
 
 .project-card {
-  background: white;
+  background: var(--color-space-gray);
   border-radius: 14px;
   overflow: hidden;
   box-shadow: 0 3px 15px rgba(0, 0, 0, 0.07);
@@ -429,7 +429,7 @@ onUnmounted(() => {
 .project-title {
   font-size: 1.05rem;
   font-weight: 700;
-  color: #2c3e50;
+  color: var(--color-cloud-white);
   margin: 0 0 8px;
 }
 

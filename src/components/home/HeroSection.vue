@@ -235,42 +235,24 @@ onUnmounted(() => {
 
 <style scoped>
 .hero-section {
-  min-height: 600px;
-  background: radial-gradient(120% 120% at 50% 0%, #fffdf6 0%, #f6f8fb 45%, #eef2f8 100%);
-  background-size: 100% 130%;
+  min-height: 680px;
+  background: radial-gradient(110% 140% at 50% 0%, var(--color-space-gray) 0%, #101012 45%, var(--color-pitch-black) 100%);
+  background-size: 100% 120%;
   background-position: 50% 50%;
   display: flex;
   align-items: center;
   padding: 0 20px;
   overflow: hidden;
+  color: var(--color-ghost-white);
 }
-
-.hero-animate {
-  opacity: 1;
-}
-
-.hero-stagger {
-  opacity: 1;
-}
-
-.hero-ready .hero-animate,
-.hero-ready .hero-stagger {
-  opacity: 1;
-}
-
-.hero-stagger-1 { animation-delay: 280ms; }
-.hero-stagger-2 { animation-delay: 340ms; }
-.hero-stagger-3 { animation-delay: 400ms; }
-.hero-stagger-4 { animation-delay: 460ms; }
-.hero-stagger-5 { animation-delay: 520ms; }
 
 .hero-container {
-  max-width: 1200px;
+  max-width: 980px;
   margin: 0 auto;
   width: 100%;
   display: grid;
-  grid-template-columns: minmax(320px, 1fr) minmax(360px, 1fr);
-  gap: clamp(20px, 4vw, 60px);
+  grid-template-columns: minmax(300px, 1fr) minmax(340px, 1fr);
+  gap: clamp(20px, 4vw, 48px);
   align-items: center;
 }
 
@@ -292,20 +274,17 @@ onUnmounted(() => {
 .avatar-container {
   width: 280px;
   height: 280px;
-  border-radius: 50%;
+  border-radius: 28px;
   overflow: hidden;
-  margin-bottom: 30px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  border: 4px solid white;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 4px;
+  margin-bottom: 24px;
+  border: 1px solid #333336;
+  background: #161617;
 }
 
 .avatar-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 50%;
 }
 
 .avatar-placeholder {
@@ -315,112 +294,95 @@ onUnmounted(() => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: #f8f9fa;
-  color: #6c757d;
-  border-radius: 50%;
-}
-
-.avatar-placeholder svg {
-  margin-bottom: 8px;
-}
-
-.avatar-placeholder span {
-  font-size: 0.9rem;
-}
-
-.tagline {
-  text-align: center;
-  width: 100%;
+  background: #161617;
+  color: #86868b;
 }
 
 .tagline-line {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #2c3e50;
-  line-height: 1.3;
-  margin-bottom: 8px;
-  margin-left: auto;
-  margin-right: auto;
-  text-align: center;
+  font-size: 20px;
+  font-weight: 400;
+  color: #f5f5f7;
+  line-height: 1.25;
+  letter-spacing: -0.2px;
 }
 
 .hero-right {
-  padding-left: clamp(0px, 2vw, 20px);
   min-width: 0;
 }
 
 .main-title {
-  font-size: 3rem;
-  font-weight: 700;
-  color: #2c3e50;
+  font-size: clamp(40px, 6vw, 64px);
+  font-weight: 600;
+  color: #ffffff;
   margin-bottom: 8px;
-  line-height: 1.2;
+  line-height: 1.07;
+  letter-spacing: -0.73px;
 }
 
 .brand-name {
-  font-size: 1.15rem;
-  font-weight: 600;
-  color: #667eea;
-  margin: 6px 0 10px;
-  letter-spacing: 3px;
-  text-transform: uppercase;
+  font-size: 17px;
+  font-weight: 400;
+  color: #2997ff;
+  margin: 4px 0 12px;
+  letter-spacing: -0.32px;
+  text-transform: none;
 }
 
 .title-divider {
   width: 72px;
-  height: 3px;
+  height: 2px;
   border-radius: 999px;
-  background: linear-gradient(90deg, #667eea, rgba(102, 126, 234, 0.15));
+  background: linear-gradient(90deg, #0071e3, rgba(0, 113, 227, 0.1));
   margin-bottom: 24px;
 }
 
 .description {
-  font-size: clamp(0.96rem, 1.5vw, 1.1rem);
-  line-height: 1.75;
-  color: #555;
+  font-size: 17px;
+  line-height: 1.5;
+  color: #c7c7cc;
   margin-bottom: 32px;
-  max-width: 56ch;
-  text-wrap: pretty;
+  max-width: 54ch;
+  letter-spacing: -0.32px;
 }
 
 .action-buttons {
   display: flex;
-  gap: 12px;
+  gap: 10px;
   flex-wrap: wrap;
   align-items: center;
 }
 
-/* 动画按钮基础样式 */
 .animated-button {
   position: relative;
   display: flex;
   align-items: center;
   gap: 4px;
-  padding: 16px 36px;
-  border: 4px solid;
-  border-color: transparent;
-  font-size: 16px;
-  background-color: inherit;
-  border-radius: 100px;
+  padding: 9px 18px;
+  border: 1px solid transparent;
+  font-size: 17px;
+  background-color: transparent;
+  border-radius: 999px;
   font-weight: 600;
+  letter-spacing: -0.32px;
   cursor: pointer;
   overflow: hidden;
-  transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+  backdrop-filter: blur(8px);
+  transition: transform 0.25s ease, background 0.25s ease, border-color 0.25s ease, color 0.25s ease;
 }
 
 .animated-button svg {
   position: absolute;
-  width: 24px;
-  z-index: 9;
-  transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+  width: 18px;
+  z-index: 2;
+  transition: all 0.35s ease;
 }
 
 .animated-button .arr-1 {
-  right: 16px;
+  right: 12px;
 }
 
 .animated-button .arr-2 {
-  left: -25%;
+  left: -22px;
 }
 
 .animated-button .circle {
@@ -428,70 +390,99 @@ onUnmounted(() => {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 20px;
-  height: 20px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
   opacity: 0;
-  transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+  transition: all 0.35s ease;
 }
 
 .animated-button .text {
   position: relative;
   z-index: 1;
-  transform: translateX(-12px);
-  transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
-}
-
-.animated-button:hover {
-  box-shadow: 0 0 0 12px transparent;
-  color: #212121;
-  border-radius: 12px;
+  transform: translateX(-6px);
+  transition: all 0.35s ease;
 }
 
 .animated-button:hover .arr-1 {
-  right: -25%;
+  right: -20px;
 }
 
 .animated-button:hover .arr-2 {
-  left: 16px;
+  left: 12px;
 }
 
 .animated-button:hover .text {
-  transform: translateX(12px);
+  transform: translateX(8px);
 }
 
 .animated-button:active {
-  scale: 0.95;
+  transform: scale(0.97);
 }
 
 .animated-button:hover .circle {
-  width: 220px;
-  height: 220px;
-  opacity: 1;
+  width: 170px;
+  height: 170px;
+  opacity: 0.16;
+}
+
+.btn-primary {
+  background: linear-gradient(180deg, #0a84ff 0%, #0071e3 100%);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  background: linear-gradient(180deg, #2997ff 0%, #0077ed 100%);
+}
+
+.btn-primary svg {
+  fill: #ffffff;
+}
+
+.btn-primary .circle {
+  background-color: #ffffff;
+}
+
+.btn-secondary {
+  border-color: #424245;
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(29, 29, 31, 0.86);
+}
+
+.btn-secondary:hover {
+  background: rgba(51, 51, 54, 0.92);
+  border-color: #5a5a5f;
+}
+
+.btn-secondary svg {
+  fill: rgba(255, 255, 255, 0.9);
+}
+
+.btn-secondary .circle {
+  background-color: #2997ff;
 }
 
 .btn-quick {
-  color: #8e44ad;
-  box-shadow: 0 0 0 2px #8e44ad;
+  border-color: #424245;
+  color: #f5f5f7;
+  background: rgba(22, 22, 23, 0.86);
 }
 
 .btn-quick svg {
-  fill: #8e44ad;
+  fill: #86868b;
 }
 
 .btn-quick .circle {
-  background-color: #8e44ad;
-}
-
-.btn-quick:active {
-  box-shadow: 0 0 0 4px #8e44ad;
+  background-color: #2997ff;
 }
 
 .quick-intro-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.55);
-  backdrop-filter: blur(8px);
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(12px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -502,372 +493,182 @@ onUnmounted(() => {
 .quick-intro-card {
   position: relative;
   width: min(620px, 100%);
-  border-radius: 24px;
-  padding: 36px;
-  background: rgba(255, 255, 255, 0.97);
-  box-shadow: 0 24px 80px rgba(15, 23, 42, 0.25);
-  border: 1px solid rgba(102, 126, 234, 0.12);
+  border-radius: 28px;
+  padding: 32px;
+  background: #1d1d1f;
+  border: 1px solid #333336;
   max-height: calc(100vh - 48px);
   overflow-y: auto;
 }
 
 .quick-intro-close {
   position: absolute;
-  top: 16px;
-  right: 16px;
-  width: 36px;
-  height: 36px;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
   border: none;
-  border-radius: 50%;
-  background: rgba(102, 126, 234, 0.08);
-  color: #2c3e50;
-  font-size: 22px;
+  border-radius: 999px;
+  background: #333336;
+  color: #f5f5f7;
+  font-size: 20px;
   cursor: pointer;
   line-height: 1;
-  transition: background 0.2s;
 }
 
 .quick-intro-close:hover {
-  background: rgba(102, 126, 234, 0.18);
+  background: #424245;
 }
 
-/* Header */
-.qi-header {
-  margin-bottom: 20px;
-}
+.qi-header { margin-bottom: 20px; }
 
 .qi-badge {
   display: inline-block;
-  padding: 3px 12px;
+  padding: 4px 12px;
   border-radius: 999px;
-  background: rgba(102, 126, 234, 0.1);
-  color: #667eea;
-  font-weight: 700;
-  font-size: 0.72rem;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  margin-bottom: 14px;
+  background: rgba(41, 151, 255, 0.15);
+  color: #2997ff;
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: -0.48px;
+  margin-bottom: 12px;
 }
 
 .qi-name {
-  margin: 0 0 4px;
-  font-size: 2rem;
-  font-weight: 700;
-  color: #2c3e50;
-  line-height: 1.2;
+  margin: 0 0 6px;
+  font-size: 40px;
+  font-weight: 600;
+  color: #ffffff;
+  line-height: 1.1;
+  letter-spacing: -0.3px;
 }
 
 .qi-brand {
   margin: 0;
-  color: #667eea;
-  font-weight: 600;
-  letter-spacing: 3px;
-  font-size: 0.88rem;
+  color: #86868b;
+  font-weight: 400;
+  letter-spacing: -0.31px;
+  font-size: 14px;
 }
 
-/* Bio */
 .qi-text {
   margin: 0 0 20px;
-  color: #4a5568;
-  line-height: 1.8;
-  font-size: 0.97rem;
+  color: #f5f5f7;
+  line-height: 1.43;
+  font-size: 14px;
+  letter-spacing: -0.31px;
 }
 
 .qi-divider {
   height: 1px;
-  background: linear-gradient(90deg, rgba(102, 126, 234, 0.3), transparent);
+  background: #333336;
   margin-bottom: 20px;
 }
 
-/* Highlights grid */
 .qi-highlights {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
+  gap: 10px;
 }
 
 .qi-highlight {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
   padding: 16px;
-  border-radius: 16px;
-  background: linear-gradient(160deg, rgba(102, 126, 234, 0.07), rgba(102, 126, 234, 0.02));
-  border: 1px solid rgba(102, 126, 234, 0.1);
+  border-radius: 18px;
+  background: #161617;
+  border: 1px solid #333336;
 }
 
 .qi-hlabel {
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  color: #667eea;
-  text-transform: uppercase;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+  color: #2997ff;
 }
 
 .qi-hvalue {
-  font-size: 0.88rem;
-  font-weight: 600;
-  color: #2c3e50;
-  line-height: 1.5;
-}
-
-/* 主按钮样式 - 蓝色主题 */
-.btn-primary {
-  color: #3498db;
-  box-shadow: 0 0 0 2px #3498db;
-}
-
-.btn-primary svg {
-  fill: #3498db;
-}
-
-.btn-primary .circle {
-  background-color: #3498db;
-}
-
-.btn-primary:active {
-  box-shadow: 0 0 0 4px #3498db;
-}
-
-/* 次按钮样式 - 绿色主题 */
-.btn-secondary {
-  color: #27ae60;
-  box-shadow: 0 0 0 2px #27ae60;
-}
-
-.btn-secondary svg {
-  fill: #27ae60;
-}
-
-.btn-secondary .circle {
-  background-color: #27ae60;
-}
-
-.btn-secondary:active {
-  box-shadow: 0 0 0 4px #27ae60;
-}
-
-/* 平板端 */
-@keyframes heroEnterLeft {
-  from {
-    opacity: 0;
-    transform: translate3d(-16px, 0, 0);
-  }
-  to {
-    opacity: 1;
-    transform: translate3d(0, 0, 0);
-  }
-}
-
-@keyframes heroEnterRight {
-  from {
-    opacity: 0;
-    transform: translate3d(16px, 0, 0);
-  }
-  to {
-    opacity: 1;
-    transform: translate3d(0, 0, 0);
-  }
-}
-
-@keyframes heroStaggerIn {
-  from {
-    opacity: 0;
-    transform: translate3d(0, 12px, 0);
-  }
-  to {
-    opacity: 1;
-    transform: translate3d(0, 0, 0);
-  }
-}
-
-@media (max-width: 1100px) {
-  .hero-container {
-    grid-template-columns: minmax(300px, 1fr) minmax(320px, 1fr);
-    gap: 28px;
-  }
-
-  .main-title {
-    font-size: 2.4rem;
-  }
-
-  .brand-name {
-    font-size: 1.05rem;
-    letter-spacing: 2.4px;
-  }
-
-  .description {
-    max-width: 48ch;
-  }
-
-  .animated-button {
-    padding: 13px 24px;
-    font-size: 0.95rem;
-  }
+  font-size: 14px;
+  font-weight: 400;
+  color: #f5f5f7;
+  line-height: 1.43;
+  letter-spacing: -0.31px;
 }
 
 @media (max-width: 968px) {
   .hero-container {
-    gap: 40px;
+    gap: 32px;
   }
-  
+
   .main-title {
-    font-size: 2.5rem;
-    margin-bottom: 6px;
+    font-size: clamp(36px, 7vw, 52px);
   }
-  
-  .brand-name {
-    font-size: 1.15rem;
-    margin-bottom: 20px;
-  }
-  
-  .description {
-    font-size: 1.05rem;
-    margin-bottom: 28px;
-  }
-  
-  .tagline-line {
-    font-size: 1.3rem;
-  }
-  
+
   .avatar-container {
     width: 240px;
     height: 240px;
   }
 }
 
-/* 移动端响应式 */
 @media (max-width: 768px) {
   .hero-section {
-    padding: 20px 16px;
+    padding: 28px 16px;
     min-height: auto;
   }
-  
+
   .hero-container {
     grid-template-columns: 1fr;
-    gap: 30px;
+    gap: 28px;
     text-align: center;
   }
-  
-  .hero-right {
-    padding-left: 0;
-  }
-  
+
   .main-title {
-    font-size: 2rem;
-    margin-bottom: 6px;
+    font-size: 44px;
   }
-  
-  .brand-name {
-    font-size: 1rem;
-    margin: 4px 0 12px;
-    letter-spacing: 2px;
-  }
-  
-  .title-divider {
-    width: 56px;
-    margin-bottom: 18px;
-  }
-  
+
   .description {
-    font-size: 1rem;
-    margin-bottom: 24px;
+    margin-left: auto;
+    margin-right: auto;
   }
-  
-  .tagline {
-    text-align: center;
-  }
-  
-  .tagline-line {
-    font-size: 1.2rem;
-  }
-  
+
   .avatar-container {
-    width: 200px;
-    height: 200px;
-    margin-bottom: 20px;
+    width: 208px;
+    height: 208px;
   }
-  
+
   .action-buttons {
     justify-content: center;
-    flex-wrap: wrap;
   }
 
   .quick-intro-card {
     width: min(100%, 520px);
-    padding: 28px;
+    padding: 24px;
   }
 
-  .qi-name {
-    font-size: 1.75rem;
-  }
-
-  .qi-highlights {
-    grid-template-columns: 1fr;
-    gap: 10px;
-  }
+  .qi-name { font-size: 32px; }
+  .qi-highlights { grid-template-columns: 1fr; }
 }
 
-/* 小屏幕手机 */
 @media (max-width: 480px) {
-  .hero-section {
-    padding: 16px 12px;
-  }
-  
-  .main-title {
-    font-size: 1.75rem;
-    margin-bottom: 4px;
-  }
-  
-  .brand-name {
-    font-size: 1rem;
-    margin-bottom: 12px;
-    letter-spacing: 1px;
-  }
-  
-  .description {
-    font-size: 0.95rem;
-  }
-  
-  .tagline-line {
-    font-size: 1.1rem;
-  }
-  
-  .avatar-container {
-    width: 180px;
-    height: 180px;
-  }
-  
+  .main-title { font-size: 36px; }
+
+  .brand-name,
+  .description,
   .animated-button {
-    padding: 12px 28px;
-    font-size: 0.9rem;
-  }
-  
-  .animated-button svg {
-    width: 20px;
+    font-size: 16px;
   }
 
-  .quick-intro-overlay {
-    padding: 16px;
+  .avatar-container {
+    width: 176px;
+    height: 176px;
   }
+
+  .quick-intro-overlay { padding: 16px; }
 
   .quick-intro-card {
-    width: 100%;
-    padding: 20px;
     border-radius: 20px;
-  }
-
-  .qi-name {
-    font-size: 1.5rem;
-  }
-
-  .qi-text {
-    font-size: 0.93rem;
-    line-height: 1.7;
-  }
-
-  .qi-highlight {
-    padding: 12px 14px;
+    padding: 20px;
   }
 }
 </style>

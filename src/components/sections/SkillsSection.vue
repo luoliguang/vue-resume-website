@@ -88,27 +88,28 @@ const setActiveCategory = (categoryId) => {
 <style scoped>
 .skills-section {
   padding: 80px 20px;
-  background: linear-gradient(180deg, #f0f2f5 0%, #e8eaf0 100%);
-  min-height: 100vh;
+  background: transparent;
 }
 
 .container {
-  max-width: 1200px;
+  max-width: var(--page-max-width);
   margin: 0 auto;
 }
 
 .section-title {
   text-align: center;
-  font-size: 2.5rem;
-  color: #2c3e50;
+  font-size: var(--text-heading);
+  color: var(--color-cloud-white);
   margin-bottom: 16px;
   font-weight: 600;
+  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-heading);
 }
 
 .section-subtitle {
   text-align: center;
   font-size: 1.1rem;
-  color: #666;
+  color: #86868b;
   margin-bottom: 50px;
 }
 
@@ -120,10 +121,10 @@ const setActiveCategory = (categoryId) => {
 
 /* 左侧技能分类 */
 .skills-sidebar {
-  background: white;
+  background: #1d1d1f;
   border-radius: 15px;
   padding: 30px 20px;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: none;
   height: fit-content;
 }
 
@@ -139,7 +140,7 @@ const setActiveCategory = (categoryId) => {
 }
 
 .category-item:hover {
-  background: #f8f9fa;
+  background: #161617;
 }
 
 .category-item.active {
@@ -167,7 +168,7 @@ const setActiveCategory = (categoryId) => {
 
 /* 右侧技能详情 */
 .skills-details {
-  background: white;
+  background: var(--color-space-gray);
   border-radius: 15px;
   padding: 40px;
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
@@ -186,7 +187,7 @@ const setActiveCategory = (categoryId) => {
 
 .category-title {
   font-size: 1.8rem;
-  color: #2c3e50;
+  color: var(--color-cloud-white);
   margin-bottom: 30px;
   font-weight: 600;
 }
@@ -199,14 +200,15 @@ const setActiveCategory = (categoryId) => {
 
 .skill-item {
   padding: 20px;
-  background: #f8f9fa;
-  border-radius: 12px;
-  transition: all 0.3s ease;
+  background: #161617;
+  border: 1px solid #333336;
+  border-radius: 18px;
+  transition: background 0.25s ease, border-color 0.25s ease;
 }
 
 .skill-item:hover {
-  background: #e9ecef;
-  transform: translateY(-2px);
+  background: #1f1f22;
+  border-color: #424245;
 }
 
 .skill-header {

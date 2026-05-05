@@ -127,11 +127,11 @@ watch(isMobileMenuOpen, (open) => {
   top: 0;
   left: 0;
   right: 0;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid #e0e0e0;
+  background: rgba(0, 0, 0, 0.82);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid #333336;
   z-index: 1000;
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease;
 }
 
 .navbar.hidden {
@@ -139,7 +139,7 @@ watch(isMobileMenuOpen, (open) => {
 }
 
 .nav-container {
-  max-width: 1200px;
+  max-width: var(--page-max-width);
   margin: 0 auto;
   padding: 0 20px;
   display: flex;
@@ -154,14 +154,15 @@ watch(isMobileMenuOpen, (open) => {
 }
 
 .nav-brand h2 {
-  color: #2c3e50;
+  color: var(--color-cloud-white);
   font-size: 1.5rem;
   font-weight: 600;
-  transition: color 0.3s ease;
+  letter-spacing: var(--tracking-body);
+  transition: color 0.25s ease;
 }
 
 .nav-brand:hover h2 {
-  color: #3498db;
+  color: var(--color-vivid-blue);
 }
 
 .nav-right {
@@ -178,14 +179,16 @@ watch(isMobileMenuOpen, (open) => {
 
 .nav-link {
   text-decoration: none;
-  color: #333;
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 14px;
   font-weight: 500;
-  transition: color 0.3s ease;
+  letter-spacing: -0.2px;
+  transition: color 0.25s ease;
   position: relative;
 }
 
 .nav-link:hover {
-  color: #3498db;
+  color: var(--color-cloud-white);
 }
 
 .nav-link::after {
@@ -195,8 +198,8 @@ watch(isMobileMenuOpen, (open) => {
   left: 0;
   width: 0;
   height: 2px;
-  background: #3498db;
-  transition: width 0.3s ease;
+  background: var(--color-interactive-blue);
+  transition: width 0.25s ease;
 }
 
 .nav-link:hover::after {

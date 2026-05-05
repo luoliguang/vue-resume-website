@@ -1,26 +1,26 @@
 <template>
   <div class="app">
     <Navbar />
-    <main class="main-content">
+    <main class="main-content page-shell">
       <HeroSection />
-      <div v-scroll-fade-in="{ distance: 72, start: 'top 95%', end: 'top 65%', scrub: 1 }">
+      <section class="page-section page-section-dark" v-scroll-fade-in="{ distance: 72, start: 'top 95%', end: 'top 65%', scrub: 1 }">
         <AboutSection />
-      </div>
-      <div v-scroll-fade-in="{ distance: 68, start: 'top 95%', end: 'top 66%', scrub: 1 }">
+      </section>
+      <section class="page-section page-section-dark" v-scroll-fade-in="{ distance: 68, start: 'top 95%', end: 'top 66%', scrub: 1 }">
         <ProjectsSection />
-      </div>
-      <div v-scroll-fade-in="{ distance: 64, start: 'top 94%', end: 'top 66%', scrub: 0.95 }">
+      </section>
+      <section class="page-section page-section-dark" v-scroll-fade-in="{ distance: 64, start: 'top 94%', end: 'top 66%', scrub: 0.95 }">
         <ProjectShowcase />
-      </div>
-      <div v-scroll-fade-in="{ distance: 60, start: 'top 94%', end: 'top 67%', scrub: 0.9 }">
+      </section>
+      <section class="page-section page-section-dark" v-scroll-fade-in="{ distance: 60, start: 'top 94%', end: 'top 67%', scrub: 0.9 }">
         <JourneySection />
-      </div>
-      <div v-scroll-fade-in="{ distance: 56, start: 'top 93%', end: 'top 67%', scrub: 0.85 }">
+      </section>
+      <section class="page-section page-section-dark" v-scroll-fade-in="{ distance: 56, start: 'top 93%', end: 'top 67%', scrub: 0.85 }">
         <SkillsSection />
-      </div>
-      <div v-scroll-fade-in="{ distance: 52, start: 'top 93%', end: 'top 68%', scrub: 0.8 }">
+      </section>
+      <section class="page-section page-section-dark" v-scroll-fade-in="{ distance: 52, start: 'top 93%', end: 'top 68%', scrub: 0.8 }">
         <ContactSection />
-      </div>
+      </section>
     </main>
     <Footer />
   </div>
@@ -46,6 +46,25 @@ import ContactSection from './components/sections/ContactSection.vue'
 
 .main-content {
   margin-top: 70px;
+}
+
+.page-shell {
+  background: var(--color-pitch-black);
+}
+
+.page-section {
+  position: relative;
+  padding: 0;
+}
+
+.page-section-light {
+  background: var(--color-ghost-white);
+  color: var(--color-space-gray);
+}
+
+.page-section-dark {
+  background: var(--color-pitch-black);
+  color: var(--color-cloud-white);
 }
 
 @media (max-width: 768px) {

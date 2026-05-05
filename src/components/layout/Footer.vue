@@ -51,9 +51,9 @@ const scrollToSection = (sectionId) => {
 
 <style scoped>
 .footer {
-  background: linear-gradient(180deg, #f0f2f5 0%, #e8eaf0 100%);
-  border-top: 1px solid #e9ecef;
-  padding: 130px 0 50px;
+  background: var(--color-pitch-black);
+  border-top: 1px solid #333336;
+  padding: 96px 0 44px;
   margin-top: 0;
   position: relative;
 }
@@ -65,11 +65,11 @@ const scrollToSection = (sectionId) => {
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, #3498db, transparent);
+  background: linear-gradient(90deg, transparent, var(--color-interactive-blue), transparent);
 }
 
 .container {
-  max-width: 1200px;
+  max-width: var(--page-max-width);
   margin: 0 auto;
   padding: 0 20px;
 }
@@ -97,26 +97,25 @@ const scrollToSection = (sectionId) => {
 .logo-icon {
   width: 36px;
   height: 36px;
-  background: linear-gradient(135deg, #3498db, #2980b9);
-  border-radius: 10px;
+  background: var(--color-space-gray);
+  border-radius: var(--radius-standard);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
-  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  color: var(--color-cloud-white);
+  border: 1px solid #424245;
+  transition: border-color 0.25s ease;
 }
 
 .logo-icon:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(52, 152, 219, 0.4);
+  border-color: var(--color-interactive-blue);
 }
 
 .logo-text {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #3498db;
-  letter-spacing: 0.5px;
+  font-size: var(--text-subheading);
+  font-weight: 600;
+  color: var(--color-cloud-white);
+  letter-spacing: var(--tracking-body);
 }
 
 .footer-nav {

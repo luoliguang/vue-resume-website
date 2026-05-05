@@ -166,28 +166,29 @@ onUnmounted(() => {
 <style scoped>
 .experience-section {
   padding: 80px 20px;
-  background: linear-gradient(180deg, #f0f2f5 0%, #e8eaf0 100%);
-  min-height: 100vh;
+  background: transparent;
 }
 
 .container {
-  max-width: 1200px;
+  max-width: var(--page-max-width);
   margin: 0 auto;
 }
 
 .section-title {
   text-align: left;
-  font-size: 2.5rem;
-  color: #2c3e50;
-  margin-bottom: 50px;
+  font-size: var(--text-heading);
+  color: var(--color-cloud-white);
+  margin-bottom: 44px;
   font-weight: 600;
+  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-heading);
 }
 
 .experience-content {
   display: grid;
   grid-template-columns: 200px 1fr;
-  gap: 40px;
-  margin-bottom: 80px;
+  gap: 32px;
+  margin-bottom: 72px;
 }
 
 /* 左侧时间线 */
@@ -202,7 +203,7 @@ onUnmounted(() => {
   top: 0;
   bottom: 0;
   width: 2px;
-  background: #e0e0e0;
+  background: #333336;
 }
 
 .timeline-item {
@@ -214,13 +215,13 @@ onUnmounted(() => {
 }
 
 .timeline-item.active .timeline-dot {
-  background: #3498db;
-  border-color: #3498db;
+  background: var(--color-interactive-blue);
+  border-color: var(--color-interactive-blue);
   transform: scale(1.2);
 }
 
 .timeline-item.active .timeline-period {
-  color: #2c3e50;
+  color: var(--color-cloud-white);
   font-weight: 600;
 }
 
@@ -232,16 +233,16 @@ onUnmounted(() => {
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background: white;
-  border: 3px solid #e0e0e0;
+  background: var(--color-space-gray);
+  border: 2px solid #424245;
   transition: all 0.3s ease;
   z-index: 1;
 }
 
 .timeline-period {
   margin-left: 30px;
-  font-size: 0.9rem;
-  color: #888;
+  font-size: var(--text-body-sm);
+  color: #86868b;
   transition: all 0.3s ease;
 }
 
@@ -251,10 +252,10 @@ onUnmounted(() => {
 }
 
 .experience-card {
-  background: white;
-  border-radius: 15px;
+  background: var(--color-space-gray);
+  border-radius: var(--radius-cards);
   padding: 30px;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid #333336;
   transition: all 0.3s ease;
   opacity: 0;
   transform: translateY(20px);
@@ -298,20 +299,20 @@ onUnmounted(() => {
 .job-title {
   font-size: 1.4rem;
   font-weight: 600;
-  color: #2c3e50;
+  color: var(--color-cloud-white);
   margin-bottom: 5px;
 }
 
 .company-name {
   font-size: 1rem;
-  color: #666;
+  color: #c7c7cc;
   font-weight: 500;
 }
 
 .experience-description {
   font-size: 1rem;
   line-height: 1.6;
-  color: #555;
+  color: #f5f5f7;
   margin-bottom: 20px;
 }
 
@@ -356,10 +357,10 @@ onUnmounted(() => {
 }
 
 .achievement-card {
-  background: white;
-  border-radius: 12px;
+  background: var(--color-space-gray);
+  border-radius: var(--radius-cards);
   padding: 25px;
-  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.05);
+  border: 1px solid #333336;
   transition: all 0.3s ease;
 }
 

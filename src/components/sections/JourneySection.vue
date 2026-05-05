@@ -4,7 +4,7 @@
       <h2 class="section-title">{{ t('journey.title') }}</h2>
       
       <!-- 横向时间轴 -->
-      <div class="timeline-wrapper">
+      <div class="timeline-wrapper" ref="timelineWrapper">
         <a-timeline 
           :direction="timelineDirection" 
           :mode="timelineMode" 
@@ -45,6 +45,7 @@ const isMobile = ref(false)
 const timelineMode = ref('alternate') // alternate: 上下交错布局
 const timelineDirection = ref('horizontal') // horizontal: 水平方向
 const timelineLabelPosition = ref('same') // same: 标签与内容同一侧
+const timelineWrapper = ref(null)
 
 // 检测屏幕尺寸
 const checkScreenSize = () => {
@@ -123,50 +124,53 @@ const getIconComponent = (iconName) => {
 <style scoped>
 .journey-section {
   padding: 80px 20px;
-  background: linear-gradient(180deg, #e8eaf0 0%, #f0f2f5 100%);
+  background: transparent;
 }
 
 .container {
-  max-width: 1200px;
-  margin: 0 auto;
+  max-width: none;
+  width: 100%;
+  margin: 0;
+  padding: 0 20px;
 }
 
 .section-title {
   text-align: center;
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: #2c3e50;
-  margin-bottom: 40px;
+  font-size: var(--text-heading);
   font-weight: 600;
+  color: var(--color-cloud-white);
+  margin-top: 8px;
+  margin-bottom: 56px;
+  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-heading);
 }
 
 .section-subtitle {
   text-align: center;
   font-size: 1.1rem;
-  color: #666;
+  color: #86868b;
   margin-bottom: 0;
 }
 
 /* Timeline 包装器 */
 .timeline-wrapper {
-  margin-top: 100px;
-  padding: 20vh 0;
-  overflow-x: visible;
-  overflow-y: visible;
+  margin-top: 80px;
+  padding: 48px 0 24px;
+  overflow: visible;
   width: 100%;
 }
 
 /* 水平交替布局时间轴样式 */
 .timeline-wrapper :deep(.arco-timeline) {
   width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
+  margin: 0;
+  padding: 0 8px;
 }
 
 .timeline-wrapper :deep(.arco-timeline-item) {
   flex: 1;
-  min-width: 100px;
-  max-width: 300px;
+  min-width: 180px;
+  max-width: none;
 }
 
 /* 标签和内容的布局 */
@@ -277,12 +281,12 @@ const getIconComponent = (iconName) => {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  background: #fff;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background: var(--color-space-gray);
+  border: 1px solid #333336;
+  padding: 18px;
+  border-radius: 18px;
   width: 100%;
-  max-width: 280px;
+  max-width: 220px;
   margin: 0 auto;
 }
 
@@ -322,13 +326,13 @@ const getIconComponent = (iconName) => {
 .timeline-text .timeline-title {
   font-size: 1rem;
   font-weight: 600;
-  color: #2c3e50;
+  color: var(--color-cloud-white);
   margin-bottom: 4px;
 }
 
 .timeline-text .timeline-description {
   font-size: 0.85rem;
-  color: #555;
+  color: #c7c7cc;
   line-height: 1.5;
   margin-bottom: 8px;
 }
@@ -343,21 +347,21 @@ const getIconComponent = (iconName) => {
 
 /* 状态样式 */
 .status-completed {
-  background: #f6ffed;
-  color: #52c41a;
-  border: 1px solid #b7eb8f;
+  background: rgba(41, 151, 255, 0.14);
+  color: #8ecbff;
+  border: 1px solid rgba(41, 151, 255, 0.35);
 }
 
 .status-in-progress {
-  background: #fffbe6;
-  color: #faad14;
-  border: 1px solid #ffe58f;
+  background: rgba(134, 104, 255, 0.12);
+  color: #b6a3ff;
+  border: 1px solid rgba(134, 104, 255, 0.35);
 }
 
 .status-not-started {
-  background: #fff2f0;
-  color: #ff4d4f;
-  border: 1px solid #ffccc7;
+  background: rgba(134, 134, 139, 0.14);
+  color: #c7c7cc;
+  border: 1px solid rgba(134, 134, 139, 0.35);
 }
 
 /* 移动端响应式设计 - 竖向时间轴 */
