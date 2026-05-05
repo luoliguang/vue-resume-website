@@ -2,487 +2,338 @@
   <section id="journey" class="journey-section">
     <div class="container">
       <h2 class="section-title">{{ t('journey.title') }}</h2>
-      
-      <!-- 横向时间轴 -->
-      <div class="timeline-wrapper" ref="timelineWrapper">
-        <a-timeline 
-          :direction="timelineDirection" 
-          :mode="timelineMode" 
-          :labelPosition="timelineLabelPosition"
-        >
-          <a-timeline-item 
-            v-for="milestone in journeyMilestones" 
+
+      <!-- Desktop horizontal timeline -->
+      <div class="timeline-horizontal">
+        <div class="h-track">
+          <!-- Background line sits behind everything -->
+          <div class="h-line"></div>
+
+          <div
+            v-for="(milestone, index) in journeyMilestones"
             :key="milestone.id"
-            :label="milestone.year"
+            class="h-node"
           >
-            <div class="timeline-item-content">
-              <div :class="['timeline-icon', getStatusClass(milestone.status)]">
-                <component :is="getIconComponent(milestone.icon)" />
-              </div>
-              <div class="timeline-text">
-                <div class="timeline-title">{{ milestone.title[isChinese ? 'zh' : 'en'] }}</div>
-                <div class="timeline-description">{{ milestone.description[isChinese ? 'zh' : 'en'] }}</div>
-                <div :class="['timeline-status', getStatusClass(milestone.status)]">
-                  {{ getStatusText(milestone.status) }}
+            <!-- Top slot: filled for even indices -->
+            <div class="h-slot h-slot--top">
+              <div v-if="index % 2 === 0" class="h-card">
+                <div :class="['h-icon', getStatusClass(milestone.status)]">
+                  <component :is="getIconComponent(milestone.icon)" :size="16" />
                 </div>
+                <div class="h-year">{{ milestone.year }}</div>
+                <div class="h-title">{{ milestone.title[isChinese ? 'zh' : 'en'] }}</div>
+                <div class="h-desc">{{ milestone.description[isChinese ? 'zh' : 'en'] }}</div>
+                <span :class="['h-badge', getStatusClass(milestone.status)]">{{ getStatusText(milestone.status) }}</span>
               </div>
             </div>
-          </a-timeline-item>
-        </a-timeline>
+
+            <!-- Dot on the line -->
+            <div :class="['h-dot', getStatusClass(milestone.status)]"></div>
+
+            <!-- Bottom slot: filled for odd indices -->
+            <div class="h-slot h-slot--bottom">
+              <div v-if="index % 2 !== 0" class="h-card">
+                <div :class="['h-icon', getStatusClass(milestone.status)]">
+                  <component :is="getIconComponent(milestone.icon)" :size="16" />
+                </div>
+                <div class="h-year">{{ milestone.year }}</div>
+                <div class="h-title">{{ milestone.title[isChinese ? 'zh' : 'en'] }}</div>
+                <div class="h-desc">{{ milestone.description[isChinese ? 'zh' : 'en'] }}</div>
+                <span :class="['h-badge', getStatusClass(milestone.status)]">{{ getStatusText(milestone.status) }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile vertical timeline -->
+      <div class="timeline-vertical">
+        <div
+          v-for="milestone in journeyMilestones"
+          :key="milestone.id"
+          class="v-item"
+        >
+          <div :class="['v-dot', getStatusClass(milestone.status)]"></div>
+          <div class="v-card">
+            <div class="v-header">
+              <div :class="['v-icon', getStatusClass(milestone.status)]">
+                <component :is="getIconComponent(milestone.icon)" :size="15" />
+              </div>
+              <span class="v-year">{{ milestone.year }}</span>
+            </div>
+            <div class="v-title">{{ milestone.title[isChinese ? 'zh' : 'en'] }}</div>
+            <div class="v-desc">{{ milestone.description[isChinese ? 'zh' : 'en'] }}</div>
+            <span :class="['v-badge', getStatusClass(milestone.status)]">{{ getStatusText(milestone.status) }}</span>
+          </div>
+        </div>
       </div>
     </div>
   </section>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { journeyMilestones } from '../../data/journey.js'
 import { t, isChinese } from '../../composables/useI18n.js'
 import { GraduationCap, Briefcase, Code, Rocket, Contact } from 'lucide-vue-next'
 
-// 响应式Timeline配置
-const isMobile = ref(false)
-const timelineMode = ref('alternate') // alternate: 上下交错布局
-const timelineDirection = ref('horizontal') // horizontal: 水平方向
-const timelineLabelPosition = ref('same') // same: 标签与内容同一侧
-const timelineWrapper = ref(null)
-
-// 检测屏幕尺寸
-const checkScreenSize = () => {
-  isMobile.value = window.innerWidth <= 768
-  if (isMobile.value) {
-    timelineMode.value = 'left'
-    timelineDirection.value = 'vertical'
-    timelineLabelPosition.value = 'same'
-  } else {
-    timelineMode.value = 'alternate' // 保持交替模式
-    timelineDirection.value = 'horizontal' // 水平方向
-    timelineLabelPosition.value = 'same'
-  }
-}
-
-onMounted(() => {
-  checkScreenSize()
-  window.addEventListener('resize', checkScreenSize)
-})
-
-onUnmounted(() => {
-  window.removeEventListener('resize', checkScreenSize)
-})
-
 const getStatusClass = (status) => {
-  switch (status) {
-    case 'completed':
-      return 'status-completed'
-    case 'in-progress':
-      return 'status-in-progress'
-    case 'not-started':
-      return 'status-not-started'
-    default:
-      return 'status-completed'
-  }
+  return { completed: 'status-completed', 'in-progress': 'status-in-progress', 'not-started': 'status-not-started' }[status] ?? 'status-completed'
 }
 
 const getStatusText = (status) => {
-  if (isChinese.value) {
-    switch (status) {
-      case 'completed':
-        return '已完成'
-      case 'in-progress':
-        return '进行中'
-      case 'not-started':
-        return '未开始'
-      default:
-        return '已完成'
-    }
-  } else {
-    switch (status) {
-      case 'completed':
-        return 'Completed'
-      case 'in-progress':
-        return 'In Progress'
-      case 'not-started':
-        return 'Not Started'
-      default:
-        return 'Completed'
-    }
-  }
+  const map = isChinese.value
+    ? { completed: '已完成', 'in-progress': '进行中', 'not-started': '未开始' }
+    : { completed: 'Completed', 'in-progress': 'In Progress', 'not-started': 'Not Started' }
+  return map[status] ?? (isChinese.value ? '已完成' : 'Completed')
 }
 
 const getIconComponent = (iconName) => {
-  const iconMap = {
-    graduation: GraduationCap,
-    briefcase: Briefcase,
-    code: Code,
-    rocket: Rocket,
-    contact: Contact
-  }
-  return iconMap[iconName] || Code
+  return { graduation: GraduationCap, briefcase: Briefcase, code: Code, rocket: Rocket, contact: Contact }[iconName] ?? Code
 }
 </script>
 
 <style scoped>
+/* ── Status tokens ─────────────────────────── */
+.status-completed   { --sc: #34c759; --sb: rgba(52,199,89,.12); --sbo: rgba(52,199,89,.3); }
+.status-in-progress { --sc: #ff9f0a; --sb: rgba(255,159,10,.12); --sbo: rgba(255,159,10,.3); }
+.status-not-started { --sc: #86868b; --sb: rgba(134,134,139,.12); --sbo: rgba(134,134,139,.3); }
+
+/* ── Section ───────────────────────────────── */
 .journey-section {
   padding: 80px 20px;
-  background: transparent;
 }
 
 .container {
-  max-width: none;
-  width: 100%;
-  margin: 0;
-  padding: 0 20px;
+  max-width: var(--page-max-width);
+  margin: 0 auto;
 }
 
 .section-title {
   text-align: center;
   font-size: var(--text-heading);
   font-weight: 600;
-  color: var(--color-cloud-white);
-  margin-top: 8px;
-  margin-bottom: 56px;
+  color: var(--text-on-dark-strong);
+  margin-bottom: 48px;
   line-height: var(--leading-heading);
   letter-spacing: var(--tracking-heading);
 }
 
-.section-subtitle {
-  text-align: center;
-  font-size: 1.1rem;
-  color: #86868b;
-  margin-bottom: 0;
+/* ══════════════════════════════════════════════
+   HORIZONTAL TIMELINE (desktop ≥ 769px)
+══════════════════════════════════════════════ */
+.timeline-horizontal { display: block; }
+.timeline-vertical   { display: none; }
+
+.h-track {
+  position: relative;
+  display: flex;
+  align-items: stretch;      /* all nodes same height */
+  gap: 0;
+  min-height: 420px;
 }
 
-/* Timeline 包装器 */
-.timeline-wrapper {
-  margin-top: 80px;
-  padding: 48px 0 24px;
-  overflow: visible;
-  width: 100%;
+/* Central horizontal line */
+.h-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 2px;
+  transform: translateY(-50%);
+  background: var(--surface-border-dark-strong);
+  pointer-events: none;
 }
 
-/* 水平交替布局时间轴样式 */
-.timeline-wrapper :deep(.arco-timeline) {
-  width: 100%;
-  margin: 0;
-  padding: 0 8px;
-}
-
-.timeline-wrapper :deep(.arco-timeline-item) {
+/* Each milestone column */
+.h-node {
   flex: 1;
-  min-width: 180px;
-  max-width: none;
-}
-
-/* 标签和内容的布局 */
-.timeline-wrapper :deep(.arco-timeline-item-label) {
-  text-align: center;
-  padding: 0 15px;
-}
-
-.timeline-wrapper :deep(.arco-timeline-item-content) {
-  padding: 0 15px;
-}
-
-/* Timeline 标签样式 */
-.timeline-label {
-  text-align: center;
-  padding: 16px;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  margin-bottom: 15px;
-  width: 100%;
-  max-width: 250px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.timeline-year {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #3498db;
-  margin-bottom: 6px;
-}
-
-.timeline-title {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #2c3e50;
-  margin-bottom: 3px;
-}
-
-.timeline-subtitle {
-  font-size: 0.85rem;
-  color: #666;
-  font-style: italic;
-}
-
-/* Timeline 内容样式 */
-.timeline-content {
-  background: white;
-  border-radius: 8px;
-  padding: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  margin-top: 15px;
-  width: 100%;
-  max-width: 250px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.timeline-description {
-  font-size: 0.95rem;
-  line-height: 1.6;
-  color: #555;
-  margin-bottom: 15px;
-}
-
-.timeline-status {
-  display: inline-block;
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 0.85rem;
-  font-weight: 500;
-}
-
-/* Timeline 节点样式 */
-.timeline-dot {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  display: flex;
+  display: grid;
+  grid-template-rows: 1fr auto 1fr;
+  /* top-slot | dot | bottom-slot */
   align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  border: 2px solid white;
+  justify-items: center;
+  position: relative;
 }
 
-.timeline-dot.status-completed {
-  background: #52c41a;
-  border: 3px solid #52c41a;
-}
-
-.timeline-dot.status-in-progress {
-  background: #faad14;
-  border: 3px solid #faad14;
-}
-
-.timeline-dot.status-not-started {
-  background: #ff4d4f;
-  border: 3px solid #ff4d4f;
-}
-
-.dot-icon {
-  color: white;
-}
-
-/* 新的Timeline项目内容样式 - 水平交替布局 */
-.timeline-item-content {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  background: var(--color-space-gray);
-  border: 1px solid #333336;
-  padding: 18px;
-  border-radius: 18px;
+/* Top / bottom card slots – equal height so line stays centred */
+.h-slot {
   width: 100%;
-  max-width: 220px;
-  margin: 0 auto;
+  display: flex;
+  padding: 0 6px;
 }
 
-.timeline-icon {
-  width: 48px;
-  height: 48px;
+.h-slot--top  { align-items: flex-end;   padding-bottom: 20px; }
+.h-slot--bottom { align-items: flex-start; padding-top: 20px; }
+
+/* Card */
+.h-card {
+  background: var(--surface-card-dark);
+  border: 1px solid var(--surface-border-dark-strong);
+  border-radius: var(--radius-standard);
+  padding: 14px;
+  width: 100%;
+  transition: border-color .2s ease;
+}
+
+.h-card:hover {
+  border-color: var(--text-on-dark-subtle);
+}
+
+/* Dot */
+.h-dot {
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 12px;
+  background: var(--sc);
+  border: 2px solid var(--surface-page, #000);
+  box-shadow: 0 0 0 3px var(--sc);
+  position: relative;
+  z-index: 1;
   flex-shrink: 0;
-  align-self: flex-start;
 }
 
-.timeline-icon svg {
-  color: #fff;
+/* Card internals */
+.h-icon, .v-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--sb);
+  color: var(--sc);
+  border: 1px solid var(--sbo);
+  margin-bottom: 8px;
+  flex-shrink: 0;
 }
 
-.timeline-icon.status-completed {
-  background: #52c41a;
-}
-
-.timeline-icon.status-in-progress {
-  background: #faad14;
-}
-
-.timeline-icon.status-not-started {
-  background: #ff4d4f;
-}
-
-.timeline-text {
-  flex: 1;
-  width: 100%;
-}
-
-.timeline-text .timeline-title {
-  font-size: 1rem;
+.h-year, .v-year {
+  font-size: var(--text-caption);
   font-weight: 600;
-  color: var(--color-cloud-white);
+  color: var(--text-on-dark-subtle);
+  letter-spacing: var(--tracking-caption);
   margin-bottom: 4px;
 }
 
-.timeline-text .timeline-description {
-  font-size: 0.85rem;
-  color: #c7c7cc;
+.h-title, .v-title {
+  font-size: var(--text-body-sm);
+  font-weight: 600;
+  color: var(--text-on-dark-strong);
+  letter-spacing: var(--tracking-body-sm);
+  line-height: 1.35;
+  margin-bottom: 6px;
+}
+
+/* Clamp title/desc in horizontal cards only to keep height predictable */
+.h-title {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.h-desc, .v-desc {
+  font-size: var(--text-caption);
+  color: var(--text-on-dark-muted);
   line-height: 1.5;
+  letter-spacing: var(--tracking-caption);
   margin-bottom: 8px;
 }
 
-.timeline-text .timeline-status {
+.h-desc {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.h-badge, .v-badge {
   display: inline-block;
   padding: 2px 8px;
-  border-radius: 12px;
-  font-size: 0.75rem;
+  border-radius: 999px;
+  font-size: 11px;
   font-weight: 500;
+  background: var(--sb);
+  color: var(--sc);
+  border: 1px solid var(--sbo);
 }
 
-/* 状态样式 */
-.status-completed {
-  background: rgba(41, 151, 255, 0.14);
-  color: #8ecbff;
-  border: 1px solid rgba(41, 151, 255, 0.35);
+/* Tablet: make cards narrower but still horizontal */
+@media (max-width: 900px) {
+  .h-track { min-height: 380px; }
+  .h-card  { padding: 10px; }
+  .h-slot--top    { padding-bottom: 16px; }
+  .h-slot--bottom { padding-top: 16px; }
 }
 
-.status-in-progress {
-  background: rgba(134, 104, 255, 0.12);
-  color: #b6a3ff;
-  border: 1px solid rgba(134, 104, 255, 0.35);
-}
-
-.status-not-started {
-  background: rgba(134, 134, 139, 0.14);
-  color: #c7c7cc;
-  border: 1px solid rgba(134, 134, 139, 0.35);
-}
-
-/* 移动端响应式设计 - 竖向时间轴 */
+/* ══════════════════════════════════════════════
+   VERTICAL TIMELINE (mobile ≤ 768px)
+══════════════════════════════════════════════ */
 @media (max-width: 768px) {
-  .journey-section {
-    padding: 50px 16px;
+  .journey-section { padding: 48px 16px; }
+  .section-title   { margin-bottom: 36px; }
+
+  .timeline-horizontal { display: none; }
+  .timeline-vertical   {
+    display: block;
+    position: relative;
+    padding-left: 28px;
   }
-  
-  .section-title {
-    font-size: 1.75rem;
-    margin-bottom: 10px;
+
+  /* Vertical guide line */
+  .timeline-vertical::before {
+    content: '';
+    position: absolute;
+    left: 6px;
+    top: 6px;
+    bottom: 6px;
+    width: 2px;
+    background: var(--surface-border-dark-strong);
   }
-  
-  .section-subtitle {
-    font-size: 0.95rem;
-    margin-bottom: 50px;
+
+  .v-item {
+    position: relative;
+    margin-bottom: 16px;
   }
-  
-  .timeline-wrapper {
-    padding: 20px 0;
+  .v-item:last-child { margin-bottom: 0; }
+
+  /* Dot */
+  .v-dot {
+    position: absolute;
+    left: -25px;
+    top: 16px;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: var(--sc);
+    border: 2px solid var(--surface-page, #000);
+    box-shadow: 0 0 0 2px var(--sc);
+    z-index: 1;
   }
-  
-  /* 移动端改为左对齐时间轴 */
-  .timeline-wrapper :deep(.arco-timeline) {
-    width: 100%;
-    max-width: 100%;
+
+  .v-card {
+    background: var(--surface-card-dark);
+    border: 1px solid var(--surface-border-dark-strong);
+    border-radius: var(--radius-standard);
+    padding: 14px 16px;
   }
-  
-  .timeline-wrapper :deep(.arco-timeline-item) {
-    width: 100%;
-    margin-bottom: 20px;
+
+  .v-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
   }
-  
-  .timeline-wrapper :deep(.arco-timeline-item-label) {
-    width: 100px;
-    text-align: center;
-    padding: 0 10px;
-  }
-  
-  .timeline-wrapper :deep(.arco-timeline-item-content) {
-    flex: 1;
-    padding: 0 10px;
-  }
-  
-  /* 移动端Timeline项目内容样式 */
-  .timeline-item-content {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 16px;
-    max-width: 100%;
-  }
-  
-  .timeline-icon {
-    margin-right: 0;
-    margin-bottom: 12px;
-    align-self: flex-start;
-  }
-  
-  .timeline-text {
-    width: 100%;
-  }
-  
-  .timeline-title {
-    font-size: 1rem;
-  }
-  
-  .timeline-description {
-    font-size: 0.9rem;
-  }
+
+  .v-icon { margin-bottom: 0; width: 26px; height: 26px; }
+
+  .v-year { margin-bottom: 0; }
 }
 
-/* 小屏幕手机 - 竖向时间轴 */
 @media (max-width: 480px) {
-  .journey-section {
-    padding: 40px 12px;
-  }
-  
-  .section-title {
-    font-size: 1.5rem;
-    margin-bottom: 8px;
-  }
-  
-  .section-subtitle {
-    font-size: 0.9rem;
-    margin-bottom: 40px;
-  }
-  
-  .timeline-wrapper {
-    padding: 15px 0;
-  }
-  
-  /* 小屏幕竖向时间轴 */
-  .timeline-wrapper :deep(.arco-timeline) {
-    width: 100%;
-    max-width: 100%;
-    padding: 0;
-  }
-  
-  .timeline-wrapper :deep(.arco-timeline-item) {
-    width: 100%;
-    margin-bottom: 25px;
-    padding-left: 0;
-  }
-  
-  .timeline-item-content {
-    padding: 14px;
-    max-width: 100%;
-    margin-left: 0;
-    margin-right: 0;
-  }
-  
-  .timeline-icon {
-    margin-bottom: 10px;
-  }
-  
-  .timeline-title {
-    font-size: 0.95rem;
-  }
-  
-  .timeline-description {
-    font-size: 0.85rem;
-  }
+  .journey-section { padding: 40px 12px; }
+  .timeline-vertical { padding-left: 24px; }
+  .v-dot { left: -21px; }
+  .v-card { padding: 12px 14px; }
 }
 </style>

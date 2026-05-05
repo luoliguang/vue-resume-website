@@ -11,7 +11,9 @@
       "Bash(awk '{print $5, $9}')",
       "Bash(cat)",
       "Bash(python /tmp/tree_report.py)",
-      "Bash(node -e \"console.log\\('Project OK'\\)\")"
+      "Bash(node -e \"console.log\\('Project OK'\\)\")",
+      "Bash(npx vite *)",
+      "mcp__Claude_Preview__preview_start"
     ]
   }
 }
