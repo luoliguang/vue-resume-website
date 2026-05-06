@@ -101,7 +101,7 @@ const translations = {
       github: 'GitHub'
     },
     footer: {
-      quote: '一线跑得够久，才知道真正的问题在哪。',
+      quote: '想太多便会丢失开始出发的勇气。',
       copyright: '© 2025 罗洋洋. All Rights Reserved.'
     }
   },
@@ -204,7 +204,7 @@ const translations = {
       github: 'GitHub'
     },
     footer: {
-      quote: 'The longer you work the frontline, the clearer you see where the real problems are.',
+      quote: 'Thinking too much will lose the courage to start.',
       copyright: '© 2025 Luo Yangyang. All Rights Reserved.'
     }
   }

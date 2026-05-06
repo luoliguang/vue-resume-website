@@ -177,7 +177,7 @@ onUnmounted(() => {
 .section-title {
   text-align: left;
   font-size: var(--text-heading);
-  color: var(--color-cloud-white);
+  color: var(--text-on-dark-strong);
   margin-bottom: 44px;
   font-weight: 600;
   line-height: var(--leading-heading);
@@ -203,7 +203,7 @@ onUnmounted(() => {
   top: 0;
   bottom: 0;
   width: 2px;
-  background: #333336;
+  background: var(--surface-border-dark-strong);
 }
 
 .timeline-item {
@@ -221,7 +221,7 @@ onUnmounted(() => {
 }
 
 .timeline-item.active .timeline-period {
-  color: var(--color-cloud-white);
+  color: var(--text-on-dark-strong);
   font-weight: 600;
 }
 
@@ -233,8 +233,8 @@ onUnmounted(() => {
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background: var(--color-space-gray);
-  border: 2px solid #424245;
+  background: var(--surface-card-dark);
+  border: 2px solid var(--surface-border-dark-strong);
   transition: all 0.3s ease;
   z-index: 1;
 }
@@ -242,7 +242,7 @@ onUnmounted(() => {
 .timeline-period {
   margin-left: 30px;
   font-size: var(--text-body-sm);
-  color: #86868b;
+  color: var(--text-on-dark-subtle);
   transition: all 0.3s ease;
 }
 
@@ -252,10 +252,10 @@ onUnmounted(() => {
 }
 
 .experience-card {
-  background: var(--color-space-gray);
+  background: var(--surface-card-dark);
   border-radius: var(--radius-cards);
   padding: 30px;
-  border: 1px solid #333336;
+  border: 1px solid var(--surface-border-dark-strong);
   transition: all 0.3s ease;
   opacity: 0;
   transform: translateY(20px);
@@ -276,12 +276,12 @@ onUnmounted(() => {
 .experience-icon {
   width: 50px;
   height: 50px;
-  background: #f8f9fa;
+  background: var(--surface-card-darker);
   border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #3498db;
+  color: var(--color-interactive-blue);
   flex-shrink: 0;
 }
 
@@ -290,7 +290,7 @@ onUnmounted(() => {
 }
 
 .date-range {
-  color: #3498db;
+  color: var(--color-interactive-blue);
   font-size: 0.9rem;
   font-weight: 500;
   margin-bottom: 8px;
@@ -299,20 +299,20 @@ onUnmounted(() => {
 .job-title {
   font-size: 1.4rem;
   font-weight: 600;
-  color: var(--color-cloud-white);
+  color: var(--text-on-dark-strong);
   margin-bottom: 5px;
 }
 
 .company-name {
   font-size: 1rem;
-  color: #c7c7cc;
+  color: var(--text-on-dark-muted);
   font-weight: 500;
 }
 
 .experience-description {
   font-size: 1rem;
   line-height: 1.6;
-  color: #f5f5f7;
+  color: var(--text-on-dark);
   margin-bottom: 20px;
 }
 
@@ -327,14 +327,14 @@ onUnmounted(() => {
   margin-bottom: 10px;
   font-size: 0.95rem;
   line-height: 1.5;
-  color: #555;
+  color: var(--text-on-dark-muted);
 }
 
 .responsibilities li::before {
   content: "•";
   position: absolute;
   left: 0;
-  color: #3498db;
+  color: var(--color-interactive-blue);
   font-weight: bold;
 }
 
@@ -345,7 +345,7 @@ onUnmounted(() => {
 
 .achievements-title {
   font-size: 1.8rem;
-  color: #2c3e50;
+  color: var(--text-on-dark-strong);
   margin-bottom: 30px;
   font-weight: 600;
 }
@@ -357,10 +357,10 @@ onUnmounted(() => {
 }
 
 .achievement-card {
-  background: var(--color-space-gray);
+  background: var(--surface-card-dark);
   border-radius: var(--radius-cards);
   padding: 25px;
-  border: 1px solid #333336;
+  border: 1px solid var(--surface-border-dark-strong);
   transition: all 0.3s ease;
 }
 
@@ -372,26 +372,26 @@ onUnmounted(() => {
 .achievement-icon {
   width: 40px;
   height: 40px;
-  background: #f0f8ff;
+  background: var(--surface-card-darker);
   border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #3498db;
+  color: var(--color-interactive-blue);
   margin-bottom: 15px;
 }
 
 .achievement-title {
   font-size: 1.1rem;
   font-weight: 600;
-  color: #2c3e50;
+  color: var(--text-on-dark-strong);
   margin-bottom: 10px;
 }
 
 .achievement-description {
   font-size: 0.9rem;
   line-height: 1.5;
-  color: #666;
+  color: var(--text-on-dark-muted);
 }
 
 /* 平板端 */
