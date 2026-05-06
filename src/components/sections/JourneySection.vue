@@ -224,27 +224,12 @@ const getIconComponent = (iconName) => {
   margin-bottom: 6px;
 }
 
-/* Clamp title/desc in horizontal cards only to keep height predictable */
-.h-title {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
 .h-desc, .v-desc {
   font-size: var(--text-caption);
   color: var(--text-on-dark-muted);
   line-height: 1.5;
   letter-spacing: var(--tracking-caption);
   margin-bottom: 8px;
-}
-
-.h-desc {
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
 }
 
 .h-badge, .v-badge {

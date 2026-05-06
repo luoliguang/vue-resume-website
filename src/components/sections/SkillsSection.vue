@@ -27,9 +27,8 @@
                 <line x1="8" y1="21" x2="16" y2="21"/>
                 <line x1="12" y1="17" x2="12" y2="21"/>
               </svg>
-              <svg v-else-if="category.id === 'design'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="3"/>
-                <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1"/>
+              <svg v-else-if="category.id === 'productivity'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
               </svg>
             </div>
             <span class="category-name">{{ category.name[isChinese ? 'zh' : 'en'] }}</span>
@@ -291,20 +290,27 @@ const setActiveCategory = (categoryId) => {
   }
 
   .skills-sidebar {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 8px;
-    padding: 16px;
+    padding: 12px;
     border-radius: var(--radius-standard);
   }
 
   .category-item {
-    flex: 1;
-    min-width: 110px;
+    flex-direction: column;
+    align-items: center;
     justify-content: center;
+    gap: 6px;
     margin-bottom: 0;
-    padding: 10px 14px;
+    padding: 12px 8px;
     border-radius: var(--radius-standard);
+    text-align: center;
+  }
+
+  .category-name {
+    font-size: 12px;
+    line-height: 1.3;
   }
 
   .skills-details {
