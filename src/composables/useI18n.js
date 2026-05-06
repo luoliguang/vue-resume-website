@@ -3,7 +3,6 @@ import { ref, computed } from 'vue'
 // 语言数据
 const translations = {
   zh: {
-    // 导航栏
     nav: {
       home: '首页',
       about: '关于我',
@@ -13,47 +12,43 @@ const translations = {
       journey: '我的历程',
       contact: '联系方式'
     },
-    // 首页
     hero: {
       title: '罗洋洋',
       nickname: 'giluoo',
-      subtitle: '服装供应链流程优化 | 服装跟单',
-      description: '我在服装供应链一线从事跟单工作超过 2 年，熟悉客户沟通、面料印花与生产推进全流程。同时持续自学前端与 Node.js，并将技术能力用于优化日常业务协同与执行效率。',
+      subtitle: '服装跟单 · 供应链数字化',
+      description: '在服装供应链一线做了 2 年跟单，服务 200+ 客户，将订单返工率降低 15%。同时自学前端与 Node.js，为自己的工作搭建了 AI 知识库、素材管理平台和自动化脚本——用技术解决一线真实问题。',
       cta: '了解我',
       cta2: '查看项目',
       cta3: '30秒认识我',
       quickIntro: {
-        text: '我的核心优势是把业务理解与技术实现结合起来：先定位流程中的低效环节，再用可落地的工具方案持续改进。',
-        label1: '我正在做',
-        value1: '数码印花跟单 / 企业内部效率工具开发',
+        text: '我的核心竞争力：一线跟单经验让我清楚问题在哪，技术能力让我能直接动手解决。',
+        label1: '正在做',
+        value1: '数码印花跟单 · 订单流程自动化工具',
         label2: '我擅长',
-        value2: '将模糊需求结构化，并推动跨角色协同落地',
-        label3: '我希望加入',
-        value3: '重视业务理解与技术落地并重的团队或合作项目'
+        value2: '从混乱流程中找到关键瓶颈，并用工具把它跑通',
+        label3: '适合我的团队',
+        value3: '注重执行效率、愿意用数字化手段解决传统问题的公司'
       }
     },
-    // 关于我
     about: {
       title: '关于我',
-      description: '我在纺织供应链里做跟单，发现很多重复低效的工作可以用工具解决。这驱使我开始学前端和 Node.js，并把它直接用在自己每天的工作里。',
+      description: '拥有 2 年服装跟单经验，服务 200+ 客户，将订单返工率降低 15%。在一线工作中发现了大量可以用工具解决的低效环节，于是自学前端与 Node.js，为团队搭建了 AI 问答知识库、实拍素材管理平台和订单自动化脚本。现在，我既能独立负责客户从打样到出货的完整流程，也能持续用技术手段优化流程本身。',
       skills: '核心技能',
       skillTags: ['服装跟单', '客户沟通', '生产协调', 'Vue.js', 'Node.js', 'WPS脚本']
     },
-    // 工作经历
     experience: {
       title: '工作经历',
-      achievements: '主要成就',
+      achievements: '核心成就',
       achievementItems: [
-        '成功管理超过50个服装订单项目',
-        '客户满意度保持在95%以上',
-        '优化生产流程，提升效率20%',
-        '建立完善的客户沟通体系'
+        '累计服务 200+ 客户，多数形成长期复购合作关系',
+        '通过优化下单流程与校验规范，将订单返工率降低约 15%',
+        '独立开发 3 款内部工具，覆盖素材管理、AI 问答和订单自动化',
+        '协助团队将客户满意度持续维持在 90% 以上'
       ]
     },
-    // 项目展示
     projects: {
       title: '项目展示',
-      subtitle: '将复杂的工作问题转化为可量化的技术解决方案，探索传统行业与数字化的结合。',
+      subtitle: '将一线工作中发现的真实问题，转化为可落地的技术解决方案。',
       workProjects: '工作项目',
       personalProjects: '个人项目',
       allProjects: '全部项目',
@@ -63,59 +58,54 @@ const translations = {
         planning: '规划中'
       }
     },
-    // 技能专长
     skills: {
       title: '技能专长',
       categories: {
         apparel: '服装业务技能',
         communication: '客户沟通与管理',
         technical: '技术能力',
-        design: '设计理解与工具'
+        productivity: '效率工具与自动化'
       }
     },
-    // 我的历程
     journey: {
       title: '我的历程',
       milestones: [
         {
-          title: '初入服装行业',
-          description: '学习服装生产技术与客服跟单核心流程，为后续职业发展奠定基础。',
+          title: '加入服装行业实习',
+          description: '毕业后加入双月数码印花实习，学习数码印花生产工艺与客户跟单核心流程。',
           status: '已完成'
         },
         {
-          title: '成为服装跟单',
-          description: '正式成为服装跟单，全面掌握客户需求与国际出货流程，开始独立负责项目。',
+          title: '转正，正式成为跟单',
+          description: '通过转正考核，独立承接客户订单，全面负责从打样到出货的完整流程。',
           status: '已完成'
         },
         {
-          title: '数字化转型',
-          description: '系统学习 Vue 和 Node.js，成功独立开发并上线个人网站，探索技术与传统行业的结合。',
+          title: '用技术解决工作问题',
+          description: '自学前端与 Node.js，陆续开发 AI 知识库、素材管理平台和订单自动化脚本，直接用于日常工作。',
+          status: '已完成'
+        },
+        {
+          title: '持续成长',
+          description: '深化供应链数字化实践，探索更多将技术能力与服装行业经验结合的可能性。',
           status: '进行中'
-        },
-        {
-          title: '展望未来',
-          description: '规划与探索智能化工厂信息系统 (MES/ERP) 的构建，持续学习新技术。',
-          status: '未开始'
         }
       ]
     },
-    // 联系方式
     contact: {
       title: '联系方式',
-      subtitle: '期待与您合作',
+      subtitle: '欢迎发消息，通常 24 小时内回复',
       email: '邮箱',
       phone: '电话',
       location: '位置',
       github: 'GitHub'
     },
-    // 底部
     footer: {
-      quote: '时间不在于你拥有多少，而在于你怎样使用。',
-      copyright: '© 2025 Luo Liguang. All Rights Reserved.'
+      quote: '一线跑得够久，才知道真正的问题在哪。',
+      copyright: '© 2025 罗洋洋. All Rights Reserved.'
     }
   },
   en: {
-    // Navigation
     nav: {
       home: 'Home',
       about: 'About',
@@ -125,48 +115,43 @@ const translations = {
       journey: 'Journey',
       contact: 'Contact'
     },
-    // Hero Section
     hero: {
       title: 'Luo Yangyang',
       nickname: 'giluoo',
-      subtitle: 'Apparel Supply Chain Process Optimizer · Frontend Practitioner',
-      description: 'I have 2+ years of frontline experience in apparel supply-chain merchandising, covering client communication, fabric printing coordination, and production follow-through. In parallel, I continuously study frontend and Node.js, and apply those skills to improve real operational workflows and team efficiency.',
+      subtitle: 'Garment Merchandiser · Supply Chain Digitalization',
+      description: '2+ years on the frontline of apparel supply-chain merchandising — 200+ clients served, rework rate cut by 15%. I also taught myself frontend and Node.js to build practical tools: an AI knowledge base, a material photo platform, and automation scripts that solve the real bottlenecks I face every day.',
       cta: 'About Me',
       cta2: 'View Projects',
       cta3: 'Know Me in 30 Seconds',
       quickIntro: {
-        text: 'My core value is bridging business context and technical execution: identify workflow bottlenecks first, then deliver practical tools that create measurable improvements.',
-        label1: 'Current Focus',
-        value1: 'Digital printing merchandising / Internal productivity tools',
-        label2: 'What I Do Well',
-        value2: 'Structuring ambiguous requirements and driving cross-functional delivery',
-        label3: 'Best Team Fit',
-        value3: 'Teams that value both business understanding and technical execution'
+        text: 'My edge: frontline merchandising experience tells me exactly where the problems are — and I can build the tools to fix them myself.',
+        label1: 'Currently',
+        value1: 'Digital printing merchandising · Order process automation',
+        label2: 'Best At',
+        value2: 'Pinpointing workflow bottlenecks and shipping tools that actually fix them',
+        label3: 'Ideal Team',
+        value3: 'Companies that value execution efficiency and want to modernize traditional operations'
       }
     },
-    // About Section
     about: {
       title: 'About Me',
-      description: 'Working in garment supply chain, I kept noticing repetitive, inefficient processes that could be solved with the right tools. That pushed me to learn frontend and Node.js — and apply them directly to my own daily work.',
+      description: '2 years of hands-on garment merchandising, serving 200+ clients and cutting order rework rates by 15%. I kept running into repetitive bottlenecks on the job — so I taught myself frontend and Node.js, then built an AI knowledge base, a material photo management platform, and order automation scripts for my own team. Today I can run the full order cycle independently while continuously improving the workflows behind it.',
       skills: 'Core Skills',
       skillTags: ['Garment Merchandising', 'Client Communication', 'Production Coordination', 'Vue.js', 'Node.js', 'WPS Scripting']
     },
-    // Experience Section
     experience: {
       title: 'Work Experience',
-      subtitle: 'Work Experience',
       achievements: 'Key Achievements',
       achievementItems: [
-        'Successfully managed over 50 garment order projects',
-        'Maintained customer satisfaction above 95%',
-        'Optimized production processes, improving efficiency by 20%',
-        'Established comprehensive customer communication system'
+        'Managed 200+ client accounts, most developing into long-term repeat relationships',
+        'Reduced order rework rate by ~15% through optimized ordering workflows and validation standards',
+        'Independently built 3 internal tools covering material management, AI Q&A, and order automation',
+        'Contributed to sustaining team customer satisfaction above 90% consistently'
       ]
     },
-    // Projects Section
     projects: {
-      title: 'Learning & Projects',
-      subtitle: 'Transforming complex work problems into quantifiable technical solutions',
+      title: 'Projects',
+      subtitle: 'Real problems found on the frontline, turned into practical technical solutions.',
       workProjects: 'Work Projects',
       personalProjects: 'Personal Projects',
       allProjects: 'All Projects',
@@ -176,71 +161,62 @@ const translations = {
         planning: 'Planning'
       }
     },
-    // Skills Section
     skills: {
       title: 'Skills & Expertise',
-      subtitle: 'Skills & Expertise',
       categories: {
         apparel: 'Apparel Business Skills',
         communication: 'Client Communication & Management',
         technical: 'Technical Capabilities',
-        design: 'Design Understanding & Tools'
+        productivity: 'Productivity & Automation'
       }
     },
-    // Journey Section
     journey: {
       title: 'My Journey',
-      subtitle: 'My Journey',
       milestones: [
         {
-          title: 'Entered Apparel Industry',
-          description: 'Learned garment production technology and core processes of customer service and merchandising, laying the foundation for subsequent career development.',
+          title: 'Joined Apparel Industry as Intern',
+          description: 'Joined Shuangyue Digital Printing as an intern after graduation, learning digital printing production and core merchandising workflows.',
           status: 'Completed'
         },
         {
-          title: 'Became Garment Merchandiser',
-          description: 'Officially became a garment merchandiser, fully mastering customer needs and international shipping processes, and began to independently manage projects.',
+          title: 'Promoted to Full Merchandiser',
+          description: 'Passed probation and began independently managing client orders, taking full ownership of the order cycle from sampling to shipment.',
           status: 'Completed'
         },
         {
-          title: 'Digital Transformation',
-          description: 'Systematically learned Vue and Node.js, successfully developed and launched a personal website, exploring the combination of technology and traditional industries.',
+          title: 'Built Tools to Fix Real Problems',
+          description: 'Taught myself frontend and Node.js, then shipped an AI knowledge base, a material management platform, and order automation scripts — all actively used in daily work.',
+          status: 'Completed'
+        },
+        {
+          title: 'Continuous Growth',
+          description: 'Deepening supply chain digitalization practices and exploring more ways to combine technical skills with apparel industry expertise.',
           status: 'In Progress'
-        },
-        {
-          title: 'Looking Forward',
-          description: 'Planning and exploring the construction of intelligent factory information systems (MES/ERP), continuously learning new technologies.',
-          status: 'Not Started'
         }
       ]
     },
-    // Contact Section
     contact: {
       title: 'Contact',
-      subtitle: 'Looking Forward to Working with You',
+      subtitle: 'Happy to connect — I usually reply within 24 hours',
       email: 'Email',
       phone: 'Phone',
       location: 'Location',
       github: 'GitHub'
     },
-    // Footer
     footer: {
-      quote: 'Where others see only business, I also look for the technical layer.',
-      copyright: '© 2025 Luoyangyang. All Rights Reserved.'
+      quote: 'The longer you work the frontline, the clearer you see where the real problems are.',
+      copyright: '© 2025 Luo Yangyang. All Rights Reserved.'
     }
   }
 }
 
-// 当前语言状态
 const currentLanguage = ref('zh')
 
-// 切换语言
 const toggleLanguage = () => {
   currentLanguage.value = currentLanguage.value === 'zh' ? 'en' : 'zh'
   localStorage.setItem('language', currentLanguage.value)
 }
 
-// 设置语言
 const setLanguage = (lang) => {
   if (translations[lang]) {
     currentLanguage.value = lang
@@ -248,19 +224,15 @@ const setLanguage = (lang) => {
   }
 }
 
-// 获取翻译
 const t = (key) => {
   const keys = key.split('.')
   let value = translations[currentLanguage.value]
-  
   for (const k of keys) {
     value = value?.[k]
   }
-  
   return value || key
 }
 
-// 初始化语言
 const initLanguage = () => {
   const savedLanguage = localStorage.getItem('language')
   if (savedLanguage && translations[savedLanguage]) {
@@ -268,7 +240,6 @@ const initLanguage = () => {
   }
 }
 
-// 计算属性
 const isChinese = computed(() => currentLanguage.value === 'zh')
 const isEnglish = computed(() => currentLanguage.value === 'en')
 

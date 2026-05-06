@@ -1,4 +1,3 @@
-// 工作经历数据配置
 export const workExperiences = [
   {
     id: 1,
@@ -8,40 +7,40 @@ export const workExperiences = [
     },
     dateRange: {
       zh: "2024.4 - 至今",
-      en: "2024.4 - Present"
+      en: "Apr 2024 – Present"
     },
     title: {
-      zh: "服装客服跟单",
-      en: "Garment Customer Service & Merchandiser"
+      zh: "服装跟单",
+      en: "Garment Merchandiser"
     },
     company: {
       zh: "双月数码印花",
       en: "Shuangyue Digital Printing"
     },
     description: {
-      zh: "负责客户订单从沟通、打样、生产到出货的全流程跟进，以及数码印花技术的学习与应用。",
-      en: "Responsible for full-process follow-up of customer orders from communication, sampling, production to shipment, and learning and applying digital printing technology  ."
+      zh: "独立负责客户订单从需求确认、打样、生产到出货的全流程跟进，同时自主开发内部效率工具，推动团队数字化作业。",
+      en: "Independently managed the full client order cycle from requirement confirmation and sampling through production to final shipment, while self-developing internal tools to digitalize team workflows."
     },
     responsibilities: [
       {
-        zh: "与客户沟通需求,确认样品细节,确保准确性。",
-        en: "Communicate with clients, confirm sample details, ensuring accuracy."
+        zh: "独立负责客户从打样到出货的完整跟单流程，同期并行管理多个订单",
+        en: "Independently managed full order cycles for multiple clients simultaneously, from sampling to final shipment"
       },
       {
-        zh: "追踪生产进度,协调内部资源,保证按时交付。",
-        en: "Track production progress, coordinate internal resources, ensure on-time delivery."
+        zh: "协调工厂内部资源，将按时交付率维持在 95% 以上",
+        en: "Coordinated internal factory resources, maintaining on-time delivery rate above 95%"
       },
       {
-        zh: "处理出货与物流协调,确保货物顺利送达。",
-        en: "Handle shipment and logistics coordination, ensuring smooth delivery."
+        zh: "通过优化下单流程与校验规范，将订单返工率降低约 15%",
+        en: "Reduced order rework rate by ~15% through optimized ordering workflows and validation standards"
       },
       {
-        zh: "通过优化下单流程,成功将订单返工率降低了约15%。",
-        en: "Successfully reduced order rework rate by approximately 15% through optimizing ordering processes."
+        zh: "累计服务 200+ 客户，多数形成长期稳定的复购合作关系",
+        en: "Served 200+ clients cumulatively, with the majority developing into long-term repeat relationships"
       },
       {
-        zh: "累计服务200+个客户,建立良好合作关系。",
-        en: "Accumulated service for over 200 clients, establishing excellent cooperative relationships."
+        zh: "自主开发 AI 知识库、素材管理平台、订单自动化脚本 3 款内部工具，填补团队技术空白",
+        en: "Self-developed 3 internal tools — AI knowledge base, material management platform, order automation scripts — filling the team's technology gaps"
       }
     ],
     icon: "briefcase",
@@ -49,41 +48,40 @@ export const workExperiences = [
   }
 ]
 
-// 成就亮点数据配置
 export const achievements = [
   {
     id: 1,
     title: {
-      zh: "快速响应",
-      en: "Quick Response"
+      zh: "200+ 客户",
+      en: "200+ Clients"
     },
     description: {
-      zh: "快速响应客户需求,始终保持客户满意度在90%以上。",
-      en: "Quickly respond to customer needs, maintaining customer satisfaction above 90%."
+      zh: "累计服务 200+ 客户，多数形成长期稳定的复购合作关系。",
+      en: "Served 200+ clients cumulatively, with most developing into long-term repeat relationships."
     },
     icon: "smile"
   },
   {
     id: 2,
     title: {
-      zh: "全流程理解",
-      en: "End-to-End Understanding"
+      zh: "返工率 -15%",
+      en: "Rework Rate -15%"
     },
     description: {
-      zh: "具备从生产到交付的全流程深度理解与把控能力。",
-      en: "Possess deep understanding and control of the entire process from production to delivery."
+      zh: "通过优化下单流程与校验规范，将订单返工率降低约 15%。",
+      en: "Reduced order rework rate by ~15% through optimized ordering workflows and validation standards."
     },
     icon: "refresh-cw"
   },
   {
     id: 3,
     title: {
-      zh: "跨界思考",
-      en: "Cross-Domain Thinking"
+      zh: "3 款内部工具",
+      en: "3 Internal Tools"
     },
     description: {
-      zh: "具备强大的正向学习与跨界思考能力,持续探索数字化方案。",
-      en: "Strong forward-learning and cross-domain thinking capabilities, continuously exploring digital solutions."
+      zh: "自主开发 AI 知识库、素材管理平台和订单自动化脚本，直接用于日常工作。",
+      en: "Self-developed an AI knowledge base, material management platform, and order automation scripts — all actively used in daily work."
     },
     icon: "brain"
   }

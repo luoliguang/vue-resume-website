@@ -1,85 +1,70 @@
-// 历程数据配置
 export const journeyMilestones = [
   {
     id: 1,
-    year: "2023年6月",
+    year: "2023.6",
     title: {
-      zh: "毕业于重庆电子科技职业大学",
-      en: "Graduated from Chongqing Vocational University of Electronic Science and Technology"
+      zh: "毕业，开始探索方向",
+      en: "Graduated & Explored Paths"
     },
     description: {
-      zh: "获得微电子技术专业学士学位",
-      en: "Obtained a Bachelor's degree in Microelectronics Technology"
+      zh: "完成微电子技术专业学习，毕业后尝试了不同工作方向，逐渐明确自己真正想走的路。",
+      en: "Completed my microelectronics degree, then tried different paths after graduation to figure out where I actually wanted to go."
     },
     icon: "graduation",
     status: "completed"
   },
   {
     id: 2,
-    year: "2024年4月",
+    year: "2024.4",
     title: {
-      zh: "初入服装行业",
+      zh: "进入服装行业",
       en: "Entered the Apparel Industry"
     },
     description: {
-      zh: "入职广东省惠州市双月服饰有限公司，学习服装生产技术与客服跟单核心流程。",
-      en: "Joined Guangdong Huizhou Shuangyue Clothing Co., Ltd., and studied the core process of clothing production technology and customer service."
-    },
-    icon: "contact",
-    status: "completed"
-  },
-  {
-    id: 3,
-    year: "2024年6月",
-    title: {
-      zh: "正式成为服装跟单",
-      en: "Officially became a garment merchandiser"
-    },
-    description: {
-      zh: "正式成为服装跟单，全面掌握客户需求与出货流程。",
-      en: "Officially became a garment merchandiser, fully mastering customer needs and shipping processes."
+      zh: "加入双月数码印花，正式成为服装跟单，从零开始系统学习数码印花生产工艺与全流程跟单。",
+      en: "Joined Shuangyue Digital Printing as a garment merchandiser, learning digital printing production and full-cycle order management from the ground up."
     },
     icon: "briefcase",
     status: "completed"
   },
   {
-    id: 4,
-    year: "2024年10月",
+    id: 3,
+    year: "2024.10",
     title: {
-      zh: "独立设计开发素材网站",
-      en: "Independent design and development of material website"
+      zh: "用技术解决工作问题",
+      en: "Built Tools to Fix Real Problems"
     },
     description: {
-      zh: "独立设计开发素材网站，为后续职业发展奠定基础。",
-      en: "Independent design and development of material website, laying the foundation for subsequent career development."
+      zh: "自学前端与 Node.js，陆续开发 AI 知识库、素材管理平台和订单自动化脚本，直接用于日常工作。",
+      en: "Taught myself frontend and Node.js, then shipped an AI knowledge base, a material management platform, and order automation scripts — all actively used in daily work."
+    },
+    icon: "code",
+    status: "completed"
+  },
+  {
+    id: 4,
+    year: "2026.3",
+    title: {
+      zh: "开发微信小程序",
+      en: "Developed WeChat Mini-Program"
+    },
+    description: {
+      zh: "独立完成微信小程序从设计到上线的完整开发，持续扩展技术边界。",
+      en: "Independently completed a WeChat mini-program from design to launch, continuously expanding technical boundaries."
     },
     icon: "code",
     status: "completed"
   },
   {
     id: 5,
-    year: "2026年3月",
+    year: "2026",
     title: {
-      zh: "开发微信小程序",
-      en: "Developing a WeChat Mini Program"
+      zh: "持续成长",
+      en: "Continuous Growth"
     },
     description: {
-      zh: "开发微信小程序，为后续职业发展奠定基础。",
-      en: "Developing a WeChat Mini Program, laying the foundation for subsequent career development."
-    },
-    icon: "code",
-    status: "completed"
-  },
-  {
-    id: 6,
-    year: "2026年4月",
-    title: {
-      zh: "展望未来",
-      en: "Looking Forward"
-    },
-    description: {
-      zh: "持续学习新技术，不断提升个人能力，寻找新的职位机会。",
-      en: "Continuously learning new technologies, continuously improving personal abilities, and looking for new job opportunities."
+      zh: "深化供应链数字化实践，探索更多将技术能力与服装行业经验结合的可能性。",
+      en: "Deepening supply chain digitalization practices and exploring more ways to combine technical skills with apparel industry expertise."
     },
     icon: "rocket",
     status: "in-progress"
