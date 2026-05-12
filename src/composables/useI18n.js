@@ -94,7 +94,7 @@ const translations = {
     },
     contact: {
       title: '联系方式',
-      subtitle: '欢迎发消息，通常 24 小时内回复',
+      subtitle: '微信同号，欢迎发消息，通常 24 小时内回复。',
       email: '邮箱',
       phone: '电话',
       location: '位置',
@@ -197,7 +197,7 @@ const translations = {
     },
     contact: {
       title: 'Contact',
-      subtitle: 'Happy to connect — I usually reply within 24 hours',
+      subtitle: 'WeChat ID: giluoo. Welcome to send messages, usually reply within 24 hours.',
       email: 'Email',
       phone: 'Phone',
       location: 'Location',

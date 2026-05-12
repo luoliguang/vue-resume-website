@@ -36,6 +36,16 @@ export const contactInfo = {
       zh: '广东省惠州市',
       en: 'Huizhou, Guangdong Province'
     },
+    residency: {
+      current: {
+        zh: '广东惠州',
+        en: 'Huizhou, Guangdong'
+      },
+      hometown: {
+        zh: '重庆潼南',
+        en: 'Tongnan, Chongqing'
+      }
+    },
     icon: 'MapPin',
     link: null,
     color: '#ed8936'
