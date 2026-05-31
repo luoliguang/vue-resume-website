@@ -554,20 +554,28 @@ onUnmounted(() => {
 /* 多图画廊 */
 .detail-gallery {
   display: flex;
-  justify-content: center;
-  gap: 16px;
+  gap: 12px;
   margin-bottom: 20px;
+  overflow-x: auto;
+  /* 隐藏滚动条但保留滚动功能 */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  /* 让内容超出时可以滚动，不溢出弹窗 */
+  padding-bottom: 4px;
+}
+
+.detail-gallery::-webkit-scrollbar {
+  display: none;
 }
 
 .gallery-img {
-  width: calc(50% - 8px);
-  max-width: 180px;
+  width: 150px;
+  flex-shrink: 0;
   aspect-ratio: 9 / 16;
   object-fit: cover;
   border-radius: 16px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
   display: block;
-  flex-shrink: 0;
   cursor: zoom-in;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
@@ -830,8 +838,9 @@ onUnmounted(() => {
     flex: none;
   }
 
+  /* 移动端画廊图片稍窄，方便露出下一张提示可滑动 */
   .gallery-img {
-    max-width: 140px;
+    width: 120px;
   }
 }
 

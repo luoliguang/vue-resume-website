@@ -86,3 +86,6 @@ jspm_packages/
 
 .skills
 AGENTS.md
+
+# Claude Code local config (machine-specific, do not commit)
+.claude/settings.local.json
