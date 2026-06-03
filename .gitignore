@@ -89,3 +89,5 @@ AGENTS.md
 
 # Claude Code local config (machine-specific, do not commit)
 .claude/settings.local.json
+skills-lock.json
+SKILL.md
