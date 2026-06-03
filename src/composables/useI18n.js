@@ -23,13 +23,13 @@ const translations = {
       cta2: '查看项目',
       cta3: '30秒认识我',
       quickIntro: {
-        text: '我的核心竞争力：一线跟单经验让我清楚问题在哪，技术能力让我能直接动手解决。',
-        label1: '正在做',
-        value1: '数码印花跟单 · 订单流程自动化工具',
-        label2: '我擅长',
-        value2: '从混乱流程中找到关键瓶颈，并用工具把它跑通',
-        label3: '适合我的团队',
-        value3: '注重执行效率、愿意用数字化手段解决传统问题的公司'
+        text: '一个会写代码的服装跟单 —— 2 年以上一线经验让我知道问题在哪，自学开发让我能亲手解决它。',
+        label1: '经验',
+        value1: '2 年以上服装跟单，独立服务 200+ 客户',
+        label2: '成果',
+        value2: '订单返工率降低 15%，自研 3 款内部工具',
+        label3: '我能带来',
+        value3: '懂打样到出货全流程，又能用 AI / 代码把流程问题变成可用工具'
       }
     },
     about: {
@@ -128,13 +128,13 @@ const translations = {
       cta2: 'View Projects',
       cta3: 'Know Me in 30 Seconds',
       quickIntro: {
-        text: 'My edge: frontline merchandising experience tells me exactly where the problems are — and I can build the tools to fix them myself.',
-        label1: 'Currently',
-        value1: 'Digital printing merchandising · Order process automation',
-        label2: 'Best At',
-        value2: 'Pinpointing workflow bottlenecks and shipping tools that actually fix them',
-        label3: 'Ideal Team',
-        value3: 'Companies that value execution efficiency and want to modernize traditional operations'
+        text: 'A garment merchandiser who codes — 2+ years on the frontline tells me where the problems are, and self-taught development lets me fix them myself.',
+        label1: 'Experience',
+        value1: '2+ years merchandising, 200+ clients served independently',
+        label2: 'Impact',
+        value2: 'Cut order rework rate by 15%, built 3 internal tools in-house',
+        label3: 'What I Bring',
+        value3: 'Full sampling-to-shipment expertise, plus turning process problems into working tools with AI / code'
       }
     },
     about: {
