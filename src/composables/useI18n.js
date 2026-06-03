@@ -17,7 +17,7 @@ const translations = {
       nickname: 'giluoo',
       realNameLabel: '本名',
       realName: '罗力广',
-      subtitle: '服装跟单 · 供应链数字化',
+      subtitle: '服装行业从业者｜AI 应用实践者｜流程优化爱好者',
       description: '在服装供应链一线做了 2 年+跟单，服务 200+ 客户，将订单返工率降低 15%。同时借助 AI 自学开发，独立搭建了 AI 知识库、素材管理平台和订单自动化脚本——把一线真实问题快速变成能用的工具。',
       cta: '了解我',
       cta2: '查看项目',
@@ -34,7 +34,7 @@ const translations = {
     },
     about: {
       title: '关于我',
-      description: '拥有 2 年+服装跟单经验，服务 200+ 客户，将订单返工率降低 15%。在一线工作中发现了大量可以用工具解决的低效环节，于是借助 AI 自学开发，为团队搭建了 AI 问答知识库、实拍素材管理平台和订单自动化脚本。现在，我既能独立负责客户从打样到出货的完整流程，也能持续用技术手段优化流程本身。',
+      description: '我是罗力广，客户和朋友都习惯叫我罗洋洋。我做的是服装客服跟单，负责对接客户需求、推进从打样到出货的整个流程。两年多下来，我熟悉各个环节是怎么衔接的，也清楚哪里最容易出问题。借助 AI 自学开发，我陆续做出 AI 问答知识库、实拍素材平台和订单自动化脚本，把自己和同事每天最头疼的问题解决掉。',
       skills: '核心技能',
       skillTags: ['服装跟单', '客户沟通', '生产协调', 'Vue.js', 'Node.js', 'WPS脚本']
     },
@@ -122,7 +122,7 @@ const translations = {
       nickname: 'giluoo',
       realNameLabel: 'Real name',
       realName: 'Luo Liguang',
-      subtitle: 'Garment Merchandiser · Supply Chain Digitalization',
+      subtitle: 'Apparel Professional · AI Practitioner · Process Optimizer',
       description: '2+ years on the frontline of apparel supply-chain merchandising — 200+ clients served, rework rate cut by 15%. Using AI to teach myself development, I independently built practical tools: an AI knowledge base, a material photo platform, and order automation scripts that turn real frontline problems into working solutions.',
       cta: 'About Me',
       cta2: 'View Projects',
@@ -139,7 +139,7 @@ const translations = {
     },
     about: {
       title: 'About Me',
-      description: '2 years of hands-on garment merchandising, serving 200+ clients and cutting order rework rates by 15%. I kept running into repetitive bottlenecks on the job — so I used AI to teach myself development, then built an AI knowledge base, a material photo management platform, and order automation scripts for my own team. Today I can run the full order cycle independently while continuously improving the workflows behind it.',
+      description: "I'm Luo Liguang — though clients and friends all call me Luo Yangyang. I work as a garment customer-service merchandiser, handling client needs and driving the full process from sampling to shipment. Over two-plus years, I've learned how every step connects and where things tend to go wrong. Using AI to teach myself development, I built an AI knowledge base, a material photo platform, and order automation scripts to solve the problems my coworkers and I struggled with most.",
       skills: 'Core Skills',
       skillTags: ['Garment Merchandising', 'Client Communication', 'Production Coordination', 'Vue.js', 'Node.js', 'WPS Scripting']
     },

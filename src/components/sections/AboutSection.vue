@@ -5,7 +5,15 @@
         <div class="about-content">
           <div class="about-text">
             <h2 class="about-title">{{ aboutData.title[isChinese ? 'zh' : 'en'] }}</h2>
-            <p class="about-description">{{ aboutData.description[isChinese ? 'zh' : 'en'] }}</p>
+            <div class="about-description">
+              <p
+                v-for="(para, index) in descParagraphs"
+                :key="index"
+                class="about-paragraph"
+              >
+                {{ para }}
+              </p>
+            </div>
             <div class="skill-tags">
               <span 
                 v-for="(tag, index) in aboutData.skillTags" 
@@ -40,7 +48,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { aboutData } from '../../data/about.js'
@@ -50,6 +58,13 @@ gsap.registerPlugin(ScrollTrigger)
 
 const imageError = ref(false)
 const aboutRoot = ref(null)
+
+const descParagraphs = computed(() =>
+  aboutData.description[isChinese.value ? 'zh' : 'en']
+    .split('\n')
+    .map(p => p.trim())
+    .filter(Boolean)
+)
 
 const handleImageError = () => {
   imageError.value = true
@@ -147,11 +162,19 @@ onUnmounted(() => {
 }
 
 .about-description {
-  font-size: var(--text-body);
-  line-height: 1.5;
-  color: #c7c7cc;
   margin-bottom: 32px;
+}
+
+.about-paragraph {
+  font-size: var(--text-body);
+  line-height: 1.7;
+  color: #c7c7cc;
   letter-spacing: var(--tracking-body);
+  margin: 0 0 16px;
+}
+
+.about-paragraph:last-child {
+  margin-bottom: 0;
 }
 
 .skill-tags {
