@@ -54,13 +54,7 @@
               >
                 <div class="skill-header">
                   <span class="skill-name">{{ skill.name[isChinese ? 'zh' : 'en'] }}</span>
-                  <span class="skill-level">{{ skill.level }}%</span>
-                </div>
-                <div class="skill-progress">
-                  <div 
-                    class="progress-bar"
-                    :style="{ width: skill.level + '%' }"
-                  ></div>
+                  <span class="skill-highlight">{{ skill.highlight[isChinese ? 'zh' : 'en'] }}</span>
                 </div>
                 <p class="skill-description">{{ skill.description[isChinese ? 'zh' : 'en'] }}</p>
               </div>
@@ -217,7 +211,8 @@ const setActiveCategory = (categoryId) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  gap: 12px;
+  margin-bottom: 10px;
 }
 
 .skill-name {
@@ -227,27 +222,17 @@ const setActiveCategory = (categoryId) => {
   letter-spacing: var(--tracking-body);
 }
 
-.skill-level {
+.skill-highlight {
+  flex-shrink: 0;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(41, 151, 255, 0.12);
+  border: 1px solid rgba(41, 151, 255, 0.25);
+  color: var(--color-interactive-blue);
   font-size: var(--text-body-sm);
   font-weight: 600;
-  color: var(--color-interactive-blue);
   letter-spacing: var(--tracking-body-sm);
-}
-
-.skill-progress {
-  width: 100%;
-  height: 6px;
-  background: var(--surface-border-dark);
-  border-radius: 999px;
-  overflow: hidden;
-  margin-bottom: 12px;
-}
-
-.progress-bar {
-  height: 100%;
-  background: linear-gradient(90deg, var(--color-interactive-blue) 0%, var(--color-vivid-blue) 100%);
-  border-radius: 999px;
-  transition: width 0.8s ease;
+  white-space: nowrap;
 }
 
 .skill-description {
@@ -353,6 +338,12 @@ const setActiveCategory = (categoryId) => {
 
   .skill-item {
     padding: 14px;
+  }
+
+  .skill-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
   }
 }
 </style>
