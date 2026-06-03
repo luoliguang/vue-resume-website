@@ -381,7 +381,7 @@ html[data-theme='legacy'] .tagline-line {
   display: flex;
   align-items: center;
   gap: 4px;
-  padding: 9px 18px;
+  padding: 9px 30px;
   border: 1px solid transparent;
   font-size: 17px;
   background-color: transparent;
@@ -685,6 +685,10 @@ html[data-theme='legacy'] .tagline-line {
   .description,
   .animated-button {
     font-size: 16px;
+  }
+
+  .animated-button {
+    padding: 9px 26px;
   }
 
   .avatar-container {
