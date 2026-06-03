@@ -28,7 +28,11 @@
       <!-- 右侧面板 -->
       <div class="hero-right hero-animate hero-animate-right">
         <h1 class="main-title hero-stagger hero-stagger-1">{{ t('hero.title') }}</h1>
-        <p class="brand-name hero-stagger hero-stagger-2">{{ t('hero.nickname') }}</p>
+        <p class="brand-name hero-stagger hero-stagger-2">
+          <span class="real-name">{{ t('hero.realNameLabel') }} {{ t('hero.realName') }}</span>
+          <span class="brand-sep">·</span>
+          <span class="handle">{{ t('hero.nickname') }}</span>
+        </p>
         <div class="title-divider hero-stagger hero-stagger-3"></div>
         <p class="description hero-stagger hero-stagger-4">{{ t('hero.description') }}</p>
         <div class="action-buttons hero-stagger hero-stagger-5">
@@ -324,12 +328,28 @@ html[data-theme='legacy'] .tagline-line {
 }
 
 .brand-name {
-  font-size: 17px;
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 16px;
   font-weight: 400;
-  color: #2997ff;
-  margin: 4px 0 12px;
+  margin: 6px 0 12px;
   letter-spacing: -0.32px;
   text-transform: none;
+}
+
+.brand-name .real-name {
+  color: #5a6472;
+}
+
+.brand-name .brand-sep {
+  color: #c2c8d0;
+}
+
+.brand-name .handle {
+  color: #2997ff;
+  letter-spacing: 0.5px;
 }
 
 .title-divider {
@@ -642,6 +662,10 @@ html[data-theme='legacy'] .tagline-line {
   }
 
   .action-buttons {
+    justify-content: center;
+  }
+
+  .brand-name {
     justify-content: center;
   }
 
