@@ -7,7 +7,7 @@
           <div class="avatar-container">
             <img 
               src="/images/me.jpg" 
-              :alt="t('hero.title')" 
+              :alt="ht('title_zh', 'title_en', 'hero.title')"
               class="avatar-img"
               @error="handleImageError"
             >
@@ -16,25 +16,25 @@
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
                 <circle cx="12" cy="7" r="4"/>
               </svg>
-              <span>{{ t('hero.title') }}</span>
+              <span>{{ ht('title_zh', 'title_en', 'hero.title') }}</span>
             </div>
           </div>
           <div class="tagline">
-            <div class="tagline-line">{{ t('hero.subtitle') }}</div>
+            <div class="tagline-line">{{ ht('subtitle_zh', 'subtitle_en', 'hero.subtitle') }}</div>
           </div>
         </div>
       </div>
 
       <!-- 右侧面板 -->
       <div class="hero-right hero-animate hero-animate-right">
-        <h1 class="main-title hero-stagger hero-stagger-1">{{ t('hero.title') }}</h1>
+        <h1 class="main-title hero-stagger hero-stagger-1">{{ ht('title_zh', 'title_en', 'hero.title') }}</h1>
         <p class="brand-name hero-stagger hero-stagger-2">
-          <span class="real-name">{{ t('hero.realNameLabel') }} {{ t('hero.realName') }}</span>
+          <span class="real-name">{{ t('hero.realNameLabel') }} {{ ht('real_name_zh', 'real_name_en', 'hero.realName') }}</span>
           <span class="brand-sep">·</span>
-          <span class="handle">{{ t('hero.nickname') }}</span>
+          <span class="handle">{{ hv('nickname', 'hero.nickname') }}</span>
         </p>
         <div class="title-divider hero-stagger hero-stagger-3"></div>
-        <p class="description hero-stagger hero-stagger-4">{{ t('hero.description') }}</p>
+        <p class="description hero-stagger hero-stagger-4">{{ ht('description_zh', 'description_en', 'hero.description') }}</p>
         <div class="action-buttons hero-stagger hero-stagger-5">
           <button class="animated-button btn-primary" @click="scrollToAbout">
             <svg viewBox="0 0 24 24" class="arr-2" xmlns="http://www.w3.org/2000/svg">
@@ -89,26 +89,26 @@
 
           <div class="qi-header">
             <span class="qi-badge">{{ t('hero.cta3') }}</span>
-            <h2 class="qi-name">{{ t('hero.title') }}</h2>
-            <p class="qi-brand">{{ t('hero.nickname') }}</p>
+            <h2 class="qi-name">{{ ht('title_zh', 'title_en', 'hero.title') }}</h2>
+            <p class="qi-brand">{{ hv('nickname', 'hero.nickname') }}</p>
           </div>
 
-          <p class="qi-text">{{ t('hero.quickIntro.text') }}</p>
+          <p class="qi-text">{{ ht('quick_intro_text_zh', 'quick_intro_text_en', 'hero.quickIntro.text') }}</p>
 
           <div class="qi-divider"></div>
 
           <div class="qi-highlights">
             <div class="qi-highlight">
-              <span class="qi-hlabel">{{ t('hero.quickIntro.label1') }}</span>
-              <span class="qi-hvalue">{{ t('hero.quickIntro.value1') }}</span>
+              <span class="qi-hlabel">{{ ht('quick_intro_label1_zh', 'quick_intro_label1_en', 'hero.quickIntro.label1') }}</span>
+              <span class="qi-hvalue">{{ ht('quick_intro_value1_zh', 'quick_intro_value1_en', 'hero.quickIntro.value1') }}</span>
             </div>
             <div class="qi-highlight">
-              <span class="qi-hlabel">{{ t('hero.quickIntro.label2') }}</span>
-              <span class="qi-hvalue">{{ t('hero.quickIntro.value2') }}</span>
+              <span class="qi-hlabel">{{ ht('quick_intro_label2_zh', 'quick_intro_label2_en', 'hero.quickIntro.label2') }}</span>
+              <span class="qi-hvalue">{{ ht('quick_intro_value2_zh', 'quick_intro_value2_en', 'hero.quickIntro.value2') }}</span>
             </div>
             <div class="qi-highlight">
-              <span class="qi-hlabel">{{ t('hero.quickIntro.label3') }}</span>
-              <span class="qi-hvalue">{{ t('hero.quickIntro.value3') }}</span>
+              <span class="qi-hlabel">{{ ht('quick_intro_label3_zh', 'quick_intro_label3_en', 'hero.quickIntro.label3') }}</span>
+              <span class="qi-hvalue">{{ ht('quick_intro_value3_zh', 'quick_intro_value3_en', 'hero.quickIntro.value3') }}</span>
             </div>
           </div>
         </div>
@@ -121,9 +121,17 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { t } from '../../composables/useI18n.js'
+import { t, isChinese } from '../../composables/useI18n.js'
+import { useContent } from '../../composables/useContent.js'
 
 gsap.registerPlugin(ScrollTrigger)
+
+const { data: cmsHero } = useContent('hero')
+// CMS 双语字段：优先用数据库值，否则 fallback 到 i18n
+const ht = (zhKey, enKey, i18nKey) =>
+  (isChinese.value ? cmsHero.value?.[zhKey] : cmsHero.value?.[enKey]) || t(i18nKey)
+// CMS 单值字段（中英相同，如 nickname）
+const hv = (key, i18nKey) => cmsHero.value?.[key] || t(i18nKey)
 
 const imageError = ref(false)
 const isQuickIntroOpen = ref(false)

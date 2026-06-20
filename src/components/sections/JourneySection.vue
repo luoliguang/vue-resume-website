@@ -72,9 +72,27 @@
 </template>
 
 <script setup>
-import { journeyMilestones } from '../../data/journey.js'
+import { computed } from 'vue'
+import { journeyMilestones as staticMilestones } from '../../data/journey.js'
 import { t, isChinese } from '../../composables/useI18n.js'
 import { GraduationCap, Briefcase, Code, Rocket, Contact } from 'lucide-vue-next'
+import { useContent } from '../../composables/useContent.js'
+
+const { data: cmsJourney } = useContent('journey')
+
+const journeyMilestones = computed(() => {
+  if (cmsJourney.value?.length) {
+    return cmsJourney.value.map(m => ({
+      id:          m.id,
+      year:        m.year,
+      title:       { zh: m.title_zh, en: m.title_en ?? m.title_zh },
+      description: { zh: m.description_zh, en: m.description_en ?? m.description_zh },
+      icon:        m.icon ?? 'code',
+      status:      m.milestone_status === 'in_progress' ? 'in-progress' : (m.milestone_status ?? 'completed'),
+    }))
+  }
+  return staticMilestones
+})
 
 const getStatusClass = (status) => {
   return { completed: 'status-completed', 'in-progress': 'status-in-progress', 'not-started': 'status-not-started' }[status] ?? 'status-completed'

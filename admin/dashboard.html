@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>简历管理后台</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", sans-serif;
+      background: #000;
+      color: #f5f5f7;
+      min-height: 100vh;
+      display: flex;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Sidebar ─────────────────────────────── */
+    .sidebar {
+      width: 220px;
+      min-height: 100vh;
+      background: #161617;
+      border-right: 1px solid rgba(255,255,255,0.08);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+    }
+    .sidebar-brand {
+      padding: 24px 20px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand-icon {
+      width: 34px;
+      height: 34px;
+      background: #1d1d1f;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: #f5f5f7;
+    }
+    .brand-text h2 { font-size: 14px; font-weight: 600; letter-spacing: -0.2px; }
+    .brand-text p  { font-size: 11px; color: #86868b; margin-top: 1px; }
+
+    .nav { padding: 10px 10px; flex: 1; }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      color: #86868b;
+      transition: background .15s, color .15s;
+      margin-bottom: 1px;
+      user-select: none;
+    }
+    .nav-item:hover { background: rgba(255,255,255,0.06); color: #f5f5f7; }
+    .nav-item.active { background: rgba(41,151,255,0.12); color: #2997ff; }
+    .nav-icon {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .nav-icon svg { width: 16px; height: 16px; }
+    .nav-label { font-size: 13.5px; font-weight: 500; }
+
+    .sidebar-footer {
+      padding: 14px 10px;
+      border-top: 1px solid rgba(255,255,255,0.07);
+    }
+    .btn-logout {
+      width: 100%;
+      padding: 8px;
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 7px;
+      color: #86868b;
+      font-size: 13px;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .btn-logout:hover { border-color: rgba(255,69,58,.4); color: #ff453a; }
+
+    /* ── Main ────────────────────────────────── */
+    .main {
+      margin-left: 220px;
+      flex: 1;
+      min-height: 100vh;
+      padding: 36px 40px;
+      max-width: 1000px;
+    }
+    .page-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 5px;
+      letter-spacing: -0.4px;
+      color: #f5f5f7;
+    }
+    .page-sub { font-size: 13px; color: #86868b; margin-bottom: 30px; }
+
+    /* ── Cards ───────────────────────────────── */
+    .card {
+      background: #1d1d1f;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px;
+      padding: 22px;
+      margin-bottom: 18px;
+    }
+    .card-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: #86868b;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      margin-bottom: 16px;
+    }
+
+    /* ── Forms ───────────────────────────────── */
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 14px; }
+    .row.single { grid-template-columns: 1fr; }
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #86868b;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+    .field label .lang {
+      display: inline-block;
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-size: 10px;
+      margin-left: 4px;
+      font-weight: 700;
+    }
+    .lang-zh { background: rgba(255,214,10,.14); color: #ffd60a; }
+    .lang-en { background: rgba(41,151,255,.14); color: #2997ff; }
+
+    input[type="text"], textarea, select {
+      background: #2c2c2e;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      color: #f5f5f7;
+      font-size: 14px;
+      padding: 9px 11px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color .2s;
+      width: 100%;
+      resize: vertical;
+    }
+    input[type="text"]:focus, textarea:focus, select:focus {
+      border-color: #2997ff;
+    }
+    textarea { min-height: 88px; }
+    textarea.tall { min-height: 130px; }
+    select { cursor: pointer; }
+
+    /* ── Buttons ─────────────────────────────── */
+    .btn {
+      padding: 9px 18px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+      transition: opacity .15s;
+      letter-spacing: -0.1px;
+    }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+    .btn-primary { background: #2997ff; color: #fff; }
+    .btn-primary:not(:disabled):hover { opacity: 0.85; }
+    .btn-danger { background: rgba(255,59,48,.12); color: #ff453a; border: 1px solid rgba(255,59,48,.25); }
+    .btn-danger:hover { background: rgba(255,59,48,.22); }
+    .btn-ghost { background: rgba(255,255,255,.07); color: #f5f5f7; }
+    .btn-ghost:hover { background: rgba(255,255,255,.11); }
+    .btn-sm { padding: 6px 11px; font-size: 12px; }
+
+    .save-bar {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 6px;
+      padding-top: 18px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .save-bar .hint { font-size: 12px; color: #86868b; }
+
+    /* ── Skills accordion ───────────────────── */
+    .skill-cat { margin-bottom: 10px; }
+    .skill-cat-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 13px 16px;
+      background: #2c2c2e;
+      border-radius: 10px;
+      cursor: pointer;
+      user-select: none;
+      transition: background .15s;
+    }
+    .skill-cat-header:hover { background: #333; }
+    .skill-cat-left { display: flex; align-items: center; gap: 10px; }
+    .skill-cat-title { font-size: 14px; font-weight: 600; color: #f5f5f7; }
+    .skill-cat-count { font-size: 11px; color: #86868b; background: rgba(255,255,255,.07); padding: 2px 7px; border-radius: 999px; }
+    .skill-cat-body { padding: 14px 0 4px; }
+    .chevron {
+      width: 16px; height: 16px;
+      color: #86868b;
+      transition: transform .2s;
+      flex-shrink: 0;
+    }
+    .chevron.open { transform: rotate(180deg); }
+
+    .skill-item {
+      background: #111;
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 8px;
+    }
+    .skill-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .skill-num { font-size: 11px; color: #86868b; font-weight: 600; letter-spacing: .04em; }
+    .skill-delete {
+      background: none; border: none; cursor: pointer;
+      color: #86868b; padding: 3px 7px; border-radius: 5px;
+      display: flex; align-items: center;
+      transition: color .15s, background .15s;
+    }
+    .skill-delete:hover { color: #ff453a; background: rgba(255,69,58,.1); }
+    .skill-delete svg { width: 14px; height: 14px; }
+
+    /* ── Collection table ───────────────────── */
+    .table { width: 100%; border-collapse: collapse; }
+    .table th {
+      text-align: left;
+      font-size: 11px;
+      font-weight: 600;
+      color: #86868b;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      padding: 8px 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .table td {
+      padding: 11px 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      font-size: 14px;
+      vertical-align: middle;
+    }
+    .table tr:last-child td { border-bottom: none; }
+    .table tr:hover td { background: rgba(255,255,255,0.02); }
+    .tag {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .tag-done     { background: rgba(52,199,89,.13);  color: #34c759; }
+    .tag-progress { background: rgba(255,159,10,.13); color: #ff9f0a; }
+    .tag-plan     { background: rgba(134,134,139,.13); color: #86868b; }
+    .td-actions { display: flex; gap: 6px; white-space: nowrap; }
+
+    /* ── Modal ───────────────────────────────── */
+    .modal-backdrop {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.72);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 100;
+      backdrop-filter: blur(6px);
+    }
+    .modal {
+      background: #1d1d1f;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 18px;
+      padding: 28px;
+      width: 680px;
+      max-width: calc(100vw - 40px);
+      max-height: calc(100vh - 60px);
+      overflow-y: auto;
+    }
+    .modal-title {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      margin-bottom: 22px;
+      color: #f5f5f7;
+    }
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 22px;
+      padding-top: 18px;
+      border-top: 1px solid rgba(255,255,255,0.07);
+    }
+
+    /* ── Toast ───────────────────────────────── */
+    .toast {
+      position: fixed;
+      bottom: 28px; right: 28px;
+      padding: 11px 18px;
+      border-radius: 10px;
+      font-size: 13.5px;
+      font-weight: 500;
+      z-index: 200;
+      pointer-events: none;
+      transition: opacity .3s, transform .3s;
+    }
+    .toast-success { background: #1c3a27; border: 1px solid rgba(52,199,89,.3); color: #34c759; }
+    .toast-error   { background: #3a1c1c; border: 1px solid rgba(255,69,58,.3);  color: #ff453a; }
+
+    /* ── States ──────────────────────────────── */
+    .loading-msg { color: #86868b; font-size: 14px; padding: 40px 0; text-align: center; }
+    .empty { text-align: center; padding: 40px; color: #86868b; font-size: 14px; }
+    .add-bar { display: flex; justify-content: flex-end; margin-bottom: 14px; }
+  </style>
+</head>
+<body x-data="dashboard()" x-init="init()">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="7" height="7" rx="1.5"/>
+          <rect x="14" y="3" width="7" height="7" rx="1.5"/>
+          <rect x="3" y="14" width="7" height="7" rx="1.5"/>
+          <rect x="14" y="14" width="7" height="7" rx="1.5"/>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <h2>简历后台</h2>
+        <p>Admin Panel</p>
+      </div>
+    </div>
+    <nav class="nav">
+      <template x-for="item in navItems" :key="item.id">
+        <div class="nav-item" :class="{ active: section === item.id }" @click="switchSection(item.id)">
+          <span class="nav-icon" x-html="item.svg"></span>
+          <span class="nav-label" x-text="item.label"></span>
+        </div>
+      </template>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="btn-logout" @click="logout">退出登录</button>
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <main class="main">
+    <div x-show="loading" class="loading-msg">加载中…</div>
+
+    <!-- ═══ Hero ══════════════════════════════════════════ -->
+    <div x-show="section === 'hero' && !loading">
+      <div class="page-title">首页 Hero</div>
+      <div class="page-sub">编辑首屏展示的姓名、标语、简介等内容</div>
+
+      <div class="card">
+        <div class="card-title">基本信息</div>
+        <div class="row">
+          <div class="field">
+            <label>显示姓名 <span class="lang lang-zh">中</span></label>
+            <input type="text" x-model="hero.title_zh" placeholder="罗洋洋">
+          </div>
+          <div class="field">
+            <label>显示姓名 <span class="lang lang-en">EN</span></label>
+            <input type="text" x-model="hero.title_en" placeholder="Luo Yangyang">
+          </div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label>昵称（GitHub / 英文 ID）</label>
+            <input type="text" x-model="hero.nickname" placeholder="giluoo">
+          </div>
+          <div class="field"></div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label>本名 <span class="lang lang-zh">中</span></label>
+            <input type="text" x-model="hero.real_name_zh" placeholder="罗力广">
+          </div>
+          <div class="field">
+            <label>本名 <span class="lang lang-en">EN</span></label>
+            <input type="text" x-model="hero.real_name_en" placeholder="Luo Liguang">
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">标语 Subtitle</div>
+        <div class="row single">
+          <div class="field">
+            <label><span class="lang lang-zh">中</span></label>
+            <input type="text" x-model="hero.subtitle_zh" placeholder="服装行业从业者｜AI 应用实践者｜流程优化爱好者">
+          </div>
+        </div>
+        <div class="row single">
+          <div class="field">
+            <label><span class="lang lang-en">EN</span></label>
+            <input type="text" x-model="hero.subtitle_en" placeholder="Apparel Professional · AI Practitioner · Process Optimizer">
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">简介 Description</div>
+        <div class="row">
+          <div class="field">
+            <label><span class="lang lang-zh">中</span></label>
+            <textarea class="tall" x-model="hero.description_zh" placeholder="在服装供应链一线做了 2 年+…"></textarea>
+          </div>
+          <div class="field">
+            <label><span class="lang lang-en">EN</span></label>
+            <textarea class="tall" x-model="hero.description_en" placeholder="Over 2 years on the apparel supply chain frontline…"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">快速认识 Quick Intro</div>
+        <div class="row">
+          <div class="field">
+            <label>介绍文字 <span class="lang lang-zh">中</span></label>
+            <textarea x-model="hero.quick_intro_text_zh"></textarea>
+          </div>
+          <div class="field">
+            <label>介绍文字 <span class="lang lang-en">EN</span></label>
+            <textarea x-model="hero.quick_intro_text_en"></textarea>
+          </div>
+        </div>
+        <template x-for="n in [1,2,3]" :key="n">
+          <div>
+            <div class="card-title" style="margin-top:16px">标签 <span x-text="n"></span></div>
+            <div class="row">
+              <div class="field">
+                <label>标签名 <span class="lang lang-zh">中</span></label>
+                <input type="text" x-model="hero['quick_intro_label'+n+'_zh']">
+              </div>
+              <div class="field">
+                <label>标签名 <span class="lang lang-en">EN</span></label>
+                <input type="text" x-model="hero['quick_intro_label'+n+'_en']">
+              </div>
+            </div>
+            <div class="row">
+              <div class="field">
+                <label>内容 <span class="lang lang-zh">中</span></label>
+                <input type="text" x-model="hero['quick_intro_value'+n+'_zh']">
+              </div>
+              <div class="field">
+                <label>内容 <span class="lang lang-en">EN</span></label>
+                <input type="text" x-model="hero['quick_intro_value'+n+'_en']">
+              </div>
+            </div>
+          </div>
+        </template>
+      </div>
+
+      <div class="save-bar">
+        <span class="hint" x-show="hero.updated_at">上次保存：<span x-text="fmt(hero.updated_at)"></span></span>
+        <button class="btn btn-primary" @click="saveHero()" :disabled="saving">
+          <span x-text="saving ? '保存中…' : '保存 Hero'"></span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ═══ About ══════════════════════════════════════════ -->
+    <div x-show="section === 'about' && !loading">
+      <div class="page-title">关于我 About</div>
+      <div class="page-sub">编辑个人简介和技能标签</div>
+
+      <div class="card">
+        <div class="card-title">个人简介</div>
+        <div class="row">
+          <div class="field">
+            <label><span class="lang lang-zh">中</span></label>
+            <textarea class="tall" x-model="about.description_zh" style="min-height:200px"></textarea>
+          </div>
+          <div class="field">
+            <label><span class="lang lang-en">EN</span></label>
+            <textarea class="tall" x-model="about.description_en" style="min-height:200px"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">技能标签（逗号分隔）</div>
+        <div class="row">
+          <div class="field">
+            <label><span class="lang lang-zh">中</span></label>
+            <input type="text" x-model="aboutTagsZh" placeholder="服装跟单, 客户沟通, 生产协调, …">
+          </div>
+          <div class="field">
+            <label><span class="lang lang-en">EN</span></label>
+            <input type="text" x-model="aboutTagsEn" placeholder="Garment Merchandising, Client Communication, …">
+          </div>
+        </div>
+        <p style="font-size:12px;color:#86868b;margin-top:4px">用中文或英文逗号分隔，保存时自动转为数组</p>
+      </div>
+
+      <div class="save-bar">
+        <span class="hint" x-show="about.updated_at">上次保存：<span x-text="fmt(about.updated_at)"></span></span>
+        <button class="btn btn-primary" @click="saveAbout()" :disabled="saving">
+          <span x-text="saving ? '保存中…' : '保存 About'"></span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ═══ Skills ═════════════════════════════════════════ -->
+    <div x-show="section === 'skills' && !loading">
+      <div class="page-title">技能专长 Skills</div>
+      <div class="page-sub">展开分类编辑每个技能条目，编辑完点「保存此分类」</div>
+
+      <template x-for="(cat, ci) in skills" :key="cat.id">
+        <div class="skill-cat">
+          <div class="skill-cat-header" @click="cat._open = !cat._open">
+            <div class="skill-cat-left">
+              <span class="skill-cat-title" x-text="cat.name_zh + ' / ' + cat.name_en"></span>
+              <span class="skill-cat-count" x-text="cat.skills.length + ' 项'"></span>
+            </div>
+            <svg class="chevron" :class="{ open: cat._open }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"/>
+            </svg>
+          </div>
+          <div class="skill-cat-body" x-show="cat._open" x-transition>
+            <div class="row" style="margin-bottom:18px">
+              <div class="field">
+                <label>分类名 <span class="lang lang-zh">中</span></label>
+                <input type="text" x-model="cat.name_zh">
+              </div>
+              <div class="field">
+                <label>分类名 <span class="lang lang-en">EN</span></label>
+                <input type="text" x-model="cat.name_en">
+              </div>
+            </div>
+
+            <template x-for="(skill, si) in cat.skills" :key="si">
+              <div class="skill-item">
+                <div class="skill-item-header">
+                  <span class="skill-num">技能 <span x-text="si+1"></span></span>
+                  <button class="skill-delete" @click="removeSkill(ci, si)" title="删除此技能">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                  </button>
+                </div>
+                <div class="row">
+                  <div class="field">
+                    <label>技能名 <span class="lang lang-zh">中</span></label>
+                    <input type="text" x-model="skill.name_zh">
+                  </div>
+                  <div class="field">
+                    <label>技能名 <span class="lang lang-en">EN</span></label>
+                    <input type="text" x-model="skill.name_en">
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="field">
+                    <label>亮点标签 <span class="lang lang-zh">中</span></label>
+                    <input type="text" x-model="skill.highlight_zh" placeholder="全流程独立负责">
+                  </div>
+                  <div class="field">
+                    <label>亮点标签 <span class="lang lang-en">EN</span></label>
+                    <input type="text" x-model="skill.highlight_en" placeholder="End-to-end ownership">
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="field">
+                    <label>描述 <span class="lang lang-zh">中</span></label>
+                    <textarea x-model="skill.description_zh"></textarea>
+                  </div>
+                  <div class="field">
+                    <label>描述 <span class="lang lang-en">EN</span></label>
+                    <textarea x-model="skill.description_en"></textarea>
+                  </div>
+                </div>
+              </div>
+            </template>
+
+            <div style="display:flex;gap:10px;align-items:center;margin-top:6px">
+              <button class="btn btn-ghost btn-sm" @click="addSkill(ci)">添加技能</button>
+              <button class="btn btn-primary btn-sm" @click="saveSkillCategory(ci)" :disabled="saving">
+                <span x-text="saving ? '保存中…' : '保存此分类'"></span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </template>
+    </div>
+
+    <!-- ═══ Journey ════════════════════════════════════════ -->
+    <div x-show="section === 'journey' && !loading">
+      <div class="page-title">我的历程 Journey</div>
+      <div class="page-sub">添加、编辑或删除时间线里程碑</div>
+
+      <div class="add-bar">
+        <button class="btn btn-primary btn-sm" @click="openAddJourney()">添加里程碑</button>
+      </div>
+
+      <div class="card" x-show="!journey.length">
+        <div class="empty">还没有里程碑，点击上方按钮添加</div>
+      </div>
+
+      <div class="card" x-show="journey.length" style="padding:0;overflow:hidden">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>年份</th>
+              <th>标题（中文）</th>
+              <th>状态</th>
+              <th>排序</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <template x-for="(m, i) in journey" :key="m.id">
+              <tr>
+                <td style="width:80px;color:#a1a1a6" x-text="m.year"></td>
+                <td x-text="m.title_zh"></td>
+                <td style="width:90px">
+                  <span :class="statusTag(m.milestone_status)" x-text="statusLabel(m.milestone_status)"></span>
+                </td>
+                <td style="width:60px;color:#86868b" x-text="m.sort_order"></td>
+                <td style="width:120px">
+                  <div class="td-actions">
+                    <button class="btn btn-ghost btn-sm" @click="openEditJourney(i)">编辑</button>
+                    <button class="btn btn-danger btn-sm" @click="deleteJourney(i)">删除</button>
+                  </div>
+                </td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ Projects ═══════════════════════════════════════ -->
+    <div x-show="section === 'projects' && !loading">
+      <div class="page-title">项目展示 Projects</div>
+      <div class="page-sub">管理简历中展示的项目</div>
+
+      <div class="add-bar">
+        <button class="btn btn-primary btn-sm" @click="openAddProject()">添加项目</button>
+      </div>
+
+      <div class="card" x-show="!projects.length">
+        <div class="empty">还没有项目，点击上方按钮添加</div>
+      </div>
+
+      <div class="card" x-show="projects.length" style="padding:0;overflow:hidden">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>项目名称（中文）</th>
+              <th>类型</th>
+              <th>状态</th>
+              <th>排序</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <template x-for="(p, i) in projects" :key="p.id">
+              <tr>
+                <td x-text="p.title_zh"></td>
+                <td style="width:90px;color:#86868b" x-text="p.category === 'work' ? '工作' : '个人'"></td>
+                <td style="width:80px">
+                  <span :class="p.status === 'completed' ? 'tag tag-done' : 'tag tag-progress'"
+                        x-text="p.status === 'completed' ? '已完成' : '进行中'"></span>
+                </td>
+                <td style="width:60px;color:#86868b" x-text="p.sort_order"></td>
+                <td style="width:120px">
+                  <div class="td-actions">
+                    <button class="btn btn-ghost btn-sm" @click="openEditProject(i)">编辑</button>
+                    <button class="btn btn-danger btn-sm" @click="deleteProject(i)">删除</button>
+                  </div>
+                </td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- ═══ Journey Modal ══════════════════════════════════════ -->
+  <div class="modal-backdrop" x-show="modal === 'journey'" x-transition @click.self="modal = null">
+    <div class="modal">
+      <div class="modal-title" x-text="isNew ? '添加里程碑' : '编辑里程碑'"></div>
+      <template x-if="editItem">
+        <div>
+          <div class="row">
+            <div class="field">
+              <label>年份</label>
+              <input type="text" x-model="editItem.year" placeholder="2024.4">
+            </div>
+            <div class="field">
+              <label>图标</label>
+              <select x-model="editItem.icon">
+                <option value="graduation">毕业</option>
+                <option value="briefcase">工作</option>
+                <option value="code">开发</option>
+                <option value="rocket">成长</option>
+              </select>
+            </div>
+          </div>
+          <div class="row">
+            <div class="field">
+              <label>标题 <span class="lang lang-zh">中</span></label>
+              <input type="text" x-model="editItem.title_zh">
+            </div>
+            <div class="field">
+              <label>标题 <span class="lang lang-en">EN</span></label>
+              <input type="text" x-model="editItem.title_en">
+            </div>
+          </div>
+          <div class="row">
+            <div class="field">
+              <label>描述 <span class="lang lang-zh">中</span></label>
+              <textarea x-model="editItem.description_zh"></textarea>
+            </div>
+            <div class="field">
+              <label>描述 <span class="lang lang-en">EN</span></label>
+              <textarea x-model="editItem.description_en"></textarea>
+            </div>
+          </div>
+          <div class="row">
+            <div class="field">
+              <label>状态</label>
+              <select x-model="editItem.milestone_status">
+                <option value="completed">已完成</option>
+                <option value="in_progress">进行中</option>
+                <option value="planned">规划中</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>排序（数字越小越前）</label>
+              <input type="text" x-model.number="editItem.sort_order" placeholder="0">
+            </div>
+          </div>
+        </div>
+      </template>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" @click="modal = null">取消</button>
+        <button class="btn btn-primary" @click="saveJourney()" :disabled="saving">
+          <span x-text="saving ? '保存中…' : '保存'"></span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ Project Modal ══════════════════════════════════════ -->
+  <div class="modal-backdrop" x-show="modal === 'project'" x-transition @click.self="modal = null">
+    <div class="modal">
+      <div class="modal-title" x-text="isNew ? '添加项目' : '编辑项目'"></div>
+      <template x-if="editItem">
+        <div>
+          <div class="row">
+            <div class="field">
+              <label>项目名 <span class="lang lang-zh">中</span></label>
+              <input type="text" x-model="editItem.title_zh">
+            </div>
+            <div class="field">
+              <label>项目名 <span class="lang lang-en">EN</span></label>
+              <input type="text" x-model="editItem.title_en">
+            </div>
+          </div>
+          <div class="row">
+            <div class="field">
+              <label>描述 <span class="lang lang-zh">中</span></label>
+              <textarea x-model="editItem.description_zh"></textarea>
+            </div>
+            <div class="field">
+              <label>描述 <span class="lang lang-en">EN</span></label>
+              <textarea x-model="editItem.description_en"></textarea>
+            </div>
+          </div>
+          <div class="row">
+            <div class="field">
+              <label>分类</label>
+              <select x-model="editItem.category">
+                <option value="personal">个人项目</option>
+                <option value="work">工作项目</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>演示方式</label>
+              <select x-model="editItem.demo_type">
+                <option value="link">链接（可直接访问）</option>
+                <option value="media">媒体（图片 / GIF）</option>
+              </select>
+            </div>
+          </div>
+          <div class="row">
+            <div class="field">
+              <label>链接地址</label>
+              <input type="text" x-model="editItem.link" placeholder="https://...  或  #">
+            </div>
+            <div class="field">
+              <label>封面图路径</label>
+              <input type="text" x-model="editItem.image" placeholder="/images/projects/xxx.png">
+            </div>
+          </div>
+          <div class="row">
+            <div class="field">
+              <label>技术标签（逗号分隔）</label>
+              <input type="text" x-model="editItem._techStr" placeholder="Vue3, Node.js, Docker">
+            </div>
+            <div class="field">
+              <label>状态</label>
+              <select x-model="editItem.status">
+                <option value="completed">已完成</option>
+                <option value="in-progress">进行中</option>
+                <option value="planning">规划中</option>
+              </select>
+            </div>
+          </div>
+          <div class="row">
+            <div class="field">
+              <label>痛点 Challenge <span class="lang lang-zh">中</span></label>
+              <textarea x-model="editItem.challenge_zh"></textarea>
+            </div>
+            <div class="field">
+              <label>痛点 Challenge <span class="lang lang-en">EN</span></label>
+              <textarea x-model="editItem.challenge_en"></textarea>
+            </div>
+          </div>
+          <div class="row">
+            <div class="field">
+              <label>方案 Solution <span class="lang lang-zh">中</span></label>
+              <textarea x-model="editItem.solution_zh"></textarea>
+            </div>
+            <div class="field">
+              <label>方案 Solution <span class="lang lang-en">EN</span></label>
+              <textarea x-model="editItem.solution_en"></textarea>
+            </div>
+          </div>
+          <div class="row">
+            <div class="field">
+              <label>成果 Result <span class="lang lang-zh">中</span></label>
+              <textarea x-model="editItem.result_zh"></textarea>
+            </div>
+            <div class="field">
+              <label>成果 Result <span class="lang lang-en">EN</span></label>
+              <textarea x-model="editItem.result_en"></textarea>
+            </div>
+          </div>
+          <div class="row">
+            <div class="field">
+              <label>排序</label>
+              <input type="text" x-model.number="editItem.sort_order" placeholder="0">
+            </div>
+            <div class="field">
+              <label>图片比例</label>
+              <select x-model="editItem.image_ratio">
+                <option value="16/9">16:9（横屏）</option>
+                <option value="9/16">9:16（竖屏 / 小程序）</option>
+                <option value="4/3">4:3</option>
+                <option value="1/1">1:1（正方形）</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </template>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" @click="modal = null">取消</button>
+        <button class="btn btn-primary" @click="saveProject()" :disabled="saving">
+          <span x-text="saving ? '保存中…' : '保存'"></span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" :class="toast.error ? 'toast-error' : 'toast-success'"
+       x-show="toast.show" x-text="toast.message"
+       x-transition:enter="transition ease-out duration-200"
+       x-transition:enter-start="opacity-0 translate-y-2"
+       x-transition:enter-end="opacity-100 translate-y-0"
+       x-transition:leave="transition ease-in duration-150"
+       x-transition:leave-start="opacity-100"
+       x-transition:leave-end="opacity-0"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  <script>
+  // SVG strings for nav icons — Lucide-style, 16×16 viewport
+  const NAV_ICONS = {
+    hero: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
+    about: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`,
+    skills: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>`,
+    journey: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,
+    projects: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>`,
+  }
+
+  function dashboard() {
+    return {
+      // ── State ──
+      section: 'hero',
+      loading: false,
+      saving: false,
+      token: localStorage.getItem('admin_token'),
+      toast: { show: false, message: '', error: false },
+      modal: null,
+      editItem: null,
+      editIndex: -1,
+      isNew: false,
+
+      // ── Nav ──
+      navItems: [
+        { id: 'hero',     svg: NAV_ICONS.hero,     label: '首页 Hero' },
+        { id: 'about',    svg: NAV_ICONS.about,    label: '关于我 About' },
+        { id: 'skills',   svg: NAV_ICONS.skills,   label: '技能 Skills' },
+        { id: 'journey',  svg: NAV_ICONS.journey,  label: '历程 Journey' },
+        { id: 'projects', svg: NAV_ICONS.projects, label: '项目 Projects' },
+      ],
+
+      // ── Section data ──
+      hero: {},
+      about: {},
+      aboutTagsZh: '',
+      aboutTagsEn: '',
+      skills: [],
+      journey: [],
+      projects: [],
+
+      // ── Init ──
+      async init() {
+        if (!this.token) { window.location.href = '/admin/index.html'; return }
+        await this.switchSection('hero')
+      },
+
+      async switchSection(id) {
+        this.section = id
+        this.loading = true
+        try {
+          const map = { hero: '/api/hero', about: '/api/about', skills: '/api/skills', journey: '/api/journey', projects: '/api/projects' }
+          const res = await fetch(map[id])
+          if (res.status === 401) { this.logout(); return }
+          const json = await res.json()
+          if (id === 'hero') {
+            this.hero = json.data || {}
+          } else if (id === 'about') {
+            this.about = json.data || {}
+            this.aboutTagsZh = (this.about.skill_tags_zh || []).join(', ')
+            this.aboutTagsEn = (this.about.skill_tags_en || []).join(', ')
+          } else if (id === 'skills') {
+            this.skills = (json.data || []).map(c => ({ ...c, _open: false, skills: c.skills || [] }))
+          } else if (id === 'journey') {
+            this.journey = json.data || []
+          } else if (id === 'projects') {
+            this.projects = json.data || []
+          }
+        } catch (e) {
+          this.showToast('加载失败: ' + e.message, true)
+        } finally {
+          this.loading = false
+        }
+      },
+
+      // ── API helpers ──
+      async apiFetch(method, url, body) {
+        const res = await fetch(url, {
+          method,
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${this.token}` },
+          body: body ? JSON.stringify(body) : undefined,
+        })
+        if (res.status === 401) { this.logout(); return null }
+        const json = await res.json()
+        if (!res.ok) throw new Error(json.error || '操作失败')
+        return json
+      },
+
+      // ── Hero ──
+      async saveHero() {
+        this.saving = true
+        try {
+          const r = await this.apiFetch('PUT', '/api/hero', this.hero)
+          if (r) { this.hero = r.data; this.showToast('Hero 已保存') }
+        } catch (e) { this.showToast(e.message, true) }
+        finally { this.saving = false }
+      },
+
+      // ── About ──
+      async saveAbout() {
+        const splitTags = s => s.split(/[,，]/).map(t => t.trim()).filter(Boolean)
+        this.about.skill_tags_zh = splitTags(this.aboutTagsZh)
+        this.about.skill_tags_en = splitTags(this.aboutTagsEn)
+        this.saving = true
+        try {
+          const r = await this.apiFetch('PUT', '/api/about', this.about)
+          if (r) { this.about = r.data; this.showToast('About 已保存') }
+        } catch (e) { this.showToast(e.message, true) }
+        finally { this.saving = false }
+      },
+
+      // ── Skills ──
+      addSkill(ci) {
+        this.skills[ci].skills.push({ name_zh: '', name_en: '', highlight_zh: '', highlight_en: '', description_zh: '', description_en: '' })
+      },
+      removeSkill(ci, si) {
+        if (!confirm('确认删除这个技能条目？')) return
+        this.skills[ci].skills.splice(si, 1)
+      },
+      async saveSkillCategory(ci) {
+        const cat = this.skills[ci]
+        this.saving = true
+        try {
+          const r = await this.apiFetch('PUT', `/api/skills/${cat.id}`, cat)
+          if (r) { this.skills[ci] = { ...r.data, _open: true }; this.showToast('分类已保存') }
+        } catch (e) { this.showToast(e.message, true) }
+        finally { this.saving = false }
+      },
+
+      // ── Journey ──
+      openAddJourney() {
+        this.editItem = { year: '', title_zh: '', title_en: '', description_zh: '', description_en: '', icon: 'code', milestone_status: 'completed', sort_order: this.journey.length }
+        this.isNew = true; this.editIndex = -1; this.modal = 'journey'
+      },
+      openEditJourney(i) {
+        this.editItem = { ...this.journey[i] }
+        this.isNew = false; this.editIndex = i; this.modal = 'journey'
+      },
+      async saveJourney() {
+        this.saving = true
+        try {
+          if (this.isNew) {
+            const r = await this.apiFetch('POST', '/api/journey', this.editItem)
+            if (r) this.journey.push(r.data)
+          } else {
+            const r = await this.apiFetch('PUT', `/api/journey/${this.editItem.id}`, this.editItem)
+            if (r) this.journey[this.editIndex] = r.data
+          }
+          this.modal = null; this.showToast('里程碑已保存')
+        } catch (e) { this.showToast(e.message, true) }
+        finally { this.saving = false }
+      },
+      async deleteJourney(i) {
+        if (!confirm('确认删除「' + this.journey[i].title_zh + '」？')) return
+        try {
+          await this.apiFetch('DELETE', `/api/journey/${this.journey[i].id}`)
+          this.journey.splice(i, 1); this.showToast('已删除')
+        } catch (e) { this.showToast(e.message, true) }
+      },
+
+      // ── Projects ──
+      openAddProject() {
+        this.editItem = { title_zh: '', title_en: '', description_zh: '', description_en: '', image: '', category: 'personal', demo_type: 'link', link: '', status: 'completed', image_ratio: '16/9', _techStr: '', sort_order: this.projects.length }
+        this.isNew = true; this.editIndex = -1; this.modal = 'project'
+      },
+      openEditProject(i) {
+        const p = { ...this.projects[i] }
+        p._techStr = (p.technologies || []).join(', ')
+        this.editItem = p; this.isNew = false; this.editIndex = i; this.modal = 'project'
+      },
+      async saveProject() {
+        const item = { ...this.editItem }
+        item.technologies = (item._techStr || '').split(/[,，]/).map(t => t.trim()).filter(Boolean)
+        delete item._techStr
+        this.saving = true
+        try {
+          if (this.isNew) {
+            const r = await this.apiFetch('POST', '/api/projects', item)
+            if (r) this.projects.push(r.data)
+          } else {
+            const r = await this.apiFetch('PUT', `/api/projects/${item.id}`, item)
+            if (r) this.projects[this.editIndex] = r.data
+          }
+          this.modal = null; this.showToast('项目已保存')
+        } catch (e) { this.showToast(e.message, true) }
+        finally { this.saving = false }
+      },
+      async deleteProject(i) {
+        if (!confirm('确认删除「' + this.projects[i].title_zh + '」？')) return
+        try {
+          await this.apiFetch('DELETE', `/api/projects/${this.projects[i].id}`)
+          this.projects.splice(i, 1); this.showToast('已删除')
+        } catch (e) { this.showToast(e.message, true) }
+      },
+
+      // ── Helpers ──
+      showToast(msg, error = false) {
+        this.toast = { show: true, message: msg, error }
+        setTimeout(() => { this.toast.show = false }, 3000)
+      },
+      logout() {
+        localStorage.removeItem('admin_token')
+        window.location.href = '/admin/index.html'
+      },
+      fmt(ts) {
+        if (!ts) return ''
+        return new Date(ts).toLocaleString('zh-CN', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })
+      },
+      statusTag(s) {
+        return { completed: 'tag tag-done', in_progress: 'tag tag-progress', 'in-progress': 'tag tag-progress', planned: 'tag tag-plan' }[s] || 'tag tag-done'
+      },
+      statusLabel(s) {
+        return { completed: '已完成', in_progress: '进行中', 'in-progress': '进行中', planned: '规划中' }[s] || '已完成'
+      },
+    }
+  }
+  </script>
+</body>
+</html>

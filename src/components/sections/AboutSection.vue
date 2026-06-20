@@ -16,7 +16,7 @@
             </div>
             <div class="skill-tags">
               <span 
-                v-for="(tag, index) in aboutData.skillTags" 
+                v-for="(tag, index) in skillTags"
                 :key="index" 
                 class="skill-tag"
               >
@@ -53,18 +53,30 @@ import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { aboutData } from '../../data/about.js'
 import { isChinese } from '../../composables/useI18n.js'
+import { useContent } from '../../composables/useContent.js'
 
 gsap.registerPlugin(ScrollTrigger)
 
 const imageError = ref(false)
 const aboutRoot = ref(null)
 
-const descParagraphs = computed(() =>
-  aboutData.description[isChinese.value ? 'zh' : 'en']
+const { data: cmsAbout } = useContent('about')
+
+const descParagraphs = computed(() => {
+  const lang = isChinese.value ? 'zh' : 'en'
+  const cmsText = lang === 'zh' ? cmsAbout.value?.description_zh : cmsAbout.value?.description_en
+  return (cmsText || aboutData.description[lang])
     .split('\n')
     .map(p => p.trim())
     .filter(Boolean)
-)
+})
+
+const skillTags = computed(() => {
+  const lang = isChinese.value ? 'zh' : 'en'
+  const cmsTags = lang === 'zh' ? cmsAbout.value?.skill_tags_zh : cmsAbout.value?.skill_tags_en
+  if (cmsTags?.length) return cmsTags.map(tag => ({ zh: tag, en: tag }))
+  return aboutData.skillTags
+})
 
 const handleImageError = () => {
   imageError.value = true

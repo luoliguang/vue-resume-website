@@ -67,9 +67,27 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { skillCategories } from '../../data/skills.js'
+import { ref, computed } from 'vue'
+import { skillCategories as staticCategories } from '../../data/skills.js'
 import { t, isChinese } from '../../composables/useI18n.js'
+import { useContent } from '../../composables/useContent.js'
+
+const { data: cmsSkills } = useContent('skills')
+
+const skillCategories = computed(() => {
+  if (cmsSkills.value?.length) {
+    return cmsSkills.value.map(cat => ({
+      id: cat.category_id,
+      name: { zh: cat.name_zh, en: cat.name_en },
+      skills: (cat.skills || []).map(s => ({
+        name:        { zh: s.name_zh,        en: s.name_en },
+        highlight:   { zh: s.highlight_zh,   en: s.highlight_en },
+        description: { zh: s.description_zh, en: s.description_en },
+      })),
+    }))
+  }
+  return staticCategories
+})
 
 const activeCategory = ref('apparel')
 

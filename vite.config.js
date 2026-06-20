@@ -5,7 +5,10 @@ export default defineConfig({
   plugins: [vue()],
   server: {
     port: 3005,
-    open: true
+    open: true,
+    proxy: {
+      '/api': { target: 'http://localhost:3025', changeOrigin: true }
+    }
   },
   assetsInclude: ['**/*.mp4', '**/*.webm', '**/*.mov'],
   publicDir: 'public'

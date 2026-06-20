@@ -221,9 +221,31 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { projectShowcase, projectCategories } from '../../data/projectShowcase.js'
+import { projectShowcase as staticShowcase, projectCategories as staticCategories } from '../../data/projectShowcase.js'
 import { t, isChinese } from '../../composables/useI18n.js'
 import GlassToggle from '../ui/GlassToggle.vue'
+import { useContent } from '../../composables/useContent.js'
+
+const { data: cmsProjects } = useContent('projects')
+
+const projectShowcase = computed(() => {
+  if (cmsProjects.value?.length) {
+    return cmsProjects.value.map(p => ({
+      id: p.id, type: p.type,
+      title:       { zh: p.title_zh,       en: p.title_en ?? p.title_zh },
+      description: { zh: p.description_zh, en: p.description_en ?? p.description_zh },
+      image: p.image, detailImages: p.detail_images ?? [], technologies: p.technologies ?? [],
+      category: p.category, demoType: p.demo_type, link: p.link, status: p.status,
+      imageRatio: p.image_ratio, mediaType: p.media_type, previewGif: p.preview_gif,
+      challenge: { zh: p.challenge_zh, en: p.challenge_en },
+      solution:  { zh: p.solution_zh,  en: p.solution_en },
+      result:    { zh: p.result_zh,    en: p.result_en },
+      before:    { zh: p.before_zh,    en: p.before_en },
+      after:     { zh: p.after_zh,     en: p.after_en },
+    }))
+  }
+  return staticShowcase
+})
 
 const activeCategory = ref('all')
 const imageErrors = ref({})
@@ -237,9 +259,19 @@ const isLightboxOpen = ref(false)
 const lightboxImages = ref([])
 const lightboxIndex = ref(0)
 
+const projectCategories = computed(() => {
+  const list = projectShowcase.value
+  return [
+    { id: 'all',      name: { zh: '全部项目', en: 'All Projects' },    count: list.length },
+    { id: 'work',     name: { zh: '工作项目', en: 'Work Projects' },   count: list.filter(p => p.category === 'work').length },
+    { id: 'personal', name: { zh: '个人项目', en: 'Personal Projects' }, count: list.filter(p => p.category === 'personal').length },
+  ]
+})
+
 const filteredProjects = computed(() => {
-  if (activeCategory.value === 'all') return projectShowcase
-  return projectShowcase.filter(project => project.category === activeCategory.value)
+  const list = projectShowcase.value
+  if (activeCategory.value === 'all') return list
+  return list.filter(project => project.category === activeCategory.value)
 })
 
 const setActiveCategory = (categoryId) => {
