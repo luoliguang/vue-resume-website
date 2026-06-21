@@ -1,0 +1,75 @@
+name: Deploy to Server
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:   # 允许手动触发
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # ── 1. 拉代码 ────────────────────────────────────────────
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # ── 2. 构建前端 ──────────────────────────────────────────
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install & Build
+        run: |
+          npm ci
+          npm run build
+
+      # ── 3. 配置 SSH ──────────────────────────────────────────
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -p ${{ secrets.SERVER_PORT }} ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts 2>/dev/null
+
+      # ── 4. 同步文件 ──────────────────────────────────────────
+      - name: Sync dist/ (frontend build)
+        run: |
+          rsync -az --delete \
+            -e "ssh -p ${{ secrets.SERVER_PORT }}" \
+            dist/ \
+            ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_PATH }}/dist/
+
+      - name: Sync admin/ (admin panel)
+        run: |
+          rsync -az --delete \
+            -e "ssh -p ${{ secrets.SERVER_PORT }}" \
+            admin/ \
+            ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_PATH }}/admin/
+
+      - name: Sync server/ (backend)
+        run: |
+          rsync -az --delete \
+            --exclude 'node_modules/' \
+            --exclude '.env' \
+            --exclude '.env.*' \
+            -e "ssh -p ${{ secrets.SERVER_PORT }}" \
+            server/ \
+            ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_PATH }}/server/
+
+      # ── 5. 远端：安装依赖 + 重启服务 ────────────────────────
+      - name: Restart backend via PM2
+        run: |
+          ssh -p ${{ secrets.SERVER_PORT }} \
+            ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
+            set -e
+            cd ${{ secrets.SERVER_PATH }}/server
+            npm install --omit=dev --silent
+            pm2 describe resume-server > /dev/null 2>&1 \
+              && pm2 restart resume-server \
+              || pm2 start index.js --name resume-server
+            pm2 save
+            echo "Deploy done: $(date)"
+          EOF
