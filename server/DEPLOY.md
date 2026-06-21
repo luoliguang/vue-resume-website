@@ -53,13 +53,19 @@ npm run db:seed   # 导入前端静态数据
 
 仓库 → Settings → Secrets and variables → Actions → New repository secret
 
-| Secret 名称        | 值说明                              |
-|--------------------|-------------------------------------|
-| `SERVER_HOST`      | 服务器公网 IP 或域名                |
-| `SERVER_PORT`      | SSH 端口（宝塔默认改过，查宝塔安全） |
-| `SERVER_USER`      | SSH 用户名，通常是 `root`           |
-| `SSH_PRIVATE_KEY`  | 见下方「生成 SSH 密钥」步骤         |
-| `SERVER_PATH`      | `/www/wwwroot/resume`               |
+| Secret 名称        | 示例值                              | 说明                          |
+|--------------------|-------------------------------------|-------------------------------|
+| `SERVER_HOST`      | `123.123.123.123`                   | 服务器公网 IP 或域名          |
+| `SERVER_PORT`      | `22`                                | SSH 端口，查宝塔安全面板      |
+| `SERVER_USER`      | `root`                              | SSH 用户名                    |
+| `SSH_PRIVATE_KEY`  | `-----BEGIN OPENSSH...`             | 见下方「生成 SSH 密钥」步骤   |
+| `SERVER_PATH`      | `/www/wwwroot/resume`               | 服务器部署根目录              |
+| `SERVER_DOMAIN`    | `resume.example.com`                | 你的域名（或服务器 IP）       |
+| `API_PORT`         | `3025`                              | Node.js 后端监听端口          |
+
+> **Nginx 配置**：每次 deploy 会自动生成 `$SERVER_PATH/nginx.conf`，
+> 第一次部署完成后，把该文件内容复制到宝塔的站点 Nginx 配置里保存即可，
+> 后续路径变化时重新部署会自动更新这个文件。
 
 ### 生成 SSH 密钥（本机执行）
 ```bash

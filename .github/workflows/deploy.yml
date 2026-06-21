@@ -3,7 +3,14 @@ name: Deploy to Server
 on:
   push:
     branches: [main]
-  workflow_dispatch:   # 允许手动触发
+  workflow_dispatch:
+
+env:
+  SERVER_PATH: ${{ secrets.SERVER_PATH }}   # 例：/www/wwwroot/resume
+  SERVER_USER: ${{ secrets.SERVER_USER }}   # 例：root
+  SERVER_HOST: ${{ secrets.SERVER_HOST }}   # 例：123.123.123.123
+  SERVER_PORT: ${{ secrets.SERVER_PORT }}   # 例：22
+  API_PORT:    ${{ secrets.API_PORT }}      # 例：3025
 
 jobs:
   deploy:
@@ -32,44 +39,51 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -p ${{ secrets.SERVER_PORT }} ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts 2>/dev/null
+          ssh-keyscan -p $SERVER_PORT $SERVER_HOST >> ~/.ssh/known_hosts 2>/dev/null
 
       # ── 4. 同步文件 ──────────────────────────────────────────
-      - name: Sync dist/ (frontend build)
+      - name: Sync dist/
         run: |
           rsync -az --delete \
-            -e "ssh -p ${{ secrets.SERVER_PORT }}" \
-            dist/ \
-            ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_PATH }}/dist/
+            -e "ssh -p $SERVER_PORT" \
+            dist/ $SERVER_USER@$SERVER_HOST:$SERVER_PATH/dist/
 
-      - name: Sync admin/ (admin panel)
+      - name: Sync admin/
         run: |
           rsync -az --delete \
-            -e "ssh -p ${{ secrets.SERVER_PORT }}" \
-            admin/ \
-            ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_PATH }}/admin/
+            -e "ssh -p $SERVER_PORT" \
+            admin/ $SERVER_USER@$SERVER_HOST:$SERVER_PATH/admin/
 
-      - name: Sync server/ (backend)
+      - name: Sync server/
         run: |
           rsync -az --delete \
             --exclude 'node_modules/' \
             --exclude '.env' \
             --exclude '.env.*' \
-            -e "ssh -p ${{ secrets.SERVER_PORT }}" \
-            server/ \
-            ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_PATH }}/server/
+            -e "ssh -p $SERVER_PORT" \
+            server/ $SERVER_USER@$SERVER_HOST:$SERVER_PATH/server/
 
-      # ── 5. 远端：安装依赖 + 重启服务 ────────────────────────
-      - name: Restart backend via PM2
+      # ── 5. 生成 nginx 配置并上传 ────────────────────────────
+      - name: Generate & upload nginx config
         run: |
-          ssh -p ${{ secrets.SERVER_PORT }} \
-            ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
-            set -e
-            cd ${{ secrets.SERVER_PATH }}/server
-            npm install --omit=dev --silent
-            pm2 describe resume-server > /dev/null 2>&1 \
-              && pm2 restart resume-server \
-              || pm2 start index.js --name resume-server
-            pm2 save
-            echo "Deploy done: $(date)"
-          EOF
+          sed \
+            -e "s|__PATH__|$SERVER_PATH|g" \
+            -e "s|__DOMAIN__|${{ secrets.SERVER_DOMAIN }}|g" \
+            -e "s|__API_PORT__|$API_PORT|g" \
+            server/nginx.conf.example > /tmp/nginx.conf
+
+          scp -P $SERVER_PORT \
+            /tmp/nginx.conf \
+            $SERVER_USER@$SERVER_HOST:$SERVER_PATH/nginx.conf
+
+      # ── 6. 远端：安装依赖 + 重启服务 ────────────────────────
+      - name: Install deps & restart PM2
+        run: |
+          ssh -p $SERVER_PORT $SERVER_USER@$SERVER_HOST \
+            "cd $SERVER_PATH/server && \
+             npm install --omit=dev --silent && \
+             (pm2 describe resume-server > /dev/null 2>&1 \
+               && pm2 restart resume-server \
+               || pm2 start index.js --name resume-server) && \
+             pm2 save && \
+             echo 'Deploy done at \$(date)'"

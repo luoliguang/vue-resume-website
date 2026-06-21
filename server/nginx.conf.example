@@ -1,24 +1,24 @@
 server {
     listen 80;
-    server_name your-domain.com;   # 替换为你的域名或服务器 IP
+    server_name __DOMAIN__;
 
     # 前端 Vue SPA
     location / {
-        root /www/wwwroot/resume/dist;
+        root __PATH__/dist;
         index index.html;
         try_files $uri $uri/ /index.html;
     }
 
     # 后台管理面板
     location /admin/ {
-        alias /www/wwwroot/resume/admin/;
+        alias __PATH__/admin/;
         index index.html;
         try_files $uri $uri/ /admin/index.html;
     }
 
     # API 反代到 Node.js
     location /api/ {
-        proxy_pass         http://127.0.0.1:3025;
+        proxy_pass         http://127.0.0.1:__API_PORT__;
         proxy_http_version 1.1;
         proxy_set_header   Host             $host;
         proxy_set_header   X-Real-IP        $remote_addr;
