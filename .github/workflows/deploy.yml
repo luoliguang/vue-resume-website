@@ -45,12 +45,14 @@ jobs:
       - name: Sync dist/
         run: |
           rsync -az --delete \
+            --exclude '.user.ini' \
             -e "ssh -p $SERVER_PORT" \
             dist/ $SERVER_USER@$SERVER_HOST:$SERVER_PATH/dist/
 
       - name: Sync admin/
         run: |
           rsync -az --delete \
+            --exclude '.user.ini' \
             -e "ssh -p $SERVER_PORT" \
             admin/ $SERVER_USER@$SERVER_HOST:$SERVER_PATH/admin/
 
