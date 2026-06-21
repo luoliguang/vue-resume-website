@@ -332,6 +332,47 @@
     .toast-success { background: #1c3a27; border: 1px solid rgba(52,199,89,.3); color: #34c759; }
     .toast-error   { background: #3a1c1c; border: 1px solid rgba(255,69,58,.3);  color: #ff453a; }
 
+    /* ── Image upload ────────────────────────── */
+    .img-wrap { display: flex; flex-direction: column; gap: 8px; }
+    .img-preview {
+      position: relative;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #111;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .img-preview img { width: 100%; max-height: 160px; object-fit: cover; display: block; }
+    .img-remove {
+      position: absolute; top: 6px; right: 6px;
+      width: 22px; height: 22px;
+      background: rgba(0,0,0,.65); border: none; border-radius: 50%;
+      cursor: pointer; color: #f5f5f7;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .img-remove svg { width: 11px; height: 11px; }
+    .img-upload-btn {
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 8px 12px;
+      background: transparent;
+      border: 1px dashed rgba(255,255,255,0.18);
+      border-radius: 8px;
+      cursor: pointer; color: #86868b;
+      font-size: 13px; font-family: inherit;
+      transition: border-color .15s, color .15s;
+      width: 100%;
+    }
+    .img-upload-btn:hover { border-color: #2997ff; color: #2997ff; }
+    .img-upload-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
+    .detail-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px;
+    }
+    .detail-thumb {
+      position: relative; border-radius: 8px; overflow: hidden;
+      background: #111; border: 1px solid rgba(255,255,255,.08);
+      aspect-ratio: 1;
+    }
+    .detail-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
     /* ── States ──────────────────────────────── */
     .loading-msg { color: #86868b; font-size: 14px; padding: 40px 0; text-align: center; }
     .empty { text-align: center; padding: 40px; color: #86868b; font-size: 14px; }
@@ -818,8 +859,21 @@
               <input type="text" x-model="editItem.link" placeholder="https://...  或  #">
             </div>
             <div class="field">
-              <label>封面图路径</label>
-              <input type="text" x-model="editItem.image" placeholder="/images/projects/xxx.png">
+              <label>封面图</label>
+              <div class="img-wrap">
+                <div class="img-preview" x-show="editItem.image">
+                  <img :src="editItem.image" alt="cover">
+                  <button class="img-remove" @click="editItem.image = ''" type="button">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                  </button>
+                </div>
+                <button class="img-upload-btn" @click="triggerUpload('up-cover')" type="button">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
+                  <span x-text="editItem.image ? '重新上传' : '上传封面图'"></span>
+                </button>
+                <input id="up-cover" type="file" accept="image/*" style="display:none" @change="handleUpload($event, v => editItem.image = v)">
+                <input type="text" x-model="editItem.image" placeholder="/uploads/xxx.jpg">
+              </div>
             </div>
           </div>
           <div class="row">
@@ -866,6 +920,49 @@
               <textarea x-model="editItem.result_en"></textarea>
             </div>
           </div>
+          <!-- GIF / 预览图（media 类型时显示）-->
+          <div class="row single" x-show="editItem.demo_type === 'media'">
+            <div class="field">
+              <label>GIF / 预览图</label>
+              <div class="img-wrap">
+                <div class="img-preview" x-show="editItem.preview_gif">
+                  <img :src="editItem.preview_gif" alt="gif">
+                  <button class="img-remove" @click="editItem.preview_gif = ''" type="button">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                  </button>
+                </div>
+                <button class="img-upload-btn" @click="triggerUpload('up-gif')" type="button">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
+                  <span x-text="editItem.preview_gif ? '重新上传' : '上传 GIF / 图片'"></span>
+                </button>
+                <input id="up-gif" type="file" accept="image/*" style="display:none" @change="handleUpload($event, v => editItem.preview_gif = v)">
+                <input type="text" x-model="editItem.preview_gif" placeholder="/uploads/xxx.gif">
+              </div>
+            </div>
+          </div>
+
+          <!-- 详情图（多图，适用竖屏小程序等）-->
+          <div class="row single">
+            <div class="field">
+              <label>详情图 <span style="color:#86868b;font-weight:400;text-transform:none">（多图，竖屏 / 小程序项目使用）</span></label>
+              <div class="detail-grid" x-show="editItem.detail_images?.length">
+                <template x-for="(img, di) in (editItem.detail_images || [])" :key="di">
+                  <div class="detail-thumb">
+                    <img :src="img" alt="detail">
+                    <button class="img-remove" @click="removeDetailImage(di)" type="button">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </button>
+                  </div>
+                </template>
+              </div>
+              <button class="img-upload-btn" @click="triggerUpload('up-detail')" type="button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
+                添加详情图
+              </button>
+              <input id="up-detail" type="file" accept="image/*" style="display:none" @change="handleUpload($event, v => addDetailImage(v))">
+            </div>
+          </div>
+
           <div class="row">
             <div class="field">
               <label>排序</label>
@@ -1096,6 +1193,38 @@
           await this.apiFetch('DELETE', `/api/projects/${this.projects[i].id}`)
           this.projects.splice(i, 1); this.showToast('已删除')
         } catch (e) { this.showToast(e.message, true) }
+      },
+
+      // ── Image upload ──
+      async handleUpload(event, setter) {
+        const file = event.target.files[0]
+        if (!file) return
+        const form = new FormData()
+        form.append('file', file)
+        try {
+          const res = await fetch('/api/upload', {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${this.token}` },
+            body: form,
+          })
+          const json = await res.json()
+          if (!res.ok) throw new Error(json.error || '上传失败')
+          setter(json.url)
+          this.showToast('图片已上传')
+        } catch (e) {
+          this.showToast(e.message, true)
+        }
+        event.target.value = ''
+      },
+      triggerUpload(id) {
+        document.getElementById(id).click()
+      },
+      addDetailImage(url) {
+        if (!this.editItem.detail_images) this.editItem.detail_images = []
+        this.editItem.detail_images.push(url)
+      },
+      removeDetailImage(i) {
+        this.editItem.detail_images.splice(i, 1)
       },
 
       // ── Helpers ──

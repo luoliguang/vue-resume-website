@@ -16,6 +16,11 @@ server {
         try_files $uri $uri/ /admin/index.html;
     }
 
+    # 上传图片（持久化，不随部署清空）
+    location /uploads/ {
+        alias __PATH__/uploads/;
+    }
+
     # API 反代到 Node.js
     location /api/ {
         proxy_pass         http://127.0.0.1:__API_PORT__;

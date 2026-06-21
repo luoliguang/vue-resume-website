@@ -12,6 +12,9 @@ yarn-error.log*
 dist/
 build/
 
+# Uploaded images (persisted on server, not tracked in git)
+uploads/
+
 # Environment variables
 .env
 .env.local

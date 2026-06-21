@@ -10,6 +10,7 @@ import aboutRouter   from './routes/about.js'
 import skillsRouter  from './routes/skills.js'
 import journeyRouter from './routes/journey.js'
 import projectsRouter from './routes/projects.js'
+import uploadRouter   from './routes/upload.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const app = express()
@@ -17,11 +18,13 @@ const app = express()
 app.use(cors())
 app.use(express.json({ limit: '2mb' }))
 
-// 管理后台静态文件
-app.use('/admin', express.static(join(__dirname, '../admin')))
+// 静态文件
+app.use('/admin',   express.static(join(__dirname, '../admin')))
+app.use('/uploads', express.static(join(__dirname, '../uploads')))
 
 // API 路由
 app.use('/api/admin',    authRouter)
+app.use('/api/upload',   uploadRouter)
 app.use('/api/hero',     heroRouter)
 app.use('/api/about',    aboutRouter)
 app.use('/api/skills',   skillsRouter)
