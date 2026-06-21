@@ -56,6 +56,12 @@ jobs:
             -e "ssh -p $SERVER_PORT" \
             admin/ $SERVER_USER@$SERVER_HOST:$SERVER_PATH/admin/
 
+      - name: Sync src/data/ (needed by seed script)
+        run: |
+          rsync -az \
+            -e "ssh -p $SERVER_PORT" \
+            src/data/ $SERVER_USER@$SERVER_HOST:$SERVER_PATH/src/data/
+
       - name: Sync server/
         run: |
           rsync -az --delete \
