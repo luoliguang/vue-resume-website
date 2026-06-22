@@ -24,6 +24,7 @@ const translations = {
       cta: '了解我',
       cta2: '查看项目',
       cta3: '30秒认识我',
+      cta4: '下载简历',
       quickIntro: {
         tagline: '一个会写代码的服装跟单',
         stat1num: '2年+', stat1label: '跟单经验',
@@ -130,6 +131,7 @@ const translations = {
       cta: 'About Me',
       cta2: 'View Projects',
       cta3: 'Know Me in 30s',
+      cta4: 'Download CV',
       quickIntro: {
         tagline: 'A garment merchandiser who codes',
         stat1num: '2yr+', stat1label: 'Merchandising',
