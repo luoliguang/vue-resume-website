@@ -395,7 +395,7 @@ onUnmounted(() => {
   position: relative;
   height: 180px;
   overflow: hidden;
-  background: #f8f9fa;
+  background: #161617;
 }
 
 .project-image img {
@@ -468,7 +468,7 @@ onUnmounted(() => {
 .project-description {
   font-size: 0.875rem;
   line-height: 1.55;
-  color: #666;
+  color: #86868b;
   margin: 0 0 12px;
   display: -webkit-box;
   -webkit-line-clamp: 3;
@@ -485,12 +485,13 @@ onUnmounted(() => {
 }
 
 .tech-tag {
-  background: #e3f2fd;
-  color: #1976d2;
+  background: rgba(41, 151, 255, 0.1);
+  color: #2997ff;
   padding: 3px 9px;
   border-radius: 20px;
   font-size: 0.72rem;
   font-weight: 500;
+  border: 1px solid rgba(41, 151, 255, 0.2);
 }
 
 .project-action {
@@ -531,8 +532,9 @@ onUnmounted(() => {
   max-height: calc(100vh - 48px);
   overflow-y: auto;
   border-radius: 20px;
-  background: #fff;
-  box-shadow: 0 24px 80px rgba(15, 23, 42, 0.25);
+  background: #1d1d1f;
+  border: 1px solid #333336;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
   padding: 36px;
 }
 
@@ -544,8 +546,8 @@ onUnmounted(() => {
   height: 36px;
   border: none;
   border-radius: 50%;
-  background: rgba(44, 62, 80, 0.08);
-  color: #2c3e50;
+  background: #333336;
+  color: #f5f5f7;
   font-size: 22px;
   line-height: 1;
   cursor: pointer;
@@ -553,7 +555,7 @@ onUnmounted(() => {
 }
 
 .detail-close:hover {
-  background: rgba(44, 62, 80, 0.15);
+  background: #424245;
 }
 
 .detail-header {
@@ -564,7 +566,7 @@ onUnmounted(() => {
 .detail-title {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #2c3e50;
+  color: #f5f5f7;
   margin: 0 0 12px;
 }
 
@@ -573,7 +575,7 @@ onUnmounted(() => {
   margin-bottom: 20px;
   border-radius: 12px;
   overflow: hidden;
-  background: #f8f9fa;
+  background: #161617;
 }
 
 .detail-media-content {
@@ -621,7 +623,7 @@ onUnmounted(() => {
 .detail-desc {
   font-size: 0.95rem;
   line-height: 1.7;
-  color: #4a5568;
+  color: #c7c7cc;
   margin: 0 0 20px;
 }
 
@@ -640,13 +642,13 @@ onUnmounted(() => {
 }
 
 .ba-item.before {
-  background: #fff5f5;
-  border-color: #fecaca;
+  background: rgba(255, 69, 58, 0.08);
+  border-color: rgba(255, 69, 58, 0.3);
 }
 
 .ba-item.after {
-  background: #f0fdf4;
-  border-color: #86efac;
+  background: rgba(48, 209, 88, 0.08);
+  border-color: rgba(48, 209, 88, 0.3);
 }
 
 .ba-label {
@@ -657,13 +659,13 @@ onUnmounted(() => {
   margin-bottom: 6px;
 }
 
-.ba-item.before .ba-label { color: #dc2626; }
-.ba-item.after .ba-label  { color: #16a34a; }
+.ba-item.before .ba-label { color: #ff453a; }
+.ba-item.after .ba-label  { color: #30d158; }
 
 .ba-content {
   font-size: 0.84rem;
   line-height: 1.5;
-  color: #555;
+  color: #ebebf0;
 }
 
 /* 三段式 */
@@ -680,37 +682,37 @@ onUnmounted(() => {
   align-items: flex-start;
   padding: 12px 14px;
   border-radius: 10px;
-  background: #f8f9fa;
+  background: #161617;
   border-left: 3px solid;
 }
 
-.dp-item.challenge { border-color: #f39c12; }
-.dp-item.solution  { border-color: #3498db; }
-.dp-item.result    { border-color: #27ae60; }
+.dp-item.challenge { border-color: #ff9f0a; }
+.dp-item.solution  { border-color: #2997ff; }
+.dp-item.result    { border-color: #30d158; }
 
 .dp-label {
   flex: 0 0 56px;
   font-size: 0.75rem;
   font-weight: 700;
-  color: #2c3e50;
+  color: #86868b;
   padding-top: 2px;
 }
 
 .dp-text {
   font-size: 0.875rem;
   line-height: 1.55;
-  color: #555;
+  color: #c7c7cc;
 }
 
 /* 访问按钮 */
 .detail-action {
   padding-top: 16px;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid #333336;
 }
 
 .detail-link-btn {
   display: inline-block;
-  color: #3498db;
+  color: #2997ff;
   text-decoration: none;
   font-weight: 600;
   font-size: 0.9rem;
@@ -718,7 +720,7 @@ onUnmounted(() => {
 }
 
 .detail-link-btn:hover {
-  color: #2980b9;
+  color: #0a84ff;
 }
 
 /* ── 平板端 ── */

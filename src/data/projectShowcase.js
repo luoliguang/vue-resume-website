@@ -20,11 +20,11 @@ export const projectShowcase = [
     type: 'website', // 网站项目 - 可访问
     title: {
       zh: '实拍图素材网站',
-      en: 'Real Photo Material Website'
+      en: 'Product Photo Library'
     },
     description: {
       zh: '因客户经常需要一些实拍图，但有时不能够及时响应并且难以搜寻，因此开发了实拍图素材网站，可以方便客户获取所需信息，并且可以随时更新素材库。',
-      en: 'Because customers often need some real photos, but sometimes they cannot respond in time and it is difficult to search, therefore a real photo material website was developed to help customers easily obtain the information they need, and the material library can be updated at any time .'
+      en: 'Customers frequently needed product photos but found them scattered and hard to locate. Built a self-serve photo library so clients can browse and retrieve assets anytime, with a live-editable catalog.'
     },
     image: '/images/projects/realPhotoMaterial-preview.png',
     technologies: ['Vue3', 'Node.js', '阿里云', 'GitHub Actions'],
@@ -52,11 +52,11 @@ export const projectShowcase = [
     type: 'website',
     title: {
       zh: 'AI智能问答知识库系统',
-      en: 'AI Intelligent Question and Answer Knowledge Base System'
+      en: 'AI-Powered Knowledge Base'
     },
     description: {
       zh: '因客户需要获取最新信息、面料、已经一些服装行业的基础知识。因此部署了AI知识库系统，可以方便客户获取所需信息，并且可以随时更新知识库。',
-      en: 'Because customers need to obtain the latest information, fabrics, and basic knowledge of the clothing industry. Therefore, an AI knowledge base system was deployed to help customers easily obtain the information they need, and the knowledge base can be updated at any time .'
+      en: 'Clients needed instant access to fabric specs and industry knowledge beyond business hours. Deployed an AI knowledge base with 24/7 Q&A, keeping answers accurate as the catalog grows.'
     },
     image: '/images/projects/knowledgeBase-preview.png',
     technologies: ['知识库', 'AI', 'Docker'],
@@ -113,7 +113,7 @@ export const projectShowcase = [
     },
     result: {
       zh: '订单处理效率提升90%，错误率从15%降至0.1%以下，漏单几率趋近于0',
-      en: 'Order processing efficiency improved by 90%, error rate reduced from 15% to below 0.1%, missed order probability趋近于0'
+      en: 'Order processing efficiency improved by 90%, error rate reduced from 15% to below 0.1%, missed order probability approaching zero'
     },
     status: 'completed',
     link: '#',

@@ -64,19 +64,11 @@
               ></path>
             </svg>
           </button>
-          <button class="animated-button btn-quick" @click="openQuickIntro">
-            <svg viewBox="0 0 24 24" class="arr-2" xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M12 2a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2zm1 14.93V18h-2v-1.07a6.002 6.002 0 0 1-4.93-4.93H6v-2h1.07A6.002 6.002 0 0 1 12 5.07V4h2v1.07a6.002 6.002 0 0 1 4.93 4.93H20v2h-1.07A6.002 6.002 0 0 1 13 16.93z"
-              ></path>
+          <button class="btn-ghost" @click="openQuickIntro">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2zm1 14.93V18h-2v-1.07a6.002 6.002 0 0 1-4.93-4.93H6v-2h1.07A6.002 6.002 0 0 1 12 5.07V4h2v1.07a6.002 6.002 0 0 1 4.93 4.93H20v2h-1.07A6.002 6.002 0 0 1 13 16.93z"/>
             </svg>
-            <span class="text">{{ t('hero.cta3') }}</span>
-            <span class="circle"></span>
-            <svg viewBox="0 0 24 24" class="arr-1" xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M12 2a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2zm1 14.93V18h-2v-1.07a6.002 6.002 0 0 1-4.93-4.93H6v-2h1.07A6.002 6.002 0 0 1 12 5.07V4h2v1.07a6.002 6.002 0 0 1 4.93 4.93H20v2h-1.07A6.002 6.002 0 0 1 13 16.93z"
-              ></path>
-            </svg>
+            {{ t('hero.cta3') }}
           </button>
         </div>
       </div>
@@ -496,18 +488,24 @@ html[data-theme='legacy'] .tagline-line {
   background-color: #2997ff;
 }
 
-.btn-quick {
-  border-color: #424245;
-  color: #f5f5f7;
-  background: rgba(22, 22, 23, 0.86);
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #86868b;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: -0.2px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  align-self: center;
 }
 
-.btn-quick svg {
-  fill: #86868b;
-}
-
-.btn-quick .circle {
-  background-color: #2997ff;
+.btn-ghost:hover {
+  color: #c7c7cc;
 }
 
 .quick-intro-overlay {

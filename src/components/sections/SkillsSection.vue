@@ -2,62 +2,46 @@
   <section id="skills" class="skills-section">
     <div class="container">
       <h2 class="section-title">{{ t('skills.title') }}</h2>
-      
-      <div class="skills-content">
-        <!-- 左侧技能分类 -->
-        <div class="skills-sidebar">
-          <div 
-            v-for="category in skillCategories" 
-            :key="category.id"
-            class="category-item"
-            :class="{ active: activeCategory === category.id }"
-            @click="setActiveCategory(category.id)"
-          >
-            <div class="category-icon">
-              <svg v-if="category.id === 'apparel'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+
+      <div class="skills-stack">
+        <div
+          v-for="category in skillCategories"
+          :key="category.id"
+          class="skill-group"
+        >
+          <!-- 分类标题行 -->
+          <div class="group-header">
+            <div class="group-icon">
+              <svg v-if="category.id === 'apparel'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
               </svg>
-              <svg v-else-if="category.id === 'communication'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg v-else-if="category.id === 'communication'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-                <path d="M13 8H7"/>
-                <path d="M17 12H7"/>
+                <path d="M13 8H7"/><path d="M17 12H7"/>
               </svg>
-              <svg v-else-if="category.id === 'technical'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg v-else-if="category.id === 'technical'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
-                <line x1="8" y1="21" x2="16" y2="21"/>
-                <line x1="12" y1="17" x2="12" y2="21"/>
+                <line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
               </svg>
-              <svg v-else-if="category.id === 'productivity'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg v-else-if="category.id === 'productivity'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
               </svg>
             </div>
-            <span class="category-name">{{ category.name[isChinese ? 'zh' : 'en'] }}</span>
+            <h3 class="group-name">{{ category.name[isChinese ? 'zh' : 'en'] }}</h3>
           </div>
-        </div>
 
-        <!-- 右侧技能详情 -->
-        <div class="skills-details">
-          <div 
-            v-for="category in skillCategories" 
-            :key="category.id"
-            class="skill-category"
-            :class="{ active: activeCategory === category.id }"
-            v-show="activeCategory === category.id"
-          >
-            <h3 class="category-title">{{ category.name[isChinese ? 'zh' : 'en'] }}</h3>
-            
-            <div class="skills-list">
-              <div 
-                v-for="(skill, index) in category.skills" 
-                :key="`${category.id}-${index}`"
-                class="skill-item"
-              >
-                <div class="skill-header">
-                  <span class="skill-name">{{ skill.name[isChinese ? 'zh' : 'en'] }}</span>
-                  <span class="skill-highlight">{{ skill.highlight[isChinese ? 'zh' : 'en'] }}</span>
-                </div>
-                <p class="skill-description">{{ skill.description[isChinese ? 'zh' : 'en'] }}</p>
+          <!-- 技能卡片网格 -->
+          <div class="skills-grid">
+            <div
+              v-for="(skill, index) in category.skills"
+              :key="`${category.id}-${index}`"
+              class="skill-card"
+            >
+              <div class="skill-top">
+                <span class="skill-name">{{ skill.name[isChinese ? 'zh' : 'en'] }}</span>
+                <span class="skill-highlight">{{ skill.highlight[isChinese ? 'zh' : 'en'] }}</span>
               </div>
+              <p class="skill-desc">{{ skill.description[isChinese ? 'zh' : 'en'] }}</p>
             </div>
           </div>
         </div>
@@ -67,7 +51,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
 import { skillCategories as staticCategories } from '../../data/skills.js'
 import { t, isChinese } from '../../composables/useI18n.js'
 import { useContent } from '../../composables/useContent.js'
@@ -88,12 +72,6 @@ const skillCategories = computed(() => {
   }
   return staticCategories
 })
-
-const activeCategory = ref('apparel')
-
-const setActiveCategory = (categoryId) => {
-  activeCategory.value = categoryId
-}
 </script>
 
 <style scoped>
@@ -111,121 +89,72 @@ const setActiveCategory = (categoryId) => {
   text-align: center;
   font-size: var(--text-heading);
   color: var(--color-cloud-white);
-  margin-bottom: 16px;
+  margin-bottom: 56px;
   font-weight: 600;
   line-height: var(--leading-heading);
   letter-spacing: var(--tracking-heading);
 }
 
-.section-subtitle {
-  text-align: center;
-  font-size: 1.1rem;
-  color: #86868b;
-  margin-bottom: 50px;
+/* ── 分类堆叠 ── */
+.skills-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
 }
 
-.skills-content {
-  display: grid;
-  grid-template-columns: 250px 1fr;
-  gap: 40px;
-}
+.skill-group {}
 
-/* 左侧技能分类 */
-.skills-sidebar {
-  background: var(--surface-card-dark);
-  border: 1px solid var(--surface-border-dark-strong);
-  border-radius: var(--radius-cards);
-  padding: 24px 16px;
-  height: fit-content;
-}
-
-.category-item {
+/* 分类标题行 */
+.group-header {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  margin-bottom: 6px;
-  border-radius: var(--radius-standard);
-  cursor: pointer;
-  transition: background 0.2s ease, color 0.2s ease;
-  color: var(--text-on-dark-muted);
+  gap: 10px;
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--surface-border-dark-strong);
 }
 
-.category-item:hover {
-  background: var(--surface-card-darker);
-  color: var(--text-on-dark);
-}
-
-.category-item.active {
-  background: rgba(41, 151, 255, 0.14);
+.group-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(41, 151, 255, 0.12);
+  border: 1px solid rgba(41, 151, 255, 0.2);
   color: var(--color-interactive-blue);
-}
-
-.category-icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 20px;
-  height: 20px;
   flex-shrink: 0;
 }
 
-.category-item.active .category-icon {
-  color: var(--color-interactive-blue);
+.group-name {
+  font-size: var(--text-heading-sm);
+  font-weight: 600;
+  color: var(--text-on-dark-strong);
+  letter-spacing: var(--tracking-heading-sm);
+  margin: 0;
 }
 
-.category-name {
-  font-size: var(--text-body-sm);
-  font-weight: 500;
-  letter-spacing: var(--tracking-body-sm);
+/* ── 技能网格 ── */
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
 }
 
-/* 右侧技能详情 */
-.skills-details {
+.skill-card {
+  padding: 20px;
   background: var(--surface-card-dark);
   border: 1px solid var(--surface-border-dark-strong);
-  border-radius: var(--radius-cards);
-  padding: 40px;
-}
-
-.skill-category {
-  opacity: 0;
-  transform: translateY(16px);
-  transition: opacity 0.25s ease, transform 0.25s ease;
-}
-
-.skill-category.active {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.category-title {
-  font-size: var(--text-heading-sm);
-  color: var(--text-on-dark-strong);
-  margin-bottom: 28px;
-  font-weight: 600;
-  letter-spacing: var(--tracking-heading-sm);
-}
-
-.skills-list {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.skill-item {
-  padding: 20px;
-  background: var(--surface-card-darker);
-  border: 1px solid var(--surface-border-dark-strong);
   border-radius: 18px;
-  transition: background 0.2s ease, border-color 0.2s ease;
+  transition: border-color 0.2s ease;
 }
 
-.skill-item:hover {
-  border-color: var(--text-on-dark-subtle);
+.skill-card:hover {
+  border-color: rgba(41, 151, 255, 0.3);
 }
 
-.skill-header {
+.skill-top {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -242,7 +171,7 @@ const setActiveCategory = (categoryId) => {
 
 .skill-highlight {
   flex-shrink: 0;
-  padding: 4px 12px;
+  padding: 3px 10px;
   border-radius: 999px;
   background: rgba(41, 151, 255, 0.12);
   border: 1px solid rgba(41, 151, 255, 0.25);
@@ -253,115 +182,42 @@ const setActiveCategory = (categoryId) => {
   white-space: nowrap;
 }
 
-.skill-description {
+.skill-desc {
   font-size: var(--text-body-sm);
   color: var(--text-on-dark-muted);
-  line-height: 1.5;
+  line-height: 1.55;
   margin: 0;
   letter-spacing: var(--tracking-body-sm);
 }
 
-/* 平板端 */
+/* ── 平板端 ── */
 @media (max-width: 968px) {
-  .skills-section {
-    padding: 60px 20px;
-  }
-
-  .skills-content {
-    grid-template-columns: 190px 1fr;
-    gap: 24px;
-  }
-
-  .skills-sidebar {
-    padding: 20px 12px;
-  }
-
-  .skills-details {
-    padding: 28px;
-  }
+  .skills-section { padding: 60px 20px; }
+  .skills-stack { gap: 40px; }
 }
 
-/* 移动端响应式 */
+/* ── 移动端 ── */
 @media (max-width: 768px) {
-  .skills-section {
-    padding: 48px 16px;
-  }
+  .skills-section { padding: 48px 16px; }
+  .section-title { margin-bottom: 40px; }
+  .skills-stack { gap: 36px; }
 
-  .skills-content {
+  .skills-grid {
     grid-template-columns: 1fr;
-    gap: 16px;
+    gap: 12px;
   }
 
-  .skills-sidebar {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+  .skill-card { padding: 16px; }
+
+  .skill-top {
+    flex-wrap: wrap;
     gap: 8px;
-    padding: 12px;
-    border-radius: var(--radius-standard);
-  }
-
-  .category-item {
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    margin-bottom: 0;
-    padding: 12px 8px;
-    border-radius: var(--radius-standard);
-    text-align: center;
-  }
-
-  .category-name {
-    font-size: 12px;
-    line-height: 1.3;
-  }
-
-  .skills-details {
-    padding: 24px;
-    border-radius: var(--radius-standard);
-  }
-
-  .category-title {
-    margin-bottom: 20px;
-  }
-
-  .skills-list {
-    gap: 14px;
-  }
-
-  .skill-item {
-    padding: 16px;
   }
 }
 
-/* 小屏幕手机 */
+/* ── 小屏 ── */
 @media (max-width: 480px) {
-  .skills-section {
-    padding: 40px 12px;
-  }
-
-  .skills-sidebar {
-    padding: 12px;
-    gap: 6px;
-  }
-
-  .category-item {
-    padding: 9px 12px;
-    min-width: 90px;
-  }
-
-  .skills-details {
-    padding: 18px;
-  }
-
-  .skill-item {
-    padding: 14px;
-  }
-
-  .skill-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-  }
+  .skills-section { padding: 40px 12px; }
+  .skill-card { padding: 14px; }
 }
 </style>
