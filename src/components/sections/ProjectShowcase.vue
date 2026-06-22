@@ -237,6 +237,9 @@ const projectShowcase = computed(() => {
       image: p.image, detailImages: p.detail_images ?? [], technologies: p.technologies ?? [],
       category: p.category, demoType: p.demo_type, link: p.link, status: p.status,
       imageRatio: p.image_ratio, mediaType: p.media_type, previewGif: p.preview_gif,
+      modalContent: p.demo_type === 'media'
+        ? { type: p.media_type ?? (p.preview_gif ? 'gif' : 'image'), src: p.preview_gif || p.image }
+        : null,
       challenge: { zh: p.challenge_zh, en: p.challenge_en },
       solution:  { zh: p.solution_zh,  en: p.solution_en },
       result:    { zh: p.result_zh,    en: p.result_en },
