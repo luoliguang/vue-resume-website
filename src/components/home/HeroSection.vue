@@ -81,6 +81,7 @@
     </div>
 
     <Teleport to="body">
+      <Transition name="qi">
       <div v-if="isQuickIntroOpen" class="quick-intro-overlay" @click.self="closeQuickIntro">
         <div class="quick-intro-card">
           <button class="quick-intro-close" @click="closeQuickIntro" aria-label="Close">×</button>
@@ -112,6 +113,7 @@
           <p class="qi-footer">{{ t('hero.quickIntro.footer') }}</p>
         </div>
       </div>
+      </Transition>
     </Teleport>
   </section>
 </template>
@@ -186,7 +188,7 @@ const runHeroCinematicAnimation = () => {
       '-=0.55'
     )
     .fromTo(
-      '.action-buttons .animated-button',
+      '.action-buttons > *',
       { opacity: 0, y: 18, scale: 0.96 },
       { opacity: 1, y: 0, scale: 1, duration: 0.72, stagger: 0.08 },
       '-=0.45'
