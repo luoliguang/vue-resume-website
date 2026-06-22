@@ -70,7 +70,7 @@
             </svg>
             {{ t('hero.cta3') }}
           </button>
-          <a class="btn-ghost btn-download" href="/resume.pdf" download="罗力广（罗洋洋）- 简历.pdf" target="_blank">
+          <a class="btn-ghost btn-download" href="/uploads/resume.pdf" download="罗力广（罗洋洋）- 简历.pdf" target="_blank">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
               <path d="M12 16l-5-5 1.41-1.41L11 13.17V4h2v9.17l2.59-2.58L17 11l-5 5zm-7 2h14v2H5v-2z"/>
             </svg>
