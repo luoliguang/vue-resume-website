@@ -10,7 +10,9 @@ const translations = {
       projects: '项目展示',
       skills: '技能专长',
       journey: '我的历程',
-      contact: '联系方式'
+      contact: '联系方式',
+      themeLight: '浅色',
+      themeDark: '深色'
     },
     hero: {
       title: '罗洋洋',
@@ -114,7 +116,9 @@ const translations = {
       projects: 'Projects',
       skills: 'Skills',
       journey: 'Journey',
-      contact: 'Contact'
+      contact: 'Contact',
+      themeLight: 'Light',
+      themeDark: 'Dark'
     },
     hero: {
       title: 'Luo Yangyang',

@@ -180,7 +180,7 @@ onUnmounted(() => {
 .about-paragraph {
   font-size: var(--text-body);
   line-height: 1.7;
-  color: #c7c7cc;
+  color: var(--text-on-dark);
   letter-spacing: var(--tracking-body);
   margin: 0 0 16px;
 }

@@ -16,7 +16,7 @@
         </ul>
         <div class="nav-actions">
           <button class="theme-toggle" type="button" @click="toggleTheme">
-            {{ isLegacyTheme ? 'Modern' : 'Legacy' }}
+            {{ isLegacyTheme ? t('nav.themeDark') : t('nav.themeLight') }}
           </button>
           <GlassToggle 
             v-model="currentLanguage"

@@ -406,6 +406,91 @@ html[data-theme='legacy'] .nav-menu .nav-link {
   color: var(--text-on-dark-strong) !important;
 }
 
+/* Quick-intro modal — new stat-grid layout */
+html[data-theme='legacy'] .qi-tagline {
+  color: var(--text-on-dark-strong) !important;
+}
+html[data-theme='legacy'] .qi-stat {
+  background: var(--surface-card-darker) !important;
+  border-color: var(--surface-border-dark-strong) !important;
+}
+html[data-theme='legacy'] .qi-num {
+  color: var(--text-on-dark-strong) !important;
+}
+html[data-theme='legacy'] .qi-stat-green .qi-num {
+  color: #1a9e3f !important;
+}
+html[data-theme='legacy'] .qi-label {
+  color: var(--text-on-dark-muted) !important;
+}
+html[data-theme='legacy'] .qi-footer {
+  color: var(--text-on-dark-muted) !important;
+  border-top-color: var(--surface-border-dark-strong) !important;
+}
+
+/* Project detail modal */
+html[data-theme='legacy'] .detail-modal {
+  background: var(--surface-card-dark) !important;
+  border-color: var(--surface-border-dark-strong) !important;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.12) !important;
+}
+html[data-theme='legacy'] .detail-close {
+  background: var(--surface-card-darker) !important;
+  color: var(--text-on-dark-strong) !important;
+}
+html[data-theme='legacy'] .detail-close:hover {
+  background: var(--surface-border-dark-strong) !important;
+}
+html[data-theme='legacy'] .detail-title {
+  color: var(--text-on-dark-strong) !important;
+}
+html[data-theme='legacy'] .detail-desc {
+  color: var(--text-on-dark) !important;
+}
+html[data-theme='legacy'] .detail-media {
+  background: var(--surface-card-darker) !important;
+}
+html[data-theme='legacy'] .dp-item {
+  background: var(--surface-card-darker) !important;
+}
+html[data-theme='legacy'] .dp-label {
+  color: var(--text-on-dark-muted) !important;
+}
+html[data-theme='legacy'] .dp-text {
+  color: var(--text-on-dark) !important;
+}
+html[data-theme='legacy'] .ba-item.before {
+  background: rgba(220, 38, 38, 0.06) !important;
+  border-color: rgba(220, 38, 38, 0.2) !important;
+}
+html[data-theme='legacy'] .ba-item.after {
+  background: rgba(22, 163, 74, 0.06) !important;
+  border-color: rgba(22, 163, 74, 0.2) !important;
+}
+html[data-theme='legacy'] .ba-content {
+  color: var(--text-on-dark) !important;
+}
+html[data-theme='legacy'] .detail-action {
+  border-top-color: var(--surface-border-dark-strong) !important;
+}
+
+/* Skills section — card backgrounds */
+html[data-theme='legacy'] .skill-card {
+  background: var(--surface-card-dark) !important;
+  border-color: var(--surface-border-dark-strong) !important;
+}
+html[data-theme='legacy'] .skill-desc {
+  color: var(--text-on-dark-muted) !important;
+}
+
+/* Hero ghost button */
+html[data-theme='legacy'] .btn-ghost {
+  color: var(--text-on-dark-muted) !important;
+}
+html[data-theme='legacy'] .btn-ghost:hover {
+  color: var(--text-on-dark-strong) !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
