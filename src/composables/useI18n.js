@@ -23,13 +23,12 @@ const translations = {
       cta2: '查看项目',
       cta3: '30秒认识我',
       quickIntro: {
-        text: '一个会写代码的服装跟单 —— 2 年以上一线经验让我知道问题在哪，自学开发让我能亲手解决它。',
-        label1: '经验',
-        value1: '2 年以上服装跟单，独立服务 200+ 客户',
-        label2: '成果',
-        value2: '订单返工率降低 15%，自研 3 款内部工具',
-        label3: '我能带来',
-        value3: '懂打样到出货全流程，又能用 AI / 代码把流程问题变成可用工具'
+        tagline: '一个会写代码的服装跟单',
+        stat1num: '2年+', stat1label: '跟单经验',
+        stat2num: '200+', stat2label: '服务客户',
+        stat3num: '↓15%', stat3label: '订单返工率',
+        stat4num: '3款',  stat4label: '自研工具',
+        footer: '懂打样到出货全流程，能用 AI / 代码把流程问题直接变成可用工具。'
       }
     },
     about: {
@@ -126,15 +125,14 @@ const translations = {
       description: '2+ years on the frontline of apparel supply-chain merchandising — 200+ clients served, rework rate cut by 15%. Using AI to teach myself development, I independently built practical tools: an AI knowledge base, a material photo platform, and order automation scripts that turn real frontline problems into working solutions.',
       cta: 'About Me',
       cta2: 'View Projects',
-      cta3: 'Know Me in 30 Seconds',
+      cta3: 'Know Me in 30s',
       quickIntro: {
-        text: 'A garment merchandiser who codes — 2+ years on the frontline tells me where the problems are, and self-taught development lets me fix them myself.',
-        label1: 'Experience',
-        value1: '2+ years merchandising, 200+ clients served independently',
-        label2: 'Impact',
-        value2: 'Cut order rework rate by 15%, built 3 internal tools in-house',
-        label3: 'What I Bring',
-        value3: 'Full sampling-to-shipment expertise, plus turning process problems into working tools with AI / code'
+        tagline: 'A garment merchandiser who codes',
+        stat1num: '2yr+', stat1label: 'Merchandising',
+        stat2num: '200+', stat2label: 'Clients served',
+        stat3num: '↓15%', stat3label: 'Rework rate',
+        stat4num: '×3',   stat4label: 'In-house tools',
+        footer: 'End-to-end expertise from sampling to shipment — turning process problems into working tools with AI & code.'
       }
     },
     about: {

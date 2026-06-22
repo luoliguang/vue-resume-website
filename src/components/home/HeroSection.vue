@@ -79,30 +79,31 @@
         <div class="quick-intro-card">
           <button class="quick-intro-close" @click="closeQuickIntro" aria-label="Close">×</button>
 
-          <div class="qi-header">
-            <span class="qi-badge">{{ t('hero.cta3') }}</span>
-            <h2 class="qi-name">{{ ht('title_zh', 'title_en', 'hero.title') }}</h2>
-            <p class="qi-brand">{{ hv('nickname', 'hero.nickname') }}</p>
-          </div>
+          <!-- 定位句 -->
+          <p class="qi-tagline">{{ t('hero.quickIntro.tagline') }}</p>
 
-          <p class="qi-text">{{ ht('quick_intro_text_zh', 'quick_intro_text_en', 'hero.quickIntro.text') }}</p>
-
-          <div class="qi-divider"></div>
-
-          <div class="qi-highlights">
-            <div class="qi-highlight">
-              <span class="qi-hlabel">{{ ht('quick_intro_label1_zh', 'quick_intro_label1_en', 'hero.quickIntro.label1') }}</span>
-              <span class="qi-hvalue">{{ ht('quick_intro_value1_zh', 'quick_intro_value1_en', 'hero.quickIntro.value1') }}</span>
+          <!-- 4 个数字网格 -->
+          <div class="qi-stats">
+            <div class="qi-stat">
+              <span class="qi-num">{{ t('hero.quickIntro.stat1num') }}</span>
+              <span class="qi-label">{{ t('hero.quickIntro.stat1label') }}</span>
             </div>
-            <div class="qi-highlight">
-              <span class="qi-hlabel">{{ ht('quick_intro_label2_zh', 'quick_intro_label2_en', 'hero.quickIntro.label2') }}</span>
-              <span class="qi-hvalue">{{ ht('quick_intro_value2_zh', 'quick_intro_value2_en', 'hero.quickIntro.value2') }}</span>
+            <div class="qi-stat">
+              <span class="qi-num">{{ t('hero.quickIntro.stat2num') }}</span>
+              <span class="qi-label">{{ t('hero.quickIntro.stat2label') }}</span>
             </div>
-            <div class="qi-highlight">
-              <span class="qi-hlabel">{{ ht('quick_intro_label3_zh', 'quick_intro_label3_en', 'hero.quickIntro.label3') }}</span>
-              <span class="qi-hvalue">{{ ht('quick_intro_value3_zh', 'quick_intro_value3_en', 'hero.quickIntro.value3') }}</span>
+            <div class="qi-stat qi-stat-green">
+              <span class="qi-num">{{ t('hero.quickIntro.stat3num') }}</span>
+              <span class="qi-label">{{ t('hero.quickIntro.stat3label') }}</span>
+            </div>
+            <div class="qi-stat">
+              <span class="qi-num">{{ t('hero.quickIntro.stat4num') }}</span>
+              <span class="qi-label">{{ t('hero.quickIntro.stat4label') }}</span>
             </div>
           </div>
+
+          <!-- 底部一句话 -->
+          <p class="qi-footer">{{ t('hero.quickIntro.footer') }}</p>
         </div>
       </div>
     </Teleport>
@@ -522,9 +523,9 @@ html[data-theme='legacy'] .tagline-line {
 
 .quick-intro-card {
   position: relative;
-  width: min(620px, 100%);
+  width: min(480px, 100%);
   border-radius: 28px;
-  padding: 32px;
+  padding: 36px 32px 32px;
   background: #1d1d1f;
   border: 1px solid #333336;
   max-height: calc(100vh - 48px);
@@ -533,97 +534,82 @@ html[data-theme='legacy'] .tagline-line {
 
 .quick-intro-close {
   position: absolute;
-  top: 12px;
-  right: 12px;
-  width: 32px;
-  height: 32px;
+  top: 14px;
+  right: 14px;
+  width: 30px;
+  height: 30px;
   border: none;
   border-radius: 999px;
   background: #333336;
-  color: #f5f5f7;
-  font-size: 20px;
+  color: #86868b;
+  font-size: 18px;
   cursor: pointer;
   line-height: 1;
+  transition: background 0.2s, color 0.2s;
 }
 
 .quick-intro-close:hover {
   background: #424245;
-}
-
-.qi-header { margin-bottom: 20px; }
-
-.qi-badge {
-  display: inline-block;
-  padding: 4px 12px;
-  border-radius: 999px;
-  background: rgba(41, 151, 255, 0.15);
-  color: #2997ff;
-  font-weight: 600;
-  font-size: 12px;
-  letter-spacing: -0.48px;
-  margin-bottom: 12px;
-}
-
-.qi-name {
-  margin: 0 0 6px;
-  font-size: 40px;
-  font-weight: 600;
-  color: #ffffff;
-  line-height: 1.1;
-  letter-spacing: -0.3px;
-}
-
-.qi-brand {
-  margin: 0;
-  color: #86868b;
-  font-weight: 400;
-  letter-spacing: -0.31px;
-  font-size: 14px;
-}
-
-.qi-text {
-  margin: 0 0 20px;
   color: #f5f5f7;
-  line-height: 1.43;
-  font-size: 14px;
-  letter-spacing: -0.31px;
 }
 
-.qi-divider {
-  height: 1px;
-  background: #333336;
-  margin-bottom: 20px;
+/* 定位句 */
+.qi-tagline {
+  font-size: 22px;
+  font-weight: 600;
+  color: #f5f5f7;
+  letter-spacing: -0.5px;
+  line-height: 1.25;
+  margin: 0 0 28px;
+  padding-right: 24px;
 }
 
-.qi-highlights {
+/* 4 数字网格 */
+.qi-stats {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 24px;
 }
 
-.qi-highlight {
+.qi-stat {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding: 16px;
+  gap: 5px;
+  padding: 20px 18px;
   border-radius: 18px;
   background: #161617;
-  border: 1px solid #333336;
+  border: 1px solid #2a2a2d;
 }
 
-.qi-hlabel {
+.qi-num {
+  font-size: 36px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -1.5px;
+  line-height: 1;
+}
+
+.qi-stat-green .qi-num {
+  color: #30d158;
+}
+
+.qi-label {
   font-size: 12px;
-  font-weight: 600;
-  letter-spacing: -0.3px;
-  color: #2997ff;
+  font-weight: 500;
+  color: #86868b;
+  letter-spacing: -0.2px;
 }
 
-.qi-hvalue {
-  font-size: 14px;
-  font-weight: 400;
-  color: #f5f5f7;
-  line-height: 1.43;
-  letter-spacing: -0.31px;
+/* 底部说明 */
+.qi-footer {
+  font-size: 13px;
+  line-height: 1.6;
+  color: #6e6e73;
+  margin: 0;
+  letter-spacing: -0.2px;
+  border-top: 1px solid #2a2a2d;
+  padding-top: 18px;
 }
 
 @media (max-width: 968px) {
@@ -676,12 +662,12 @@ html[data-theme='legacy'] .tagline-line {
   }
 
   .quick-intro-card {
-    width: min(100%, 520px);
-    padding: 24px;
+    width: min(100%, 480px);
+    padding: 28px 24px 24px;
   }
 
-  .qi-name { font-size: 32px; }
-  .qi-highlights { grid-template-columns: 1fr; }
+  .qi-tagline { font-size: 19px; }
+  .qi-num { font-size: 30px; }
 }
 
 @media (max-width: 480px) {
@@ -706,7 +692,11 @@ html[data-theme='legacy'] .tagline-line {
 
   .quick-intro-card {
     border-radius: 20px;
-    padding: 20px;
+    padding: 24px 20px 20px;
   }
+
+  .qi-tagline { font-size: 17px; margin-bottom: 20px; }
+  .qi-num { font-size: 28px; }
+  .qi-stat { padding: 16px 14px; }
 }
 </style>
