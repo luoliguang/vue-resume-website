@@ -350,6 +350,23 @@
       display: flex; align-items: center; justify-content: center;
     }
     .img-remove svg { width: 11px; height: 11px; }
+    .img-open {
+      position: absolute; top: 6px; right: 34px;
+      width: 22px; height: 22px;
+      background: rgba(0,0,0,.65); border: none; border-radius: 50%;
+      cursor: pointer; color: #f5f5f7; text-decoration: none;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .img-open svg { width: 11px; height: 11px; }
+    .img-error-bar {
+      padding: 6px 10px;
+      background: rgba(255,69,58,0.12);
+      border-top: 1px solid rgba(255,69,58,0.2);
+      color: #ff453a;
+      font-size: 11px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .img-error-bar a { color: #ff9f0a; text-decoration: underline; }
     .img-upload-btn {
       display: flex; align-items: center; justify-content: center; gap: 6px;
       padding: 8px 12px;
@@ -1060,10 +1077,16 @@
               <label>封面图</label>
               <div class="img-wrap">
                 <div class="img-preview" x-show="editItem.image">
-                  <img :src="editItem.image" alt="cover">
-                  <button class="img-remove" @click="editItem.image = ''" type="button">
+                  <img :src="editItem.image" alt="cover" @error="editItem._imgError = true" @load="editItem._imgError = false">
+                  <a :href="editItem.image" target="_blank" class="img-open" title="在新标签页打开">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                  </a>
+                  <button class="img-remove" @click="editItem.image = ''; editItem._imgError = false" type="button">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                   </button>
+                  <div class="img-error-bar" x-show="editItem._imgError">
+                    图片无法加载 — <a :href="editItem.image" target="_blank">点击检查链接</a>（可能是服务器 /uploads/ 未正确配置）
+                  </div>
                 </div>
                 <button class="img-upload-btn" @click="triggerUpload('up-cover')" type="button">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
@@ -1124,10 +1147,16 @@
               <label>GIF / 预览图</label>
               <div class="img-wrap">
                 <div class="img-preview" x-show="editItem.preview_gif">
-                  <img :src="editItem.preview_gif" alt="gif">
-                  <button class="img-remove" @click="editItem.preview_gif = ''" type="button">
+                  <img :src="editItem.preview_gif" alt="gif" @error="editItem._gifError = true" @load="editItem._gifError = false">
+                  <a :href="editItem.preview_gif" target="_blank" class="img-open" title="在新标签页打开">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                  </a>
+                  <button class="img-remove" @click="editItem.preview_gif = ''; editItem._gifError = false" type="button">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                   </button>
+                  <div class="img-error-bar" x-show="editItem._gifError">
+                    图片无法加载 — <a :href="editItem.preview_gif" target="_blank">点击检查链接</a>（可能是服务器 /uploads/ 未正确配置）
+                  </div>
                 </div>
                 <button class="img-upload-btn" @click="triggerUpload('up-gif')" type="button">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
@@ -1514,7 +1543,11 @@
           const json = await res.json()
           if (!res.ok) throw new Error(json.error || '上传失败')
           setter(json.url)
-          this.showToast('图片已上传')
+          // 验证图片是否真的可以被浏览器加载
+          const testImg = new Image()
+          testImg.onload = () => this.showToast('图片已上传')
+          testImg.onerror = () => this.showToast('文件已保存，但图片无法访问，请检查服务器 /uploads/ 路径配置', true)
+          testImg.src = json.url
         } catch (e) {
           this.showToast(e.message, true)
         }
