@@ -206,6 +206,8 @@ const handleContactClick = (contact) => {
   color: var(--text-on-dark-muted);
   font-weight: 400;
   letter-spacing: var(--tracking-subheading);
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }
 
 .contact-grid {

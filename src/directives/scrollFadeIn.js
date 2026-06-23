@@ -9,10 +9,12 @@ export const scrollFadeIn = {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     const options = binding.value || {}
 
-    const distance = options.distance ?? 60
+    const isMobile = window.innerWidth <= 768
+    // 移动端用更小的位移，避免元素入场时已超出视口
+    const distance = isMobile ? Math.min((options.distance ?? 60) * 0.35, 22) : (options.distance ?? 60)
     const scrub = options.scrub ?? 0.9
-    const start = options.start ?? 'top 92%'
-    const end = options.end ?? 'top 62%'
+    const start = isMobile ? 'top 102%' : (options.start ?? 'top 92%')
+    const end   = isMobile ? 'top 50%'  : (options.end   ?? 'top 62%')
     const titleSelector = options.titleSelector ?? 'h1, h2, h3, .section-title, .title'
     const contentSelector = options.contentSelector ?? 'p, li, .card, .item, .content, .section-content, .project-card'
 

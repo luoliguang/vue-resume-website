@@ -205,7 +205,7 @@ const translations = {
     },
     contact: {
       title: 'Contact',
-      subtitle: 'WeChat ID: giluoo. Welcome to send messages, usually reply within 24 hours.',
+      subtitle: 'WeChat: giluoo · Replies within 24 hours.',
       email: 'Email',
       phone: 'Phone',
       location: 'Location',
