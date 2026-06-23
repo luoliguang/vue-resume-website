@@ -16,13 +16,18 @@ server {
         try_files $uri $uri/ /admin/index.html;
     }
 
-    # 上传图片（持久化，不随部署清空）
-    location /uploads/ {
-        alias __PATH__/uploads/;
+    # API + 上传文件 统一反代到 Node.js
+    # 注意：/uploads/ 也走 Express，确保 Express 保存和提供的是同一个目录，
+    # 避免 alias 路径与实际存储路径不一致导致图片 404。
+    location /api/ {
+        proxy_pass         http://127.0.0.1:__API_PORT__;
+        proxy_http_version 1.1;
+        proxy_set_header   Host             $host;
+        proxy_set_header   X-Real-IP        $remote_addr;
+        proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
     }
 
-    # API 反代到 Node.js
-    location /api/ {
+    location /uploads/ {
         proxy_pass         http://127.0.0.1:__API_PORT__;
         proxy_http_version 1.1;
         proxy_set_header   Host             $host;
