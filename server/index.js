@@ -21,8 +21,9 @@ app.use(cors())
 app.use(express.json({ limit: '2mb' }))
 
 // 静态文件
-app.use('/admin',   express.static(join(__dirname, '../admin')))
-app.use('/uploads', express.static(join(__dirname, '../uploads')))
+app.use('/admin',        express.static(join(__dirname, '../admin')))
+app.use('/uploads',      express.static(join(__dirname, '../uploads')))  // 本地开发兼容
+app.use('/api/uploads',  express.static(join(__dirname, '../uploads')))  // 生产环境走 /api/ 代理
 
 // API 路由
 app.use('/api/admin',    authRouter)

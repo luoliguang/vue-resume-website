@@ -33,7 +33,7 @@ const uploadImage = multer({
 
 router.post('/', requireAuth, uploadImage.single('file'), (req, res) => {
   if (!req.file) return res.status(400).json({ error: '未收到文件' })
-  res.json({ url: `/uploads/${req.file.filename}` })
+  res.json({ url: `/api/uploads/${req.file.filename}` })
 })
 
 // ── Resume PDF upload (固定文件名 resume.pdf) ──────
@@ -54,14 +54,14 @@ const uploadResume = multer({
 
 router.post('/resume', requireAuth, uploadResume.single('file'), (req, res) => {
   if (!req.file) return res.status(400).json({ error: '未收到文件' })
-  res.json({ url: '/uploads/resume.pdf', message: '简历已更新' })
+  res.json({ url: '/api/uploads/resume.pdf', message: '简历已更新' })
 })
 
 router.get('/resume', requireAuth, (req, res) => {
   const filePath = join(UPLOAD_DIR, 'resume.pdf')
   if (!existsSync(filePath)) return res.json({ exists: false })
   const stat = statSync(filePath)
-  res.json({ exists: true, url: '/uploads/resume.pdf', updatedAt: stat.mtime })
+  res.json({ exists: true, url: '/api/uploads/resume.pdf', updatedAt: stat.mtime })
 })
 
 export default router
