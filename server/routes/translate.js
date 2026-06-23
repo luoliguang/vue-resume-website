@@ -1,5 +1,6 @@
 import express from 'express'
 import { requireAuth } from '../auth.js'
+import { getSetting } from './settings.js'
 
 const router = express.Router()
 
@@ -16,8 +17,8 @@ router.post('/', requireAuth, async (req, res) => {
   const { text, fieldType } = req.body
   if (!text?.trim()) return res.status(400).json({ error: '缺少文本' })
 
-  const apiKey = process.env.DEEPSEEK_API_KEY
-  if (!apiKey) return res.status(500).json({ error: '服务器未配置 DEEPSEEK_API_KEY' })
+  const apiKey = (await getSetting('deepseek_api_key')) || process.env.DEEPSEEK_API_KEY
+  if (!apiKey) return res.status(500).json({ error: '请先在后台「系统设置」中填写 DeepSeek API Key' })
 
   const userPrompt = fieldType === 'tag'
     ? `Translate this skill tag to English (short label only): ${text}`

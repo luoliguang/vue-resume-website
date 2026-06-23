@@ -12,6 +12,7 @@ import journeyRouter from './routes/journey.js'
 import projectsRouter from './routes/projects.js'
 import uploadRouter    from './routes/upload.js'
 import translateRouter from './routes/translate.js'
+import settingsRouter  from './routes/settings.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const app = express()
@@ -32,6 +33,7 @@ app.use('/api/skills',   skillsRouter)
 app.use('/api/journey',  journeyRouter)
 app.use('/api/projects',  projectsRouter)
 app.use('/api/translate', translateRouter)
+app.use('/api/settings',  settingsRouter)
 
 // 健康检查
 app.get('/api/ping', (_, res) => res.json({ ok: true }))
