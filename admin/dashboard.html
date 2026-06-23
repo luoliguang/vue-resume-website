@@ -362,6 +362,26 @@
       width: 100%;
     }
     .img-upload-btn:hover { border-color: #2997ff; color: #2997ff; }
+
+    /* ── AI Translate button ──────────────────────── */
+    .btn-translate {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-left: 8px;
+      padding: 2px 8px;
+      border-radius: 6px;
+      border: 1px solid rgba(41,151,255,0.3);
+      background: rgba(41,151,255,0.08);
+      color: #2997ff;
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s, opacity 0.15s;
+      vertical-align: middle;
+    }
+    .btn-translate:hover { background: rgba(41,151,255,0.16); }
+    .btn-translate:disabled { opacity: 0.5; cursor: not-allowed; }
     .img-upload-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
     .detail-grid {
       display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px;
@@ -523,7 +543,7 @@
         </div>
         <div class="row single">
           <div class="field">
-            <label><span class="lang lang-en">EN</span></label>
+            <label><span class="lang lang-en">EN</span><button class="btn-translate" :disabled="translatingKey==='hero.subtitle'" @click="doTranslate(hero.subtitle_zh,v=>hero.subtitle_en=v,'hero.subtitle')" x-text="translatingKey==='hero.subtitle'?'翻译中…':'AI 译'"></button></label>
             <input type="text" x-model="hero.subtitle_en" placeholder="Apparel Professional · AI Practitioner · Process Optimizer">
           </div>
         </div>
@@ -537,7 +557,7 @@
             <textarea class="tall" x-model="hero.description_zh" placeholder="在服装供应链一线做了 2 年+…"></textarea>
           </div>
           <div class="field">
-            <label><span class="lang lang-en">EN</span></label>
+            <label><span class="lang lang-en">EN</span><button class="btn-translate" :disabled="translatingKey==='hero.desc'" @click="doTranslate(hero.description_zh,v=>hero.description_en=v,'hero.desc')" x-text="translatingKey==='hero.desc'?'翻译中…':'AI 译'"></button></label>
             <textarea class="tall" x-model="hero.description_en" placeholder="Over 2 years on the apparel supply chain frontline…"></textarea>
           </div>
         </div>
@@ -551,7 +571,7 @@
             <textarea x-model="hero.quick_intro_text_zh"></textarea>
           </div>
           <div class="field">
-            <label>介绍文字 <span class="lang lang-en">EN</span></label>
+            <label>介绍文字 <span class="lang lang-en">EN</span><button class="btn-translate" :disabled="translatingKey==='hero.qi'" @click="doTranslate(hero.quick_intro_text_zh,v=>hero.quick_intro_text_en=v,'hero.qi')" x-text="translatingKey==='hero.qi'?'翻译中…':'AI 译'"></button></label>
             <textarea x-model="hero.quick_intro_text_en"></textarea>
           </div>
         </div>
@@ -603,7 +623,7 @@
             <textarea class="tall" x-model="about.description_zh" style="min-height:200px"></textarea>
           </div>
           <div class="field">
-            <label><span class="lang lang-en">EN</span></label>
+            <label><span class="lang lang-en">EN</span><button class="btn-translate" :disabled="translatingKey==='about.desc'" @click="doTranslate(about.description_zh,v=>about.description_en=v,'about.desc')" x-text="translatingKey==='about.desc'?'翻译中…':'AI 译'"></button></label>
             <textarea class="tall" x-model="about.description_en" style="min-height:200px"></textarea>
           </div>
         </div>
@@ -617,7 +637,7 @@
             <input type="text" x-model="aboutTagsZh" placeholder="服装跟单, 客户沟通, 生产协调, …">
           </div>
           <div class="field">
-            <label><span class="lang lang-en">EN</span></label>
+            <label><span class="lang lang-en">EN</span><button class="btn-translate" :disabled="translatingKey==='about.tags'" @click="doTranslate(aboutTagsZh,v=>aboutTagsEn=v,'about.tags','tag')" x-text="translatingKey==='about.tags'?'翻译中…':'AI 译'"></button></label>
             <input type="text" x-model="aboutTagsEn" placeholder="Garment Merchandising, Client Communication, …">
           </div>
         </div>
@@ -884,7 +904,7 @@
               <textarea x-model="editItem.description_zh"></textarea>
             </div>
             <div class="field">
-              <label>描述 <span class="lang lang-en">EN</span></label>
+              <label>描述 <span class="lang lang-en">EN</span><button class="btn-translate" :disabled="translatingKey==='journey.desc'" @click="doTranslate(editItem.description_zh,v=>editItem.description_en=v,'journey.desc')" x-text="translatingKey==='journey.desc'?'翻译中…':'AI 译'"></button></label>
               <textarea x-model="editItem.description_en"></textarea>
             </div>
           </div>
@@ -925,7 +945,7 @@
               <input type="text" x-model="editItem.title_zh">
             </div>
             <div class="field">
-              <label>项目名 <span class="lang lang-en">EN</span></label>
+              <label>项目名 <span class="lang lang-en">EN</span><button class="btn-translate" :disabled="translatingKey==='proj.title'" @click="doTranslate(editItem.title_zh,v=>editItem.title_en=v,'proj.title')" x-text="translatingKey==='proj.title'?'翻译中…':'AI 译'"></button></label>
               <input type="text" x-model="editItem.title_en">
             </div>
           </div>
@@ -935,7 +955,7 @@
               <textarea x-model="editItem.description_zh"></textarea>
             </div>
             <div class="field">
-              <label>描述 <span class="lang lang-en">EN</span></label>
+              <label>描述 <span class="lang lang-en">EN</span><button class="btn-translate" :disabled="translatingKey==='proj.desc'" @click="doTranslate(editItem.description_zh,v=>editItem.description_en=v,'proj.desc')" x-text="translatingKey==='proj.desc'?'翻译中…':'AI 译'"></button></label>
               <textarea x-model="editItem.description_en"></textarea>
             </div>
           </div>
@@ -998,7 +1018,7 @@
               <textarea x-model="editItem.challenge_zh"></textarea>
             </div>
             <div class="field">
-              <label>痛点 Challenge <span class="lang lang-en">EN</span></label>
+              <label>痛点 Challenge <span class="lang lang-en">EN</span><button class="btn-translate" :disabled="translatingKey==='proj.challenge'" @click="doTranslate(editItem.challenge_zh,v=>editItem.challenge_en=v,'proj.challenge')" x-text="translatingKey==='proj.challenge'?'翻译中…':'AI 译'"></button></label>
               <textarea x-model="editItem.challenge_en"></textarea>
             </div>
           </div>
@@ -1008,7 +1028,7 @@
               <textarea x-model="editItem.solution_zh"></textarea>
             </div>
             <div class="field">
-              <label>方案 Solution <span class="lang lang-en">EN</span></label>
+              <label>方案 Solution <span class="lang lang-en">EN</span><button class="btn-translate" :disabled="translatingKey==='proj.solution'" @click="doTranslate(editItem.solution_zh,v=>editItem.solution_en=v,'proj.solution')" x-text="translatingKey==='proj.solution'?'翻译中…':'AI 译'"></button></label>
               <textarea x-model="editItem.solution_en"></textarea>
             </div>
           </div>
@@ -1018,7 +1038,7 @@
               <textarea x-model="editItem.result_zh"></textarea>
             </div>
             <div class="field">
-              <label>成果 Result <span class="lang lang-en">EN</span></label>
+              <label>成果 Result <span class="lang lang-en">EN</span><button class="btn-translate" :disabled="translatingKey==='proj.result'" @click="doTranslate(editItem.result_zh,v=>editItem.result_en=v,'proj.result')" x-text="translatingKey==='proj.result'?'翻译中…':'AI 译'"></button></label>
               <textarea x-model="editItem.result_en"></textarea>
             </div>
           </div>
@@ -1137,6 +1157,28 @@
         { id: 'projects', svg: NAV_ICONS.projects, label: '项目 Projects' },
         { id: 'resume',   svg: NAV_ICONS.resume,   label: '简历文件 PDF' },
       ],
+
+      // ── AI translate ──
+      translatingKey: null,
+      async doTranslate(zhText, setter, key, fieldType = 'text') {
+        if (!zhText?.trim()) { this.showToast('请先填写中文内容', true); return }
+        this.translatingKey = key
+        try {
+          const res = await fetch('/api/translate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${this.token}` },
+            body: JSON.stringify({ text: zhText, fieldType }),
+          })
+          const json = await res.json()
+          if (!res.ok) throw new Error(json.error || '翻译失败')
+          setter(json.translated)
+          this.showToast('翻译完成 ✓')
+        } catch (e) {
+          this.showToast(e.message, true)
+        } finally {
+          this.translatingKey = null
+        }
+      },
 
       // ── Section data ──
       resumeStatus: { exists: false, url: '', updatedAt: null },
