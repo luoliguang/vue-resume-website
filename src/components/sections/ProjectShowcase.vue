@@ -845,19 +845,42 @@ onUnmounted(() => {
   }
 }
 
-/* ── 小屏手机 ── */
+/* ── 小屏手机：竖排卡片 ── */
 @media (max-width: 480px) {
   .projects-section {
     padding: 40px 12px;
   }
 
+  /* 小屏恢复竖排：图片在上，内容在下 */
+  .project-card {
+    flex-direction: column;
+  }
+
   .project-image {
-    width: 105px;
-    min-height: 105px;
+    width: 100%;
+    height: 160px;
+    min-height: unset;
+    border-radius: 14px 14px 0 0;
   }
 
   .project-content {
-    padding: 10px 12px 10px;
+    padding: 14px 16px 14px;
+  }
+
+  .project-title {
+    font-size: 1rem;
+    margin-bottom: 6px;
+  }
+
+  .project-description {
+    font-size: 0.84rem;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    margin-bottom: 10px;
+  }
+
+  .tech-tags {
+    margin-bottom: 10px;
   }
 
   .detail-modal {
@@ -877,7 +900,6 @@ onUnmounted(() => {
     flex: none;
   }
 
-  /* 移动端画廊图片稍窄，方便露出下一张提示可滑动 */
   .gallery-img {
     width: 120px;
   }
