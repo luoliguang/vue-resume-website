@@ -491,6 +491,29 @@ html[data-theme='legacy'] .btn-ghost:hover {
   color: var(--text-on-dark-strong) !important;
 }
 
+/* project detail modal transition */
+.detail-pop-enter-active {
+  transition: opacity 0.25s ease;
+}
+.detail-pop-leave-active {
+  transition: opacity 0.18s ease;
+}
+.detail-pop-enter-from,
+.detail-pop-leave-to {
+  opacity: 0;
+}
+.detail-pop-enter-active .detail-modal {
+  transition: opacity 0.28s ease 0.04s, transform 0.32s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+.detail-pop-leave-active .detail-modal {
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+.detail-pop-enter-from .detail-modal,
+.detail-pop-leave-to .detail-modal {
+  opacity: 0;
+  transform: scale(0.94) translateY(16px);
+}
+
 /* quick-intro modal transition (Teleport renders outside scoped component) */
 .qi-enter-active {
   transition: opacity 0.25s ease;

@@ -74,6 +74,7 @@
 
     <!-- 项目详情弹窗 -->
     <Teleport to="body">
+      <Transition name="detail-pop">
       <div v-if="isDetailOpen" class="detail-overlay" @click.self="closeDetail">
         <div class="detail-modal">
           <button class="detail-close" @click="closeDetail" aria-label="Close">×</button>
@@ -161,6 +162,7 @@
           </div>
         </div>
       </div>
+      </Transition>
     </Teleport>
 
     <!-- Lightbox 全屏预览 -->
