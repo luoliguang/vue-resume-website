@@ -126,6 +126,8 @@
             </div>
           </div>
         </div>
+        <!-- scroll-driven 左侧红色竖线 -->
+        <div class="mv-about-line" aria-hidden="true"></div>
         <div class="mv-bg-num" aria-hidden="true">01</div>
       </div>
     </div>
@@ -543,8 +545,18 @@ function initParallax() {
       return s && lerpY + wh > s.top && lerpY < s.top + s.height
     }
 
-    // ── About：场景进入视口即触发（动画随 sticky 滑入同步出现）
+    // ── About：场景进入视口即触发
     showAbout.value = inVP('about')
+    // scroll-driven: 红线 scaleY + bg-num 向右漂移
+    if (aboutSceneRef.value) {
+      const line = aboutSceneRef.value.querySelector('.mv-about-line')
+      const bgNum = aboutSceneRef.value.querySelector('.mv-bg-num')
+      if (line) {
+        const lp = Math.max(0, Math.min(1, aboutP * 5))
+        line.style.transform = `scaleY(${lp})`
+      }
+      if (bgNum) bgNum.style.transform = `translateX(${aboutP * 90}px)`
+    }
 
     // ── Skills 逐列触发（离开视口后重置，下次重播）
     if (inVP('skills')) {
@@ -938,22 +950,25 @@ onUnmounted(() => {
 .mv-sec-head {
   display: flex; flex-direction: column; gap: 0.6rem;
 }
-.mv-sec-tag { transition: opacity 0.5s ease 0.05s; }
+/* Tag: 从左侧滑入 */
+.mv-sec-tag {
+  will-change: transform, opacity;
+  transition: opacity 0.55s var(--ease), transform 0.55s var(--ease);
+}
+.mv-sec-in:not(.sec-visible) .mv-sec-tag { opacity: 0; transform: translateX(-48px); }
+.sec-visible .mv-sec-tag { opacity: 1; transform: translateX(0); }
+
+/* H2: 劈入（从裁剪容器底部） */
 .mv-sec-title-clip { overflow: hidden; }
 .mv-sec-h2 {
   font-size: clamp(2.8rem, 6vw, 5rem);
   font-weight: 900; line-height: 0.9;
   letter-spacing: -0.04em; margin: 0;
   transform: translateY(110%);
-  transition: transform 0.85s var(--ease) 0.1s;
+  will-change: transform;
+  transition: transform 0.75s var(--ease) 0.1s;
 }
-
-/* 触发后的可见状态 */
-.sec-visible .mv-sec-tag   { opacity: 1; }
-.sec-visible .mv-sec-h2    { transform: translateY(0); }
-
-/* 默认隐藏（进入 scene 前） */
-.mv-sec-in:not(.sec-visible) .mv-sec-tag { opacity: 0; }
+.sec-visible .mv-sec-h2 { transform: translateY(0); }
 
 /* 大背景数字 */
 .mv-bg-num {
@@ -1054,17 +1069,45 @@ onUnmounted(() => {
 @keyframes sh-bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(4px)} }
 
 /* ══ ABOUT ══════════════════════════════════════════════════ */
+
+/* 正文：从右侧滑入（与标题方向相反，产生张力） */
 .mv-about-body {
   display: flex; flex-direction: column; gap: 2rem;
-  opacity: 0; transform: translateY(20px);
-  transition: opacity 0.7s ease 0.2s, transform 0.7s var(--ease) 0.2s;
+  opacity: 0; transform: translateX(64px);
+  will-change: transform, opacity;
+  transition: opacity 0.8s var(--ease) 0.28s, transform 0.8s var(--ease) 0.28s;
 }
-.sec-visible .mv-about-body { opacity: 1; transform: translateY(0); }
+.sec-visible .mv-about-body { opacity: 1; transform: translateX(0); }
+
 .mv-about-text {
   font-size: clamp(0.9rem, 1.6vw, 1.08rem); line-height: 1.7;
   color: var(--l2); max-width: 56ch; margin: 0;
 }
+
+/* Tags：从下方逐个弹入 */
 .mv-about-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.mv-about-tags .mv-tag {
+  opacity: 0; transform: translateY(14px);
+  transition: opacity 0.38s var(--ease), transform 0.38s var(--ease);
+}
+.sec-visible .mv-about-tags .mv-tag { opacity: 1; transform: translateY(0); }
+.sec-visible .mv-about-tags .mv-tag:nth-child(1)  { transition-delay: 0.44s; }
+.sec-visible .mv-about-tags .mv-tag:nth-child(2)  { transition-delay: 0.51s; }
+.sec-visible .mv-about-tags .mv-tag:nth-child(3)  { transition-delay: 0.58s; }
+.sec-visible .mv-about-tags .mv-tag:nth-child(4)  { transition-delay: 0.65s; }
+.sec-visible .mv-about-tags .mv-tag:nth-child(5)  { transition-delay: 0.72s; }
+.sec-visible .mv-about-tags .mv-tag:nth-child(n+6){ transition-delay: 0.79s; }
+
+/* scroll-driven 红色左侧竖线（tick() 驱动 scaleY） */
+.mv-about-line {
+  position: absolute;
+  left: clamp(1.5rem, 4vw, 5rem);
+  top: 72px;
+  width: 1px; height: 180px;
+  background: linear-gradient(to bottom, var(--accent) 60%, transparent);
+  transform-origin: top; transform: scaleY(0);
+  will-change: transform;
+}
 .mv-tag {
   font-family: 'Space Mono', monospace;
   font-size: 0.6rem; letter-spacing: 0.06em; text-transform: uppercase;
