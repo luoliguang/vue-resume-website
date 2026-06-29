@@ -50,6 +50,8 @@
     <!-- ══════ SCENE 1 · HERO (180vh) ══════ -->
     <div class="mv-scene" ref="heroSceneRef" style="min-height:180vh">
       <div class="mv-sticky">
+        <!-- Three.js floating stickers layer -->
+        <HeroLiquid />
         <div class="mv-hero-inner" ref="heroInnerRef">
           <p class="mv-eyebrow ui-label">
             {{ isChinese ? '服装行业 · 全栈开发 · AI 应用实践' : 'Fashion Industry · Full Stack · AI Practice' }}
@@ -306,6 +308,7 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { t, isChinese, toggleLanguage } from '../composables/useI18n.js'
+import HeroLiquid from '../components/HeroLiquid.vue'
 import { useContent } from '../composables/useContent.js'
 import { skillCategories } from '../data/skills.js'
 import { journeyMilestones } from '../data/journey.js'
@@ -529,32 +532,42 @@ function initParallax() {
     if (l1Ref.value)
       l1Ref.value.style.transform = `translateY(${lerpY * 0.22}px)`
 
-    // ── Hero 内容出场：滚动60%后才开始淡出，给 About 衔接留空间
-    if (heroInnerRef.value) {
-      const f = Math.max(0, 1 - (heroP - 0.6) * 3.5)
-      heroInnerRef.value.style.opacity   = f
-      heroInnerRef.value.style.transform = `translateY(${-heroP * 36}px)`
-    }
-    if (scrollHintRef.value)
-      scrollHintRef.value.style.opacity = String(Math.max(0, 1 - heroP * 5))
-
-    // 判断某个 scene 是否在视口内（场景 top 进入视口底部，且底部未离开视口顶部）
+    // 判断某个 scene 是否在视口内
     const wh = window.innerHeight
     const inVP = (name) => {
       const s = scenes[name]
       return s && lerpY + wh > s.top && lerpY < s.top + s.height
     }
 
-    // ── About：场景进入视口即触发
+    // ══ PUSH 过渡引擎 ══════════════════════════════════════════
+    // 下一 scene 的顶部从视口底部滑到视口顶部 = pushP 0→1
+    // 用同一进度同步驱动：上一 section 退出 + 下一 section 进入
+    const pushProgress = (nextName) => {
+      const s = scenes[nextName]
+      if (!s) return 0
+      return Math.max(0, Math.min(1, (lerpY + wh - s.top) / wh))
+    }
+
+    // ── Hero → About 推进（同一进度驱动双向）
+    const aboutPushP = pushProgress('about')
+    if (heroInnerRef.value) {
+      heroInnerRef.value.style.opacity   = String(Math.max(0, 1 - aboutPushP * 1.6))
+      heroInnerRef.value.style.transform = `translateY(${-aboutPushP * 60}px)`
+    }
+    if (scrollHintRef.value)
+      scrollHintRef.value.style.opacity = String(Math.max(0, 1 - aboutPushP * 4))
+
+    // About sticky 背景透明→实色：About 从透明底部升起，hero 在其后可见 = Push 感
+    const aboutStickyEl = aboutSceneRef.value?.querySelector('.mv-sticky')
+    if (aboutStickyEl)
+      aboutStickyEl.style.background = `rgba(10,10,8,${Math.min(1, aboutPushP * 2)})`
+
     showAbout.value = inVP('about')
-    // scroll-driven: 红线 scaleY + bg-num 向右漂移
+    // scroll-driven: 红线延伸 + bg-num 漂移
     if (aboutSceneRef.value) {
-      const line = aboutSceneRef.value.querySelector('.mv-about-line')
+      const line  = aboutSceneRef.value.querySelector('.mv-about-line')
       const bgNum = aboutSceneRef.value.querySelector('.mv-bg-num')
-      if (line) {
-        const lp = Math.max(0, Math.min(1, aboutP * 5))
-        line.style.transform = `scaleY(${lp})`
-      }
+      if (line)  line.style.transform  = `scaleY(${Math.max(0, Math.min(1, aboutP * 5))})`
       if (bgNum) bgNum.style.transform = `translateX(${aboutP * 90}px)`
     }
 
@@ -984,6 +997,7 @@ onUnmounted(() => {
   display: flex; flex-direction: column; justify-content: center;
   padding: 0 clamp(1.5rem, 4vw, 5rem);
   gap: 1.5rem; will-change: transform, opacity;
+  z-index: 3;
 }
 .mv-eyebrow {
   color: var(--l2);
