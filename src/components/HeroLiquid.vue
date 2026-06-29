@@ -50,92 +50,102 @@ function makeTexture({ emoji, label, color }) {
 }
 
 // ── Shaders ──────────────────────────────────────────────────
-// Vertex: mesh surface deforms outward from contact point
+// Vertex: part the mesh along the mouse trail (split outward on each side)
 const VERT = /* glsl */`
   varying vec2 vUv;
-  uniform vec2  uContact;   // contact point in local mesh space (metres, ±0.72)
-  uniform float uPush;      // 0–1  push strength (hover)
-  uniform float uRipple;    // 0–1  ripple phase (mouse exit, 0=start 1=done)
-  uniform float uRippleStr; // amplitude of the exit ripple
+  uniform vec2  uContact;
+  uniform float uRipple;
+  uniform float uRippleStr;
+  uniform vec2  uWakeDir;
+  uniform float uWakeStr;
 
   void main() {
     vUv = uv;
     vec3 pos = position;
 
-    vec2  toContact = pos.xy - uContact;
-    float d         = length(toContact);
-    float influence = 0.58;   // world-space influence radius
+    vec2 toContact = pos.xy - uContact;
 
-    if (d < influence) {
-      vec2 pushDir  = d > 0.001 ? normalize(toContact) : vec2(0.0);
-      float falloff = smoothstep(influence, 0.0, d);
-
-      // Steady push while mouse is over (dents inward under finger)
-      pos.xy -= pushDir * falloff * falloff * uPush * 0.42;
-
-      // Ripple ring expanding outward on mouse exit
-      if (uRippleStr > 0.001) {
-        float ringD   = abs(d / influence - uRipple);
-        float ring    = exp(-ringD * 14.0) * uRippleStr * (1.0 - uRipple);
-        pos.xy += pushDir * ring * 0.52;
-      }
+    // ── Wake groove: split vertices to either side of the trail ──
+    if (uWakeStr > 0.001) {
+      vec2  perp       = vec2(-uWakeDir.y, uWakeDir.x);
+      float signedPerp = dot(toContact, perp);
+      float perpDist   = abs(signedPerp);
+      float distFade   = smoothstep(0.58, 0.0, length(toContact));
+      float lineGauss  = exp(-perpDist * perpDist / (0.08 * 0.08)); // thin groove
+      float str        = lineGauss * distFade * uWakeStr;
+      // Push vertices outward from centreline
+      pos.xy += sign(signedPerp) * perp * str * 0.18;
+      // Slight z-ridge so groove has 3-D depth
+      pos.z  += lineGauss * distFade * uWakeStr * 0.06;
     }
 
-    // Gentle idle breath on z (barely visible, keeps it "alive")
-    // handled in fragment for performance
+    // ── Ripple ring on exit ──
+    if (uRippleStr > 0.001) {
+      float d      = length(toContact);
+      float infl   = 0.58;
+      vec2  pDir   = d > 0.001 ? normalize(toContact) : vec2(0.0);
+      float ringD  = abs(d / infl - uRipple);
+      float ring   = exp(-ringD * 14.0) * uRippleStr * (1.0 - uRipple);
+      pos.xy += pDir * ring * 0.48;
+    }
 
     gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
   }
 `
 
-// Fragment: UV warp — radial push + directional wake streak + ripple
+// Fragment: UV-space parting effect — clean single groove line
 const FRAG = /* glsl */`
   varying vec2 vUv;
   uniform sampler2D uMap;
-  uniform vec2  uContactUV;  // contact UV (0–1)
-  uniform float uPush;
+  uniform vec2  uContactUV;
   uniform float uRipple;
   uniform float uRippleStr;
-  uniform vec2  uWakeDir;    // normalised mouse-velocity direction in UV space
-  uniform float uWakeStr;    // 0–1, speed magnitude (decays as trail fades)
+  uniform vec2  uWakeDir;
+  uniform float uWakeStr;
   uniform float uTime;
 
   void main() {
-    vec2 uv = vUv;
+    vec2  uv        = vUv;
+    float bright    = 1.0;
 
-    vec2  toContact = uv - uContactUV;
-    float d         = length(toContact);
-    float influence = 0.44;
+    vec2 toContact = uv - uContactUV;
 
-    if (d < influence) {
-      vec2  dir     = d > 0.001 ? normalize(toContact) : vec2(0.0);
-      float falloff = smoothstep(influence, 0.0, d);
-      float ff2     = falloff * falloff;
+    // ── Wake groove: part UV on each side of the trail line ──
+    if (uWakeStr > 0.001) {
+      vec2  perp       = vec2(-uWakeDir.y, uWakeDir.x);
+      float signedPerp = dot(toContact, perp);
+      float perpDist   = abs(signedPerp);
+      float distFade   = smoothstep(0.44, 0.0, length(toContact));
+      float lineGauss  = exp(-perpDist * perpDist / (0.07 * 0.07));
+      float str        = lineGauss * distFade * uWakeStr;
 
-      // ① Radial push: dent inward at contact (small, subtle)
-      uv -= dir * ff2 * uPush * 0.18;
+      // Part UVs outward from the groove centreline
+      uv += sign(signedPerp) * perp * str * 0.28;
 
-      // ② Directional wake: drag texture along mouse path (the "line")
-      //    Texture moves in wake direction → visible streak behind cursor
-      uv -= uWakeDir * ff2 * uWakeStr * 0.55;
-
-      // ③ Ripple on exit
-      if (uRippleStr > 0.001) {
-        float ringD = abs(d / influence - uRipple);
-        float ring  = exp(-ringD * 14.0) * uRippleStr * (1.0 - uRipple);
-        uv += dir * ring * 0.38;
-      }
+      // Specular highlight along the groove (makes it look like a lit groove)
+      bright += str * 0.6;
     }
 
-    // Always-on surface shimmer
-    float shimmer = sin(vUv.x * 9.0 + uTime * 1.4) * sin(vUv.y * 7.0 + uTime * 1.1);
-    uv += shimmer * 0.004;
+    // ── Ripple on exit ──
+    if (uRippleStr > 0.001) {
+      float d     = length(toContact);
+      float infl  = 0.44;
+      vec2  dir   = d > 0.001 ? normalize(toContact) : vec2(0.0);
+      float ringD = abs(d / infl - uRipple);
+      float ring  = exp(-ringD * 14.0) * uRippleStr * (1.0 - uRipple);
+      uv += dir * ring * 0.38;
+    }
+
+    // Always-on shimmer
+    uv += sin(vUv.x * 9.0 + uTime * 1.4) * sin(vUv.y * 7.0 + uTime * 1.1) * 0.004;
 
     uv = clamp(uv, 0.01, 0.99);
     vec2  center   = (vUv - 0.5) * 2.0;
     float edgeMask = smoothstep(1.0, 0.78, length(center));
-    vec4 col = texture2D(uMap, uv);
-    col.a   *= edgeMask;
+
+    vec4 col    = texture2D(uMap, uv);
+    col.rgb    *= bright;
+    col.a      *= edgeMask;
     gl_FragColor = col;
   }
 `
@@ -156,7 +166,6 @@ function buildSticker(data, idx) {
       uMap:        { value: tex },
       uContact:    { value: new THREE.Vector2(0,0) },
       uContactUV:  { value: new THREE.Vector2(0.5,0.5) },
-      uPush:       { value: 0 },
       uRipple:     { value: 0 },
       uRippleStr:  { value: 0 },
       uWakeDir:    { value: new THREE.Vector2(0,0) },
@@ -243,7 +252,7 @@ function step(s, t, dt) {
   }
 
   // Smooth push strength: lerps to 1 while hovered, 0 when not
-  s.pushStr += ((s.isHovered ? 1 : 0) - s.pushStr) * (s.isHovered ? 0.10 : 0.06)
+  s.pushStr += ((s.isHovered ? 1 : 0) - s.pushStr) * 0.12
 
   // Advance ripple
   if (s.rippling) {
@@ -265,11 +274,11 @@ function step(s, t, dt) {
     if (spd > 0.0005) {
       s.wakeDir.set(duvx / spd, duvy / spd)
       // Build up wake strength with mouse speed (scale to 60fps)
-      s.wakeStr = Math.min(1.0, s.wakeStr + spd * 55)
+      s.wakeStr = Math.min(1.0, s.wakeStr + spd * 120)
     }
   }
   // Decay wake — slowly enough to leave a visible trail
-  s.wakeStr *= 0.82
+  s.wakeStr *= 0.88
   if (s.wakeStr < 0.001) s.wakeStr = 0
 
   s.prevUVx = uvx
@@ -280,7 +289,6 @@ function step(s, t, dt) {
   u.uTime.value       = t
   u.uContact.value.set(lx, ly)
   u.uContactUV.value.set(uvx, uvy)
-  u.uPush.value       = s.pushStr
   u.uRipple.value     = s.rippleAge
   u.uRippleStr.value  = s.rippling ? s.rippleAmp * Math.max(0, 1 - s.rippleAge) : 0
   u.uWakeDir.value.copy(s.wakeDir)
