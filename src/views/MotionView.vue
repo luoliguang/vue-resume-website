@@ -40,7 +40,7 @@
         <div class="mv-deco-v"></div>
       </div>
 
-      <div class="mv-hero-inner">
+      <div class="mv-hero-inner" ref="heroInnerRef">
         <span class="mv-eyebrow mono">
           {{ isChinese ? '服装行业 · 全栈开发 · AI 应用实践' : 'Fashion Industry · Full Stack · AI Practice' }}
         </span>
@@ -176,7 +176,7 @@
           <h2 class="mv-sec-title" data-reveal="title">{{ isChinese ? '项目展示' : 'Projects' }}</h2>
         </header>
 
-        <div class="mv-proj-grid">
+        <div class="mv-proj-grid" data-reveal="list">
           <div
             v-for="(proj, i) in displayProjects" :key="proj.id ?? i"
             class="mv-proj-card list-item"
@@ -360,6 +360,7 @@ const particlesRef   = ref(null)
 const l0Ref          = ref(null)
 const l1Ref          = ref(null)
 const l2Ref          = ref(null)
+const heroInnerRef   = ref(null)
 const aboutNumRef    = ref(null)
 const skillsNumRef   = ref(null)
 const journeyNumRef  = ref(null)
@@ -445,19 +446,25 @@ function drawParticles(now) {
   })
 }
 
-// ══ 视差引擎 + 环境动效 + 粒子（单一 rAF 循环）═══════════════
+// ══ 视差引擎 + 滚动缩放 + 粒子（单一 rAF 循环）══════════════
 let lerpY = 0, targetY = 0, parallaxRaf = null, scrollListener = null
 let frameCount = 0
+// 各 section 距顶偏移缓存（避免每帧 getBoundingClientRect）
+let sectionEls = [], sectionTops = []
+
+function cacheSections() {
+  sectionEls = [...(rootRef.value?.querySelectorAll('.mv-section') ?? [])]
+  sectionTops = sectionEls.map(s => s.offsetTop)
+}
 
 function initParallax() {
   scrollListener = () => { targetY = window.scrollY }
   window.addEventListener('scroll', scrollListener, { passive: true })
-  // 同时更新 --scroll 供 CSS 使用
+  window.addEventListener('resize', cacheSections)
   window.addEventListener('scroll', () => {
     const ms = document.documentElement.scrollHeight - window.innerHeight
-    if (ms > 0) {
+    if (ms > 0)
       document.documentElement.style.setProperty('--scroll', (window.scrollY / ms).toFixed(4))
-    }
   }, { passive: true })
 
   function tick() {
@@ -465,22 +472,48 @@ function initParallax() {
     const ms  = document.documentElement.scrollHeight - window.innerHeight
     const pct = ms > 0 ? Math.min(lerpY / ms, 1) : 0
     const now = performance.now() * 0.001
+    const vh  = window.innerHeight
 
-    // 关键修复：l1 / bg-num 有 CSS top:50%，JS 需合并 -50%
-    if (l0Ref.value)          l0Ref.value.style.transform          = `translateY(${lerpY * 0.08}px)`
-    if (l1Ref.value)          l1Ref.value.style.transform          = `translateY(calc(-50% + ${lerpY * 0.28}px))`
-    if (l2Ref.value)          l2Ref.value.style.transform          = `translateY(${lerpY * 0.42}px)`
+    // ── Hero 出场：背景 scale 放大 + 内容淡出上移 ──────────
+    // 滚动 0 → 1vh，hero 出场完毕
+    const heroExit = Math.max(0, Math.min(1, lerpY / vh))
+    if (l0Ref.value)
+      l0Ref.value.style.transform = `scale(${1 + heroExit * 0.16}) translateY(${lerpY * 0.04}px)`
+    if (l1Ref.value)
+      l1Ref.value.style.transform = `translateY(calc(-50% + ${lerpY * 0.22}px)) scale(${1 + heroExit * 0.08})`
+    if (l2Ref.value)
+      l2Ref.value.style.transform = `translateY(${lerpY * 0.42}px)`
+    if (heroInnerRef.value) {
+      const fade = Math.max(0, 1 - heroExit * 1.6)
+      heroInnerRef.value.style.opacity   = fade
+      heroInnerRef.value.style.transform = `translateY(${-heroExit * 72}px)`
+    }
+
+    // ── bg-num 视差（各区块大字）──────────────────────────
     if (aboutNumRef.value)    aboutNumRef.value.style.transform    = `translateY(calc(-50% + ${lerpY * 0.16}px))`
     if (skillsNumRef.value)   skillsNumRef.value.style.transform   = `translateY(calc(-50% + ${lerpY * 0.13}px))`
     if (journeyNumRef.value)  journeyNumRef.value.style.transform  = `translateY(calc(-50% + ${lerpY * 0.10}px))`
     if (projectsNumRef.value) projectsNumRef.value.style.transform = `translateY(calc(-50% + ${lerpY * 0.08}px))`
     if (contactNumRef.value)  contactNumRef.value.style.transform  = `translateY(calc(-50% + ${lerpY * 0.06}px))`
 
+    // ── Section 入场：从 scale(0.94) 缩放至 scale(1) ─────
+    // opacity 用实际 targetY（跳转后立即可见）；scale 用 lerpY（保留惯性平滑感）
+    sectionEls.forEach((sec, i) => {
+      const distActual = sectionTops[i] - targetY
+      const distLerp   = sectionTops[i] - lerpY
+      const pActual = Math.max(0, Math.min(1, 1 - distActual / (vh * 0.88)))
+      const pLerp   = Math.max(0, Math.min(1, 1 - distLerp   / (vh * 0.88)))
+      const scale  = 0.94 + pLerp   * 0.06
+      const opaque = Math.min(1, Math.max(0.15, pActual * 2.4))
+      sec.style.transform = `scale(${scale.toFixed(4)})`
+      sec.style.opacity   = opaque.toFixed(4)
+    })
+
     // 滚动进度线
     if (progressRef.value && ms > 0)
       progressRef.value.style.transform = `scaleX(${pct})`
 
-    // 环境光跟随滚动（CSS var → background-position）
+    // 环境光跟随滚动
     const glowY = 20 + pct * 62
     rootRef.value?.style.setProperty('--glow-y', `${glowY}%`)
 
@@ -635,7 +668,7 @@ function initObservers() {
     statsIo.observe(statsRef.value)
   }
 
-  // 项目卡片幕布揭示（data-delay 错落）
+  // 项目卡片幕布揭示（data-delay 错落，threshold 极低确保触发）
   imgIo = new IntersectionObserver((entries) => {
     entries.forEach(({ target, isIntersecting }) => {
       if (!isIntersecting) return
@@ -643,8 +676,14 @@ function initObservers() {
       setTimeout(() => target.classList.add('img-revealed'), delay)
       imgIo.unobserve(target)
     })
-  }, { threshold: 0.08 })
+  }, { threshold: 0.01, rootMargin: '0px 0px 80px 0px' })
   rootRef.value?.querySelectorAll('.mv-img-reveal').forEach(el => imgIo.observe(el))
+  // 兜底：1.5s 后强制揭示所有未触发的卡片
+  setTimeout(() => {
+    rootRef.value?.querySelectorAll('.mv-img-reveal:not(.img-revealed)').forEach((el, i) => {
+      setTimeout(() => el.classList.add('img-revealed'), i * 100)
+    })
+  }, 1500)
 
   // 导航高亮（当前区块）
   navIo = new IntersectionObserver((entries) => {
@@ -671,6 +710,7 @@ onMounted(async () => {
   setTimeout(() => { heroIn.value    = true }, 150)
   setTimeout(() => { heroSubIn.value = true }, 350)
   await nextTick()
+  cacheSections()
   initObservers()
   initCardTilt()
 })
@@ -684,6 +724,8 @@ onUnmounted(() => {
   if (cursorMoveHandler)       document.removeEventListener('mousemove', cursorMoveHandler)
   if (trailMouseHandler)       window.removeEventListener('mousemove',  trailMouseHandler)
   if (particleResizeHandler)   window.removeEventListener('resize',     particleResizeHandler)
+  window.removeEventListener('resize', cacheSections)
+  sectionEls = []; sectionTops = []
   io?.disconnect()
   statsIo?.disconnect()
   imgIo?.disconnect()
@@ -700,9 +742,9 @@ onUnmounted(() => {
 .mv {
   --mv-bg:    #080810;
   --mv-fg:    #e8e8e6;
-  --mv-fg2:   #505050;
-  --mv-fg3:   #141420;
-  --mv-line:  #1c1c28;
+  --mv-fg2:   #9a9a96;   /* 从 #505050 提亮，对比度 ~6:1 */
+  --mv-fg3:   #1c1c28;
+  --mv-line:  #252530;
   --mv-accent:#ff2d00;
   --mv-ease:  cubic-bezier(0.16, 1, 0.3, 1);
   --glow-y:   22%;
@@ -862,6 +904,8 @@ onUnmounted(() => {
   position: relative;
   padding: clamp(80px, 12vw, 140px) 0;
   overflow: hidden;
+  will-change: transform, opacity;
+  transform-origin: center top;
 }
 
 /* 每个 section 左侧颜色竖条（视觉区分） */
