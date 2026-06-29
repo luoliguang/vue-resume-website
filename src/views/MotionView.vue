@@ -536,25 +536,39 @@ function initParallax() {
     if (scrollHintRef.value)
       scrollHintRef.value.style.opacity = String(Math.max(0, 1 - heroP * 5))
 
-    // ── About 触发（可重置，支持回滚重播）
-    if (aboutP > 0.04) showAbout.value = true
-    else if (aboutP < 0.01) showAbout.value = false
+    // 判断某个 scene 是否在视口内（场景 top 进入视口底部，且底部未离开视口顶部）
+    const wh = window.innerHeight
+    const inVP = (name) => {
+      const s = scenes[name]
+      return s && lerpY + wh > s.top && lerpY < s.top + s.height
+    }
 
-    // ── Skills 逐列触发（回滚时重置计数）
-    if (skillsP > 0.04) showSkills.value = true
-    else if (skillsP < 0.01) { showSkills.value = false; skillRevealCount.value = 0 }
-    const sk = Math.max(0, Math.floor((skillsP - 0.08) / 0.16) + 1)
-    if (showSkills.value && sk > skillRevealCount.value) skillRevealCount.value = Math.min(skillCategories.length, sk)
+    // ── About：场景进入视口即触发（动画随 sticky 滑入同步出现）
+    showAbout.value = inVP('about')
 
-    // ── Journey 逐条触发（回滚时重置计数）
-    if (journeyP > 0.04) showJourney.value = true
-    else if (journeyP < 0.01) { showJourney.value = false; journeyRevealCount.value = 0 }
-    const jk = Math.max(0, Math.floor((journeyP - 0.06) / (0.85 / Math.max(1, journeyMilestones.length))) + 1)
-    if (showJourney.value && jk > journeyRevealCount.value) journeyRevealCount.value = Math.min(journeyMilestones.length, jk)
+    // ── Skills 逐列触发（离开视口后重置，下次重播）
+    if (inVP('skills')) {
+      showSkills.value = true
+      const sk = Math.max(0, Math.floor((skillsP - 0.08) / 0.16) + 1)
+      if (sk > skillRevealCount.value) skillRevealCount.value = Math.min(skillCategories.length, sk)
+    } else {
+      showSkills.value = false
+      skillRevealCount.value = 0
+    }
+
+    // ── Journey 逐条触发（离开视口后重置）
+    if (inVP('journey')) {
+      showJourney.value = true
+      const jk = Math.max(0, Math.floor((journeyP - 0.06) / (0.85 / Math.max(1, journeyMilestones.length))) + 1)
+      if (jk > journeyRevealCount.value) journeyRevealCount.value = Math.min(journeyMilestones.length, jk)
+    } else {
+      showJourney.value = false
+      journeyRevealCount.value = 0
+    }
 
     // ── 项目：水平镜头
-    if (projP > 0.02) showProjects.value = true
-    else if (projP < 0.01) showProjects.value = false
+    if (inVP('projects')) showProjects.value = true
+    else showProjects.value = false
     if (projTrackRef.value && projTrackW > 0) {
       projTrackRef.value.style.transform = `translateX(${-projTrackW * projP}px)`
       const count = displayProjects.value.length
