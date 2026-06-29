@@ -17,6 +17,9 @@ const STICKERS = [
   { emoji: '🧵', label: '服装', color: '#880e4f', x: -1.4, y: -2.4, rz: -0.14 },
 ]
 
+const TRAIL_N = 16   // trail history length
+const TRAIL_LIFE = 0.7  // seconds before a point fades out
+
 // ── Canvas texture ───────────────────────────────────────────
 function hexShift(hex, amt) {
   const h = hex.replace('#','')
@@ -50,126 +53,117 @@ function makeTexture({ emoji, label, color }) {
 }
 
 // ── Shaders ──────────────────────────────────────────────────
-// Vertex: part the mesh along the mouse trail (split outward on each side)
 const VERT = /* glsl */`
   varying vec2 vUv;
-  uniform vec2  uContact;
   uniform float uRipple;
   uniform float uRippleStr;
-  uniform vec2  uWakeDir;
-  uniform float uWakeStr;
+  uniform vec2  uContact;
 
   void main() {
     vUv = uv;
     vec3 pos = position;
-
-    vec2 toContact = pos.xy - uContact;
-
-    // ── Wake groove: split vertices to either side of the trail ──
-    if (uWakeStr > 0.001) {
-      vec2  perp       = vec2(-uWakeDir.y, uWakeDir.x);
-      float signedPerp = dot(toContact, perp);
-      float perpDist   = abs(signedPerp);
-      float distFade   = smoothstep(0.58, 0.0, length(toContact));
-      float lineGauss  = exp(-perpDist * perpDist / (0.08 * 0.08)); // thin groove
-      float str        = lineGauss * distFade * uWakeStr;
-      // Push vertices outward from centreline
-      pos.xy += sign(signedPerp) * perp * str * 0.18;
-      // Slight z-ridge so groove has 3-D depth
-      pos.z  += lineGauss * distFade * uWakeStr * 0.06;
-    }
-
-    // ── Ripple ring on exit ──
+    // Only ripple on exit — no other vertex deformation
     if (uRippleStr > 0.001) {
-      float d      = length(toContact);
-      float infl   = 0.58;
-      vec2  pDir   = d > 0.001 ? normalize(toContact) : vec2(0.0);
-      float ringD  = abs(d / infl - uRipple);
-      float ring   = exp(-ringD * 14.0) * uRippleStr * (1.0 - uRipple);
-      pos.xy += pDir * ring * 0.48;
+      float d    = length(pos.xy - uContact);
+      float infl = 0.60;
+      if (d < infl) {
+        vec2  dir  = d > 0.001 ? normalize(pos.xy - uContact) : vec2(0.0);
+        float rD   = abs(d / infl - uRipple);
+        float ring = exp(-rD * 12.0) * uRippleStr * (1.0 - uRipple);
+        pos.xy += dir * ring * 0.45;
+      }
     }
-
     gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
   }
 `
 
-// Fragment: UV-space parting effect — clean single groove line
-const FRAG = /* glsl */`
+// Trail stored as TRAIL_N points: xy=UV coords, z=age (0=fresh → 1=dead)
+const FRAG = `
+  precision highp float;
   varying vec2 vUv;
   uniform sampler2D uMap;
-  uniform vec2  uContactUV;
   uniform float uRipple;
   uniform float uRippleStr;
+  uniform vec2  uContactUV;
+  uniform vec3  uTrail[${TRAIL_N}];
   uniform vec2  uWakeDir;
-  uniform float uWakeStr;
   uniform float uTime;
 
   void main() {
-    vec2  uv        = vUv;
-    float bright    = 1.0;
+    vec2  uv     = vUv;
+    float bright = 1.0;
 
-    vec2 toContact = uv - uContactUV;
+    // ── Trail: Gaussian splat each history point ──────────
+    float trailVal = 0.0;
+    for (int i = 0; i < ${TRAIL_N}; i++) {
+      if (uTrail[i].z >= 1.0) continue;
+      vec2  delta = vUv - uTrail[i].xy;
+      float d2    = dot(delta, delta);
+      float age   = 1.0 - uTrail[i].z;          // 1=fresh 0=faded
+      trailVal   += exp(-d2 / 0.0025) * age;     // crisp gaussian per point
+    }
+    trailVal = clamp(trailVal, 0.0, 1.0);
 
-    // ── Wake groove: part UV on each side of the trail line ──
-    if (uWakeStr > 0.001) {
+    if (trailVal > 0.01) {
+      // Perpendicular to wake direction = the two sides of the groove
       vec2  perp       = vec2(-uWakeDir.y, uWakeDir.x);
-      float signedPerp = dot(toContact, perp);
-      float perpDist   = abs(signedPerp);
-      float distFade   = smoothstep(0.44, 0.0, length(toContact));
-      float lineGauss  = exp(-perpDist * perpDist / (0.07 * 0.07));
-      float str        = lineGauss * distFade * uWakeStr;
+      float signedPerp = dot(vUv - uContactUV, perp);
 
-      // Part UVs outward from the groove centreline
-      uv += sign(signedPerp) * perp * str * 0.28;
+      // Part UVs outward from the trail (texture pushed apart)
+      uv += sign(signedPerp) * perp * trailVal * 0.28;
 
-      // Specular highlight along the groove (makes it look like a lit groove)
-      bright += str * 0.6;
+      // Strong bright highlight — this is the visible line
+      bright += trailVal * 1.6;
     }
 
-    // ── Ripple on exit ──
+    // ── Ripple on exit ────────────────────────────────────
     if (uRippleStr > 0.001) {
-      float d     = length(toContact);
-      float infl  = 0.44;
-      vec2  dir   = d > 0.001 ? normalize(toContact) : vec2(0.0);
-      float ringD = abs(d / infl - uRipple);
-      float ring  = exp(-ringD * 14.0) * uRippleStr * (1.0 - uRipple);
-      uv += dir * ring * 0.38;
+      float d    = length(vUv - uContactUV);
+      float infl = 0.44;
+      if (d < infl) {
+        vec2  dir  = d > 0.001 ? normalize(vUv - uContactUV) : vec2(0.0);
+        float rD   = abs(d / infl - uRipple);
+        float ring = exp(-rD * 14.0) * uRippleStr * (1.0 - uRipple);
+        uv += dir * ring * 0.35;
+      }
     }
 
-    // Always-on shimmer
+    // Surface shimmer
     uv += sin(vUv.x * 9.0 + uTime * 1.4) * sin(vUv.y * 7.0 + uTime * 1.1) * 0.004;
 
     uv = clamp(uv, 0.01, 0.99);
-    vec2  center   = (vUv - 0.5) * 2.0;
-    float edgeMask = smoothstep(1.0, 0.78, length(center));
-
-    vec4 col    = texture2D(uMap, uv);
-    col.rgb    *= bright;
-    col.a      *= edgeMask;
-    gl_FragColor = col;
+    vec2  c      = (vUv - 0.5) * 2.0;
+    float mask   = smoothstep(1.0, 0.78, length(c));
+    vec4  col    = texture2D(uMap, uv);
+    col.rgb     *= bright;
+    col.a       *= mask;
+    gl_FragColor  = col;
   }
 `
 
 // ── Three.js ─────────────────────────────────────────────────
 let renderer, scene, camera, animId
-const clock    = new THREE.Clock()
-const mouseNDC = new THREE.Vector2(9999, 9999)
-const mouse3D  = new THREE.Vector3()
+const clock     = new THREE.Clock()
+const mouseNDC  = new THREE.Vector2(9999, 9999)
+const mouse3D   = new THREE.Vector3()
 const raycaster = new THREE.Raycaster()
 const zPlane    = new THREE.Plane(new THREE.Vector3(0,0,1), 0)
 let stickerObjs = []
 
-function buildSticker(data, idx) {
-  const tex = makeTexture(data)
+function buildSticker(data) {
+  // Pre-create trail array as THREE.Vector3 so Three.js can upload as vec3[]
+  const trailPts = Array.from({ length: TRAIL_N },
+    () => new THREE.Vector3(0.5, 0.5, 1.0))  // z=1 means dead/invisible
+
   const mat = new THREE.ShaderMaterial({
     uniforms: {
-      uMap:        { value: tex },
-      uContact:    { value: new THREE.Vector2(0,0) },
-      uContactUV:  { value: new THREE.Vector2(0.5,0.5) },
+      uMap:        { value: makeTexture(data) },
+      uContact:    { value: new THREE.Vector2(0, 0) },
+      uContactUV:  { value: new THREE.Vector2(0.5, 0.5) },
       uRipple:     { value: 0 },
       uRippleStr:  { value: 0 },
-      uWakeDir:    { value: new THREE.Vector2(0,0) },
-      uWakeStr:    { value: 0 },
+      uWakeDir:    { value: new THREE.Vector2(1, 0) },
+      uTrail:      { value: trailPts },
       uTime:       { value: 0 },
     },
     vertexShader:   VERT,
@@ -178,121 +172,120 @@ function buildSticker(data, idx) {
     depthWrite:  false,
     side: THREE.DoubleSide,
   })
-  // More subdivisions = smoother deformation
-  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(1.44,1.44,20,20), mat)
+
+  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(1.44, 1.44, 16, 16), mat)
   mesh.rotation.z = data.rz
-  const home = new THREE.Vector3(data.x, data.y, 0)
-  mesh.position.copy(home)
+  mesh.position.set(data.x, data.y, 0)
   scene.add(mesh)
 
   return {
     mesh,
-    pos:        home.clone(),
-    baseRz:     data.rz,
-    // fall / tumble
-    driftX:     (Math.random() - 0.5) * 0.35,
-    driftY:     -(0.35 + Math.random() * 0.55),
-    angularVel: (Math.random() - 0.5) * 1.1,
-    // hover state
-    isHovered:  false,
-    pushStr:    0,
-    // ripple state
-    rippling:   false,
-    rippleAge:  0,
-    rippleAmp:  0,
-    // wake / streak
-    prevUVx:    0.5,
-    prevUVy:    0.5,
-    wakeDir:    new THREE.Vector2(0, 0),
-    wakeStr:    0,
+    pos:         new THREE.Vector3(data.x, data.y, 0),
+    baseRz:      data.rz,
+    driftX:      (Math.random() - 0.5) * 0.35,
+    driftY:      -(0.35 + Math.random() * 0.55),
+    angularVel:  (Math.random() - 0.5) * 1.1,
+    // hover
+    isHovered:   false,
+    rippling:    false,
+    rippleAge:   0,
+    rippleAmp:   0,
+    // trail history
+    trailPts,          // reference to the same array in uniforms
+    trailHead:   0,
+    lastUVx:     0.5,
+    lastUVy:     0.5,
+    wakeDir:     new THREE.Vector2(1, 0),
+    prevUVx:     0.5,
+    prevUVy:     0.5,
   }
 }
 
-// ── Per-frame step ───────────────────────────────────────────
+// ── Per-frame ────────────────────────────────────────────────
 function step(s, t, dt) {
-  // ── Fall + tumble ─────────────────────────────────────
+  // Fall & tumble
   s.pos.x  += s.driftX     * dt
   s.pos.y  += s.driftY     * dt
   s.baseRz += s.angularVel * dt
 
-  // Camera frustum at z=0, fov50, camZ=7: y≈±3.3  x≈±5.8
   const X_LIMIT = 5.6, Y_DEAD = -3.9, Y_SPAWN = 4.1
   if (s.pos.y < Y_DEAD) {
-    // respawn at top with fresh random values
-    s.pos.y     = Y_SPAWN
-    s.pos.x     = (Math.random() - 0.5) * X_LIMIT * 1.8
-    s.driftX    = (Math.random() - 0.5) * 0.35
-    s.driftY    = -(0.35 + Math.random() * 0.55)
+    s.pos.y    = Y_SPAWN
+    s.pos.x    = (Math.random() - 0.5) * X_LIMIT * 1.8
+    s.driftX   = (Math.random() - 0.5) * 0.35
+    s.driftY   = -(0.35 + Math.random() * 0.55)
     s.angularVel = (Math.random() - 0.5) * 1.1
   }
-  // Soft horizontal bounce at side walls
   if (s.pos.x >  X_LIMIT) { s.pos.x =  X_LIMIT; s.driftX *= -0.7 }
   if (s.pos.x < -X_LIMIT) { s.pos.x = -X_LIMIT; s.driftX *= -0.7 }
-
   s.mesh.position.copy(s.pos)
   s.mesh.rotation.z = s.baseRz
 
-  // ── Hover detection ──────────────────────────────────
-  const dx   = mouse3D.x - s.pos.x
-  const dy   = mouse3D.y - s.pos.y
+  // Contact point in local mesh space (rotate into sticker frame)
+  const dx  = mouse3D.x - s.pos.x
+  const dy  = mouse3D.y - s.pos.y
+  const cosR = Math.cos(-s.baseRz)
+  const sinR = Math.sin(-s.baseRz)
+  const lx  =  dx * cosR - dy * sinR   // local x
+  const ly  =  dx * sinR + dy * cosR   // local y
+  const uvx =  lx / 1.44 + 0.5        // u: left=0, right=1
+  const uvy =  ly / 1.44 + 0.5        // v: bottom=0, top=1
+
+  // Hover detection
   const dist = Math.sqrt(dx*dx + dy*dy)
   const nowHovered = dist < 0.78
 
-  if (!s.isHovered && nowHovered) {
-    // Mouse enters sticker
-    s.isHovered = true
-    s.rippling  = false
-  }
-  if (s.isHovered && !nowHovered) {
-    // Mouse leaves → trigger ripple
+  if (!s.isHovered && nowHovered)  { s.isHovered = true;  s.rippling = false }
+  if ( s.isHovered && !nowHovered) {
     s.isHovered = false
     s.rippling  = true
     s.rippleAge = 0
-    s.rippleAmp = Math.max(0.4, s.pushStr)
+    s.rippleAmp = 0.85
   }
 
-  // Smooth push strength: lerps to 1 while hovered, 0 when not
-  s.pushStr += ((s.isHovered ? 1 : 0) - s.pushStr) * 0.12
-
-  // Advance ripple
   if (s.rippling) {
     s.rippleAge += dt * 2.8
     if (s.rippleAge >= 1.0) { s.rippling = false; s.rippleAge = 0 }
   }
 
-  // ── Contact point ─────────────────────────────────────
-  const lx  = dx
-  const ly  = dy
-  const uvx = -lx / 1.44 + 0.5
-  const uvy =  ly / 1.44 + 0.5
-
-  // ── Wake / streak: mouse velocity in UV space ─────────
-  if (s.isHovered) {
-    const duvx = uvx - s.prevUVx
-    const duvy = uvy - s.prevUVy
-    const spd  = Math.sqrt(duvx * duvx + duvy * duvy)
-    if (spd > 0.0005) {
-      s.wakeDir.set(duvx / spd, duvy / spd)
-      // Build up wake strength with mouse speed (scale to 60fps)
-      s.wakeStr = Math.min(1.0, s.wakeStr + spd * 120)
-    }
+  // ── Trail history ─────────────────────────────────────
+  // Age existing points
+  for (let i = 0; i < TRAIL_N; i++) {
+    const p = s.trailPts[i]
+    if (p.z < 1.0) p.z = Math.min(1.0, p.z + dt / TRAIL_LIFE)
   }
-  // Decay wake — slowly enough to leave a visible trail
-  s.wakeStr *= 0.88
-  if (s.wakeStr < 0.001) s.wakeStr = 0
 
-  s.prevUVx = uvx
-  s.prevUVy = uvy
+  if (s.isHovered) {
+    // Add new point when mouse moved enough distance in UV space
+    const movDx = uvx - s.lastUVx
+    const movDy = uvy - s.lastUVy
+    const moved = Math.sqrt(movDx*movDx + movDy*movDy)
 
-  // ── Update uniforms ───────────────────────────────────
+    if (moved > 0.012) {
+      s.trailPts[s.trailHead].set(uvx, uvy, 0.0)
+      s.trailHead = (s.trailHead + 1) % TRAIL_N
+      s.lastUVx = uvx
+      s.lastUVy = uvy
+
+      // Update wake direction from actual movement
+      const wdx = uvx - s.prevUVx
+      const wdy = uvy - s.prevUVy
+      const wlen = Math.sqrt(wdx*wdx + wdy*wdy)
+      if (wlen > 0.001) s.wakeDir.set(wdx/wlen, wdy/wlen)
+    }
+    s.prevUVx = uvx
+    s.prevUVy = uvy
+  }
+
+  // ── Uniforms ──────────────────────────────────────────
   const u = s.mesh.material.uniforms
-  u.uTime.value       = t
-  u.uContact.value.set(lx, ly)
+  u.uTime.value      = t
+  u.uContact.value.set(lx, ly)  // local space, matches pos.xy in vertex shader
   u.uContactUV.value.set(uvx, uvy)
-  u.uRipple.value     = s.rippleAge
-  u.uRippleStr.value  = s.rippling ? s.rippleAmp * Math.max(0, 1 - s.rippleAge) : 0
+  u.uRipple.value    = s.rippleAge
+  u.uRippleStr.value = s.rippling ? s.rippleAmp * (1 - s.rippleAge) : 0
   u.uWakeDir.value.copy(s.wakeDir)
-  u.uWakeStr.value    = s.wakeStr
+  // uTrail.value already points at trailPts — Three.js re-uploads each frame
 }
 
 // ── Init / loop ───────────────────────────────────────────────
@@ -303,11 +296,11 @@ function init() {
   renderer = new THREE.WebGLRenderer({ canvas: cv, alpha: true, antialias: true })
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
   renderer.setSize(W, H, false)
-  renderer.setClearColor(0,0)
+  renderer.setClearColor(0, 0)
   scene  = new THREE.Scene()
   camera = new THREE.PerspectiveCamera(50, W/H, 0.1, 100)
   camera.position.z = 7
-  stickerObjs = STICKERS.map((d, i) => buildSticker(d, i))
+  stickerObjs = STICKERS.map(d => buildSticker(d))
 }
 
 let prevT = 0
@@ -316,11 +309,8 @@ function frame() {
   const t  = clock.getElapsedTime()
   const dt = Math.min(t - prevT, 0.05)
   prevT = t
-
   raycaster.setFromCamera(mouseNDC, camera)
-  if (!raycaster.ray.intersectPlane(zPlane, mouse3D))
-    mouse3D.set(9999, 9999, 0)
-
+  if (!raycaster.ray.intersectPlane(zPlane, mouse3D)) mouse3D.set(9999, 9999, 0)
   stickerObjs.forEach(s => step(s, t, dt))
   renderer.render(scene, camera)
 }

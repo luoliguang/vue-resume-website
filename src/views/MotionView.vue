@@ -718,14 +718,26 @@ function initCanvasResize() {
   window.addEventListener('resize', resizeCanvasHandler)
 }
 
-// ── Hero 文字劈入 ─────────────────────────────────────────────
+// ── Hero 文字劈入（与扫描线对齐：扫描线 400ms 启动，expo-out 曲线）─────────
 function revealHeroTitle() {
+  // eyebrow ~10% 位置，扫描线约 480ms 到达
+  setTimeout(() => {
+    const eyebrow = heroInnerRef.value?.querySelector('.mv-eyebrow')
+    if (eyebrow) { eyebrow.style.opacity = '1'; eyebrow.style.transform = 'none' }
+  }, 500)
+  // 大标题 ~30% 位置，扫描线约 600ms 到达
   setTimeout(() => {
     heroTitleRef.value?.querySelectorAll('.mv-char-inner').forEach(el => { el.style.transform = 'none' })
-  }, 150)
+  }, 630)
+  // 副标题 ~42% 位置
   setTimeout(() => {
-    document.querySelectorAll('.mv-word-inner').forEach(el => { el.style.transform = 'none' })
-  }, 350)
+    heroInnerRef.value?.querySelectorAll('.mv-word-inner').forEach(el => { el.style.transform = 'none' })
+  }, 780)
+  // CTA 按钮 ~60% 位置
+  setTimeout(() => {
+    const cta = heroInnerRef.value?.querySelector('.mv-cta')
+    if (cta) { cta.style.opacity = '1'; cta.style.transform = 'none' }
+  }, 1000)
 }
 
 // ── IO: Hero 数字计数 ─────────────────────────────────────────
@@ -800,7 +812,10 @@ onUnmounted(() => {
 }
 .mv {
   position: relative;
-  background: var(--bg);
+  background:
+    radial-gradient(ellipse 120% 80% at 0% 0%, rgba(50,10,6,1) 0%, rgba(10,10,8,1) 55%),
+    radial-gradient(ellipse 80% 60% at 100% 100%, rgba(6,8,18,1) 0%, transparent 60%),
+    rgb(10,10,8);
   color: var(--l1);
   font-family: 'Space Grotesk', 'Inter', sans-serif;
   cursor: none;
@@ -948,12 +963,12 @@ onUnmounted(() => {
 }
 .mv-sticky {
   position: sticky; top: 0; height: 100vh; overflow: hidden;
-  background: var(--bg); /* 必须有背景色，否则透视到下一层 */
+  background: transparent; /* hero 层透明，露出 .mv 渐变背景 */
   z-index: 10;
 }
 
-/* 通用区块内容容器 */
-.mv-sec-bg { }
+/* 通用区块内容容器（非 Hero 需要实色背景，防透视到下层） */
+.mv-sec-bg { background: var(--bg); }
 .mv-sec-in {
   position: absolute; inset: 0;
   display: flex; flex-direction: column;
@@ -1004,6 +1019,8 @@ onUnmounted(() => {
   font-family: 'Space Mono', monospace;
   font-size: 0.82rem; letter-spacing: 0.12em;
   text-transform: uppercase; margin: 0;
+  opacity: 0; transform: translateY(14px);
+  transition: opacity 0.6s var(--ease), transform 0.6s var(--ease);
 }
 .mv-hero-title {
   font-size: clamp(4.5rem, 11vw, 10rem);
@@ -1039,7 +1056,11 @@ onUnmounted(() => {
 }
 .mv-stat-lbl { color: var(--l3); }
 
-.mv-cta { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+.mv-cta {
+  display: flex; flex-wrap: wrap; gap: 0.75rem;
+  opacity: 0; transform: translateY(12px);
+  transition: opacity 0.6s var(--ease), transform 0.6s var(--ease);
+}
 .mv-btn-fill {
   padding: 0.65rem 1.6rem;
   background: var(--l1); color: var(--bg);
@@ -1318,6 +1339,7 @@ a.mv-contact-row:hover .mv-contact-arr { transform: translateX(4px); }
     transition: none !important;
   }
   .mv-char-inner, .mv-word-inner { transform: none !important; }
+  .mv-eyebrow, .mv-cta { opacity: 1 !important; transform: none !important; }
   .mv-sec-h2 { transform: none !important; }
   .mv-contact-links { opacity: 1 !important; transform: none !important; }
 }
