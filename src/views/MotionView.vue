@@ -527,30 +527,34 @@ function initParallax() {
     if (l1Ref.value)
       l1Ref.value.style.transform = `translateY(${lerpY * 0.22}px)`
 
-    // ── Hero 内容出场：向上漂移 + 淡出
+    // ── Hero 内容出场：滚动60%后才开始淡出，给 About 衔接留空间
     if (heroInnerRef.value) {
-      const f = Math.max(0, 1 - heroP * 2.4)
+      const f = Math.max(0, 1 - (heroP - 0.6) * 3.5)
       heroInnerRef.value.style.opacity   = f
-      heroInnerRef.value.style.transform = `translateY(${-heroP * 56}px)`
+      heroInnerRef.value.style.transform = `translateY(${-heroP * 36}px)`
     }
     if (scrollHintRef.value)
-      scrollHintRef.value.style.opacity = String(Math.max(0, 1 - heroP * 8))
+      scrollHintRef.value.style.opacity = String(Math.max(0, 1 - heroP * 5))
 
-    // ── About 触发
-    if (aboutP > 0.04 && !showAbout.value) showAbout.value = true
+    // ── About 触发（可重置，支持回滚重播）
+    if (aboutP > 0.04) showAbout.value = true
+    else if (aboutP < 0.01) showAbout.value = false
 
-    // ── Skills 逐列触发
-    if (skillsP > 0.04 && !showSkills.value) showSkills.value = true
+    // ── Skills 逐列触发（回滚时重置计数）
+    if (skillsP > 0.04) showSkills.value = true
+    else if (skillsP < 0.01) { showSkills.value = false; skillRevealCount.value = 0 }
     const sk = Math.max(0, Math.floor((skillsP - 0.08) / 0.16) + 1)
-    if (sk > skillRevealCount.value) skillRevealCount.value = Math.min(skillCategories.length, sk)
+    if (showSkills.value && sk > skillRevealCount.value) skillRevealCount.value = Math.min(skillCategories.length, sk)
 
-    // ── Journey 逐条触发
-    if (journeyP > 0.04 && !showJourney.value) showJourney.value = true
+    // ── Journey 逐条触发（回滚时重置计数）
+    if (journeyP > 0.04) showJourney.value = true
+    else if (journeyP < 0.01) { showJourney.value = false; journeyRevealCount.value = 0 }
     const jk = Math.max(0, Math.floor((journeyP - 0.06) / (0.85 / Math.max(1, journeyMilestones.length))) + 1)
-    if (jk > journeyRevealCount.value) journeyRevealCount.value = Math.min(journeyMilestones.length, jk)
+    if (showJourney.value && jk > journeyRevealCount.value) journeyRevealCount.value = Math.min(journeyMilestones.length, jk)
 
     // ── 项目：水平镜头
-    if (projP > 0.02 && !showProjects.value) showProjects.value = true
+    if (projP > 0.02) showProjects.value = true
+    else if (projP < 0.01) showProjects.value = false
     if (projTrackRef.value && projTrackW > 0) {
       projTrackRef.value.style.transform = `translateX(${-projTrackW * projP}px)`
       const count = displayProjects.value.length
