@@ -88,14 +88,16 @@ const VERT = /* glsl */`
   }
 `
 
-// Fragment: UV warp under contact + ripple + edge alpha
+// Fragment: UV warp — radial push + directional wake streak + ripple
 const FRAG = /* glsl */`
   varying vec2 vUv;
   uniform sampler2D uMap;
-  uniform vec2  uContactUV;  // contact point remapped to UV (0–1)
+  uniform vec2  uContactUV;  // contact UV (0–1)
   uniform float uPush;
   uniform float uRipple;
   uniform float uRippleStr;
+  uniform vec2  uWakeDir;    // normalised mouse-velocity direction in UV space
+  uniform float uWakeStr;    // 0–1, speed magnitude (decays as trail fades)
   uniform float uTime;
 
   void main() {
@@ -103,16 +105,21 @@ const FRAG = /* glsl */`
 
     vec2  toContact = uv - uContactUV;
     float d         = length(toContact);
-    float influence = 0.40;
+    float influence = 0.44;
 
     if (d < influence) {
       vec2  dir     = d > 0.001 ? normalize(toContact) : vec2(0.0);
       float falloff = smoothstep(influence, 0.0, d);
+      float ff2     = falloff * falloff;
 
-      // UV push: texture "flows" away from finger
-      uv -= dir * falloff * falloff * uPush * 0.32;
+      // ① Radial push: dent inward at contact (small, subtle)
+      uv -= dir * ff2 * uPush * 0.18;
 
-      // UV ripple ring
+      // ② Directional wake: drag texture along mouse path (the "line")
+      //    Texture moves in wake direction → visible streak behind cursor
+      uv -= uWakeDir * ff2 * uWakeStr * 0.55;
+
+      // ③ Ripple on exit
       if (uRippleStr > 0.001) {
         float ringD = abs(d / influence - uRipple);
         float ring  = exp(-ringD * 14.0) * uRippleStr * (1.0 - uRipple);
@@ -120,16 +127,13 @@ const FRAG = /* glsl */`
       }
     }
 
-    // Subtle always-on surface shimmer (liquid at rest)
+    // Always-on surface shimmer
     float shimmer = sin(vUv.x * 9.0 + uTime * 1.4) * sin(vUv.y * 7.0 + uTime * 1.1);
     uv += shimmer * 0.004;
 
     uv = clamp(uv, 0.01, 0.99);
-
-    // Circular alpha mask
-    vec2  center  = (vUv - 0.5) * 2.0;
+    vec2  center   = (vUv - 0.5) * 2.0;
     float edgeMask = smoothstep(1.0, 0.78, length(center));
-
     vec4 col = texture2D(uMap, uv);
     col.a   *= edgeMask;
     gl_FragColor = col;
@@ -155,6 +159,8 @@ function buildSticker(data, idx) {
       uPush:       { value: 0 },
       uRipple:     { value: 0 },
       uRippleStr:  { value: 0 },
+      uWakeDir:    { value: new THREE.Vector2(0,0) },
+      uWakeStr:    { value: 0 },
       uTime:       { value: 0 },
     },
     vertexShader:   VERT,
@@ -171,34 +177,51 @@ function buildSticker(data, idx) {
   scene.add(mesh)
 
   return {
-    mesh, home,
+    mesh,
     pos:        home.clone(),
-    vel:        new THREE.Vector3(),
     baseRz:     data.rz,
-    phase:      idx * 1.13 + Math.random() * 0.5,
+    // fall / tumble
+    driftX:     (Math.random() - 0.5) * 0.35,
+    driftY:     -(0.35 + Math.random() * 0.55),
+    angularVel: (Math.random() - 0.5) * 1.1,
     // hover state
     isHovered:  false,
-    pushStr:    0,       // smooth 0→1
+    pushStr:    0,
     // ripple state
     rippling:   false,
     rippleAge:  0,
     rippleAmp:  0,
+    // wake / streak
+    prevUVx:    0.5,
+    prevUVy:    0.5,
+    wakeDir:    new THREE.Vector2(0, 0),
+    wakeStr:    0,
   }
 }
 
 // ── Per-frame step ───────────────────────────────────────────
 function step(s, t, dt) {
-  // ── Very gentle idle float (stays mostly in place) ──
-  const floatTarget = s.home.clone()
-  floatTarget.y += Math.sin(t * 0.7 + s.phase) * 0.06
-  floatTarget.x += Math.cos(t * 0.5 + s.phase) * 0.03
+  // ── Fall + tumble ─────────────────────────────────────
+  s.pos.x  += s.driftX     * dt
+  s.pos.y  += s.driftY     * dt
+  s.baseRz += s.angularVel * dt
 
-  // Very soft spring — sticker barely moves; effect is on surface, not position
-  s.vel.addScaledVector(floatTarget.clone().sub(s.pos), 0.018)
-  s.vel.multiplyScalar(0.92)
-  s.pos.add(s.vel)
+  // Camera frustum at z=0, fov50, camZ=7: y≈±3.3  x≈±5.8
+  const X_LIMIT = 5.6, Y_DEAD = -3.9, Y_SPAWN = 4.1
+  if (s.pos.y < Y_DEAD) {
+    // respawn at top with fresh random values
+    s.pos.y     = Y_SPAWN
+    s.pos.x     = (Math.random() - 0.5) * X_LIMIT * 1.8
+    s.driftX    = (Math.random() - 0.5) * 0.35
+    s.driftY    = -(0.35 + Math.random() * 0.55)
+    s.angularVel = (Math.random() - 0.5) * 1.1
+  }
+  // Soft horizontal bounce at side walls
+  if (s.pos.x >  X_LIMIT) { s.pos.x =  X_LIMIT; s.driftX *= -0.7 }
+  if (s.pos.x < -X_LIMIT) { s.pos.x = -X_LIMIT; s.driftX *= -0.7 }
+
   s.mesh.position.copy(s.pos)
-  s.mesh.rotation.z = s.baseRz + s.vel.x * 0.08
+  s.mesh.rotation.z = s.baseRz
 
   // ── Hover detection ──────────────────────────────────
   const dx   = mouse3D.x - s.pos.x
@@ -229,12 +252,28 @@ function step(s, t, dt) {
   }
 
   // ── Contact point ─────────────────────────────────────
-  // Mouse in local mesh space (±0.72)
-  const lx = dx   // same axis — mesh is at world position s.pos
-  const ly = dy
-  // Remap to UV (0–1): local ±0.72 → UV 0.5 ± 0.5
-  const uvx = -lx / 1.44 + 0.5   // flip x so push feels natural
+  const lx  = dx
+  const ly  = dy
+  const uvx = -lx / 1.44 + 0.5
   const uvy =  ly / 1.44 + 0.5
+
+  // ── Wake / streak: mouse velocity in UV space ─────────
+  if (s.isHovered) {
+    const duvx = uvx - s.prevUVx
+    const duvy = uvy - s.prevUVy
+    const spd  = Math.sqrt(duvx * duvx + duvy * duvy)
+    if (spd > 0.0005) {
+      s.wakeDir.set(duvx / spd, duvy / spd)
+      // Build up wake strength with mouse speed (scale to 60fps)
+      s.wakeStr = Math.min(1.0, s.wakeStr + spd * 55)
+    }
+  }
+  // Decay wake — slowly enough to leave a visible trail
+  s.wakeStr *= 0.82
+  if (s.wakeStr < 0.001) s.wakeStr = 0
+
+  s.prevUVx = uvx
+  s.prevUVy = uvy
 
   // ── Update uniforms ───────────────────────────────────
   const u = s.mesh.material.uniforms
@@ -244,6 +283,8 @@ function step(s, t, dt) {
   u.uPush.value       = s.pushStr
   u.uRipple.value     = s.rippleAge
   u.uRippleStr.value  = s.rippling ? s.rippleAmp * Math.max(0, 1 - s.rippleAge) : 0
+  u.uWakeDir.value.copy(s.wakeDir)
+  u.uWakeStr.value    = s.wakeStr
 }
 
 // ── Init / loop ───────────────────────────────────────────────
