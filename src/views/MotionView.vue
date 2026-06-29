@@ -298,10 +298,6 @@
       </div>
     </Transition>
 
-    <!-- 模式切换 -->
-    <button class="mv-mode-toggle magnetic" @click="emit('switch-mode')">
-      ← {{ isChinese ? '经典版' : 'Classic' }}
-    </button>
   </div>
 </template>
 
@@ -872,16 +868,16 @@ onUnmounted(() => {
 .mv-brand {
   font-family: 'Space Grotesk', sans-serif;
   font-weight: 900; font-size: 0.85rem;
-  color: var(--l1); text-decoration: none;
+  color: var(--l1) !important; text-decoration: none !important;
   letter-spacing: -0.01em;
 }
-.mv-brand-sep { color: var(--l3); margin-inline: 0.1em; }
-.mv-brand-en  { font-weight: 400; color: var(--l2); }
+.mv-brand-sep { color: var(--l3) !important; margin-inline: 0.1em; }
+.mv-brand-en  { font-weight: 400; color: var(--l2) !important; }
 .mv-nav { display: flex; gap: 1.8rem; }
 .mv-nav-link {
   font-family: 'Space Mono', monospace;
   font-size: 0.62rem; letter-spacing: 0.08em; text-transform: uppercase;
-  color: var(--l3); text-decoration: none;
+  color: var(--l3) !important; text-decoration: none !important;
   transition: color 0.2s ease;
   position: relative;
 }
@@ -890,18 +886,18 @@ onUnmounted(() => {
   background: var(--accent); transform: scaleX(0); transform-origin: left;
   transition: transform 0.35s var(--ease);
 }
-.mv-nav-link:hover { color: var(--l1); }
+.mv-nav-link:hover { color: var(--l1) !important; }
 .mv-nav-link:hover::after, .mv-nav-link.mv-nav-active::after { transform: scaleX(1); }
-.mv-nav-link.mv-nav-active { color: var(--l1); }
+.mv-nav-link.mv-nav-active { color: var(--l1) !important; }
 .mv-header-r { display: flex; align-items: center; gap: 1rem; }
 .mv-lang {
   font-family: 'Space Mono', monospace;
   font-size: 0.62rem; letter-spacing: 0.08em;
   background: transparent; border: 1px solid var(--line);
-  color: var(--l2); padding: 0.3rem 0.7rem;
+  color: var(--l2) !important; padding: 0.3rem 0.7rem;
   cursor: none; transition: border-color 0.2s, color 0.2s;
 }
-.mv-lang:hover { border-color: var(--l2); color: var(--l1); }
+.mv-lang:hover { border-color: var(--l2); color: var(--l1) !important; }
 
 /* ══ SCENE 骨架 ══════════════════════════════════════════════ */
 .mv-scene {
@@ -957,9 +953,9 @@ onUnmounted(() => {
   gap: 1.5rem; will-change: transform, opacity;
 }
 .mv-eyebrow {
-  color: var(--l3);
+  color: var(--l2);
   font-family: 'Space Mono', monospace;
-  font-size: 0.65rem; letter-spacing: 0.1em;
+  font-size: 0.82rem; letter-spacing: 0.12em;
   text-transform: uppercase; margin: 0;
 }
 .mv-hero-title {
@@ -1033,10 +1029,10 @@ onUnmounted(() => {
 
 /* 滚动提示 */
 .mv-scroll-hint {
-  position: absolute; bottom: 1.2rem; left: clamp(1.5rem,4vw,5rem);
+  position: absolute; bottom: 6.5rem; left: clamp(1.5rem,4vw,5rem);
   display: flex; align-items: center; gap: 0.5rem; transition: opacity 0.4s ease;
 }
-.mv-sh-arrow { font-size: 0.9rem; animation: sh-bounce 1.8s ease-in-out infinite; }
+.mv-sh-arrow { font-size: 1.4rem; animation: sh-bounce 1.8s ease-in-out infinite; color: var(--l1); }
 @keyframes sh-bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(4px)} }
 
 /* ══ ABOUT ══════════════════════════════════════════════════ */
@@ -1239,15 +1235,6 @@ a.mv-contact-row:hover .mv-contact-arr { transform: translateX(4px); }
 .mv-fade-enter-from,  .mv-fade-leave-to     { opacity: 0; }
 
 /* ══ 模式切换按钮 ════════════════════════════════════════════ */
-.mv-mode-toggle {
-  position: fixed; bottom: 1.4rem; right: clamp(1.5rem,4vw,5rem); z-index: 5001;
-  background: var(--l1); color: var(--bg);
-  font-family: 'Space Mono', monospace;
-  font-size: 0.65rem; letter-spacing: 0.06em; text-transform: uppercase;
-  padding: 0.55rem 1.1rem; border: none; cursor: none;
-  transition: background 0.2s;
-}
-.mv-mode-toggle:hover { background: rgba(232,232,230,0.85); }
 
 /* ══ Reduced motion ══════════════════════════════════════════ */
 @media (prefers-reduced-motion: reduce) {

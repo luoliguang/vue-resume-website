@@ -124,6 +124,7 @@ function switchMode () {
 }
 
 .mode-toggle--motion {
+  bottom: 3.8rem;
   background: rgba(255,45,0,0.12);
   border-color: rgba(255,45,0,0.3);
   color: rgba(255,200,195,0.9);
