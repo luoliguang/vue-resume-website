@@ -1244,7 +1244,12 @@ onUnmounted(() => {
   transition: opacity 0.5s ease, transform 0.5s var(--ease);
 }
 .mv-tl-item.tl-in { opacity: 1; transform: translateX(0); }
-.mv-tl-year { color: var(--l3); padding-top: 0.15rem; }
+.mv-tl-year {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.82rem; letter-spacing: 0.04em;
+  color: var(--l2); padding-top: 0.2rem;
+  text-transform: none;
+}
 .mv-tl-title { font-size: clamp(1rem, 1.8vw, 1.2rem); font-weight: 700; margin: 0 0 0.4rem; }
 .mv-tl-desc  { font-size: 0.85rem; line-height: 1.65; color: var(--l2); margin: 0; }
 
@@ -1432,6 +1437,50 @@ a.mv-contact-row:hover .mv-contact-arr { transform: translateX(4px); }
 .mv-fade-enter-from,  .mv-fade-leave-to     { opacity: 0; }
 
 /* ══ 模式切换按钮 ════════════════════════════════════════════ */
+
+/* ══ Mobile ══════════════════════════════════════════════════ */
+/* touch: restore cursor */
+@media (pointer: coarse) {
+  .mv, .mv * { cursor: auto !important; }
+}
+
+@media (max-width: 640px) {
+  /* 导航：隐藏链接，只留 logo + 语言切换 */
+  .mv-nav { display: none; }
+  .mv-header { padding: 0 1rem; height: 48px; }
+  .mv-brand { font-size: 0.82rem; }
+
+  /* HeroLiquid：移动端隐藏 Three.js 贴片（避免遮挡内容） */
+  .hl-canvas { display: none !important; }
+
+  /* Hero：缩小标题，减少内边距 */
+  .mv-hero-inner { padding: 0 1.2rem; gap: 1rem; }
+  .mv-hero-title { font-size: clamp(3.2rem, 18vw, 5.5rem); }
+
+  /* 统计数字排成两列 */
+  .mv-stats { gap: 1.2rem 2rem; }
+
+  /* CTA 按钮横向排列，不换行 */
+  .mv-cta { flex-wrap: nowrap; }
+  .mv-btn-fill, .mv-btn-line {
+    font-size: 0.78rem; padding: 0.55rem 1.1rem;
+  }
+
+  /* 各版块边距 */
+  .mv-sec, .mv-sec-bg { padding-inline: 1.2rem; }
+
+  /* 历程：压缩日期列 */
+  .mv-tl-item { grid-template-columns: 64px 1fr; gap: 0.75rem; }
+
+  /* 项目卡片：移动端缩小 */
+  .mv-proj-card { flex: 0 0 82vw; }
+
+  /* HUD 坐标隐藏（移动端不动鼠标） */
+  .mv-hud-right { display: none; }
+
+  /* 模式切换按钮调整位置，避免遮住内容 */
+  .mv-mode-pill { bottom: 1rem; right: 1rem; }
+}
 
 /* ══ Reduced motion ══════════════════════════════════════════ */
 @media (prefers-reduced-motion: reduce) {
