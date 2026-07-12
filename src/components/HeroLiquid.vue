@@ -347,6 +347,8 @@ function step(s, t, dt) {
     s.jellyAmp = 1.0
     s.jellyOX  = lx
     s.jellyOY  = ly
+    // 通知光标环：贴片被命中，触发脉冲扩张
+    window.dispatchEvent(new CustomEvent('sticker-hit'))
   }
   if (s.isClose && !nowClose) {
     // 离开：较弱 jelly（手指离开鼓面的回弹）

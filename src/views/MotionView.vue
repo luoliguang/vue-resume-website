@@ -696,6 +696,27 @@ function initCursor() {
   }
   document.addEventListener('mousemove', cursorMoveHandler)
 
+  // 光标环脉冲：贴片被命中时扩张闪光
+  let hitTimeout = null
+  function onStickerHit() {
+    const ring = curRingRef.value; if (!ring) return
+    ring.classList.remove('sticker-hit')
+    void ring.offsetWidth  // reflow 强制重新触发 transition
+    ring.classList.add('sticker-hit')
+    clearTimeout(hitTimeout)
+    hitTimeout = setTimeout(() => ring.classList.remove('sticker-hit'), 520)
+  }
+  window.addEventListener('sticker-hit', onStickerHit)
+
+  // 滚动时光标环自动收缩淡出，停止滚动后恢复
+  let scrollDimTimeout = null
+  function onScrollDim() {
+    curRingRef.value?.classList.add('scrolling')
+    clearTimeout(scrollDimTimeout)
+    scrollDimTimeout = setTimeout(() => curRingRef.value?.classList.remove('scrolling'), 380)
+  }
+  window.addEventListener('scroll', onScrollDim, { passive: true })
+
   function cursorTick() {
     const dot = curDotRef.value, ring = curRingRef.value
     if (dot)  { dot.style.left  = mx + 'px'; dot.style.top  = my + 'px' }
@@ -953,10 +974,27 @@ onUnmounted(() => {
   border: 1px solid rgba(232,232,230,0.35);
 }
 .mv-cur-ring {
-  position: fixed; width: 28px; height: 28px;
-  border: 1px solid rgba(232,232,230,0.18);
+  position: fixed; width: 38px; height: 38px;
+  border: 1px solid rgba(232,232,230,0.20);
   border-radius: 50%; pointer-events: none; z-index: 9996;
   transform: translate(-50%, -50%);
+  transition: width 0.38s cubic-bezier(0.16,1,0.3,1),
+              height 0.38s cubic-bezier(0.16,1,0.3,1),
+              border-color 0.25s,
+              opacity 0.28s;
+}
+/* 命中贴片：脉冲扩张 + 短暂亮边 */
+.mv-cur-ring.sticker-hit {
+  width: 56px; height: 56px;
+  border-color: rgba(232,232,230,0.52);
+  transition: width 0.14s cubic-bezier(0.16,1,0.3,1),
+              height 0.14s cubic-bezier(0.16,1,0.3,1),
+              border-color 0.08s;
+}
+/* 滚动时收缩 + 淡出，不干扰内容阅读 */
+.mv-cur-ring.scrolling {
+  width: 22px; height: 22px;
+  opacity: 0.12;
 }
 
 /* ══ 导航 ════════════════════════════════════════════════════ */
