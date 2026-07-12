@@ -110,6 +110,7 @@ const FRAG = `
   uniform vec3  uTrail[${TRAIL_N}];
   uniform vec2  uWakeDir;
   uniform float uTime;
+  uniform float uFadeIn;
 
   void main() {
     vec2  uv     = vUv;
@@ -158,7 +159,7 @@ const FRAG = `
     float mask   = smoothstep(1.0, 0.78, length(c));
     vec4  col    = texture2D(uMap, uv);
     col.rgb     *= bright;
-    col.a       *= mask;
+    col.a       *= mask * uFadeIn;
     gl_FragColor  = col;
   }
 `
@@ -171,6 +172,9 @@ const mouse3D   = new THREE.Vector3()
 const raycaster = new THREE.Raycaster()
 const zPlane    = new THREE.Plane(new THREE.Vector3(0,0,1), 0)
 let stickerObjs = []
+
+// 滚动速度（由 scroll 事件更新，每帧衰减）
+let scrollVelY = 0, _lastScrollY = 0, _scrollHandler = null
 
 function buildSticker(data) {
   // Pre-create trail array as THREE.Vector3 so Three.js can upload as vec3[]
@@ -187,6 +191,7 @@ function buildSticker(data) {
       uWakeDir:    { value: new THREE.Vector2(1, 0) },
       uTrail:      { value: trailPts },
       uTime:       { value: 0 },
+      uFadeIn:     { value: 0.0 },
     },
     vertexShader:   VERT,
     fragmentShader: FRAG,
@@ -204,16 +209,23 @@ function buildSticker(data) {
     mesh,
     pos:         new THREE.Vector3(data.x, data.y, 0),
     baseRz:      data.rz,
-    driftX:      (Math.random() - 0.5) * 0.35,
-    driftY:      -(0.35 + Math.random() * 0.55),
-    angularVel:  (Math.random() - 0.5) * 1.1,
+    driftX:      (Math.random() - 0.5) * 0.18,
+    driftY:      -(0.30 + Math.random() * 0.45),
+    angularVel:  (Math.random() - 0.5) * 0.75,
+    // 落叶摆动
+    swayAmp:     0.10 + Math.random() * 0.13,
+    swayFreq:    0.35 + Math.random() * 0.30,
+    swayPhase:   Math.random() * Math.PI * 2,
+    // 入场淡入 / 缩放
+    spawnAge:    0,
+    fadeIn:      true,
     // hover
     isHovered:   false,
     rippling:    false,
     rippleAge:   0,
     rippleAmp:   0,
     // trail history
-    trailPts,          // reference to the same array in uniforms
+    trailPts,
     trailHead:   0,
     lastUVx:     0.5,
     lastUVy:     0.5,
@@ -225,23 +237,43 @@ function buildSticker(data) {
 
 // ── Per-frame ────────────────────────────────────────────────
 function step(s, t, dt) {
-  // Fall & tumble
-  s.pos.x  += s.driftX     * dt
-  s.pos.y  += s.driftY     * dt
+  // 落叶摆动：正弦左右飘 + 缓慢水平漂移
+  const swayVx = Math.sin(t * s.swayFreq + s.swayPhase) * s.swayAmp
+  s.pos.x  += (s.driftX + swayVx) * dt
+  // 滚动加速：快速滚动页面时贴片跟着加速下落，有惯性感
+  s.pos.y  += (s.driftY - scrollVelY * 0.9) * dt
   s.baseRz += s.angularVel * dt
 
-  const X_LIMIT = 5.6, Y_DEAD = -3.9, Y_SPAWN = 4.1
+  const X_LIMIT = 5.6, Y_DEAD = -3.9, Y_SPAWN = 4.5
   if (s.pos.y < Y_DEAD) {
-    s.pos.y    = Y_SPAWN
-    s.pos.x    = (Math.random() - 0.5) * X_LIMIT * 1.8
-    s.driftX   = (Math.random() - 0.5) * 0.35
-    s.driftY   = -(0.35 + Math.random() * 0.55)
-    s.angularVel = (Math.random() - 0.5) * 1.1
+    // 重生：随机位置 + 重置运动参数
+    s.pos.y      = Y_SPAWN
+    s.pos.x      = (Math.random() - 0.5) * X_LIMIT * 1.8
+    s.driftX     = (Math.random() - 0.5) * 0.18
+    s.driftY     = -(0.30 + Math.random() * 0.45)
+    s.angularVel = (Math.random() - 0.5) * 0.75
+    s.swayAmp    = 0.10 + Math.random() * 0.13
+    s.swayFreq   = 0.35 + Math.random() * 0.30
+    s.swayPhase  = Math.random() * Math.PI * 2
+    // 重新触发入场动画
+    s.spawnAge   = 0
+    s.fadeIn     = true
+    s.mesh.scale.setScalar(0.55)
   }
-  if (s.pos.x >  X_LIMIT) { s.pos.x =  X_LIMIT; s.driftX *= -0.7 }
-  if (s.pos.x < -X_LIMIT) { s.pos.x = -X_LIMIT; s.driftX *= -0.7 }
+  if (s.pos.x >  X_LIMIT) { s.pos.x =  X_LIMIT; s.driftX *= -0.6 }
+  if (s.pos.x < -X_LIMIT) { s.pos.x = -X_LIMIT; s.driftX *= -0.6 }
   s.mesh.position.copy(s.pos)
   s.mesh.rotation.z = s.baseRz
+
+  // 入场淡入 + 缩放（ease-out，从 0.55→1.0，0.55s 内完成）
+  const u = s.mesh.material.uniforms
+  if (s.fadeIn) {
+    s.spawnAge += dt
+    const p = Math.min(1, s.spawnAge / 0.55)
+    u.uFadeIn.value = p
+    s.mesh.scale.setScalar(0.55 + (1 - Math.pow(1 - p, 2)) * 0.45)
+    if (p >= 1) { s.fadeIn = false; s.mesh.scale.setScalar(1) }
+  }
 
   // Contact point in local mesh space (rotate into sticker frame)
   const dx  = mouse3D.x - s.pos.x
@@ -300,7 +332,6 @@ function step(s, t, dt) {
   }
 
   // ── Uniforms ──────────────────────────────────────────
-  const u = s.mesh.material.uniforms
   u.uTime.value      = t
   u.uContact.value.set(lx, ly)  // local space, matches pos.xy in vertex shader
   u.uContactUV.value.set(uvx, uvy)
@@ -323,6 +354,14 @@ function init() {
   camera = new THREE.PerspectiveCamera(50, W/H, 0.1, 100)
   camera.position.z = 7
   stickerObjs = STICKERS.map(d => buildSticker(d))
+
+  _lastScrollY = window.scrollY
+  _scrollHandler = () => {
+    const dy = Math.abs(window.scrollY - _lastScrollY)
+    _lastScrollY = window.scrollY
+    scrollVelY = Math.min(4, scrollVelY + dy * 0.014)
+  }
+  window.addEventListener('scroll', _scrollHandler, { passive: true })
 }
 
 let prevT = 0
@@ -331,6 +370,7 @@ function frame() {
   const t  = clock.getElapsedTime()
   const dt = Math.min(t - prevT, 0.05)
   prevT = t
+  scrollVelY = Math.max(0, scrollVelY - dt * 5)  // ~0.2s 惯性衰减
   raycaster.setFromCamera(mouseNDC, camera)
   if (!raycaster.ray.intersectPlane(zPlane, mouse3D)) mouse3D.set(9999, 9999, 0)
   stickerObjs.forEach(s => step(s, t, dt))
@@ -365,6 +405,7 @@ onUnmounted(() => {
   })
   window.removeEventListener('mousemove', onMove)
   window.removeEventListener('resize',    onResize)
+  if (_scrollHandler) window.removeEventListener('scroll', _scrollHandler)
 })
 </script>
 
