@@ -8,48 +8,70 @@ import * as THREE from 'three'
 
 const canvasRef = ref(null)
 
+// ── Lucide-style SVG line icons ──────────────────────────────
+const _S = `stroke="rgba(232,232,230,0.88)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"`
+const _W = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" ${_S}>`
+
+const SVG_SCISSORS = _W + `<circle cx="6" cy="6" r="3"/><path d="M8.12 8.12 12 12"/><path d="M20 4 8.12 15.88"/><circle cx="6" cy="18" r="3"/><path d="M14.8 14.8 20 20"/></svg>`
+const SVG_CPU      = _W + `<rect width="16" height="16" x="4" y="4" rx="2"/><rect width="6" height="6" x="9" y="9" rx="1"/><path d="M15 2v2M15 20v2M2 15h2M2 9h2M20 15h2M20 9h2M9 2v2M9 20v2"/></svg>`
+const SVG_CODE     = _W + `<path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/></svg>`
+const SVG_PACKAGE  = _W + `<path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="M12 22V12"/><path d="m3.3 7 7.703 4.734a2 2 0 0 0 1.994 0L20.7 7"/><path d="m7.5 4.27 9 5.15"/></svg>`
+const SVG_STAR     = _W + `<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`
+const SVG_SHIRT    = _W + `<path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.57a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.57a2 2 0 0 0-1.34-2.23z"/></svg>`
+
 const STICKERS = [
-  { emoji: '✂️', label: '跟单', color: '#c0392b', x: -4.0, y:  1.8, rz:  0.30 },
-  { emoji: '🤖', label: 'AI',   color: '#1565c0', x:  3.8, y:  2.0, rz: -0.18 },
-  { emoji: '💻', label: '代码', color: '#1b5e20', x:  4.4, y: -0.5, rz:  0.12 },
-  { emoji: '📦', label: '出货', color: '#e65100', x: -4.3, y: -1.2, rz: -0.22 },
-  { emoji: '⭐', label: '品质', color: '#4527a0', x:  1.0, y:  2.6, rz:  0.35 },
-  { emoji: '🧵', label: '服装', color: '#880e4f', x: -1.4, y: -2.4, rz: -0.14 },
+  { svg: SVG_SCISSORS, label: '跟单', x: -4.0, y:  1.8, rz:  0.30 },
+  { svg: SVG_CPU,      label: 'AI',   x:  3.8, y:  2.0, rz: -0.18 },
+  { svg: SVG_CODE,     label: '代码', x:  4.4, y: -0.5, rz:  0.12 },
+  { svg: SVG_PACKAGE,  label: '出货', x: -4.3, y: -1.2, rz: -0.22 },
+  { svg: SVG_STAR,     label: '品质', x:  1.0, y:  2.6, rz:  0.35 },
+  { svg: SVG_SHIRT,    label: '服装', x: -1.4, y: -2.4, rz: -0.14 },
 ]
 
-const TRAIL_N = 16   // trail history length
-const TRAIL_LIFE = 0.7  // seconds before a point fades out
+const TRAIL_N = 16
+const TRAIL_LIFE = 0.7
 
-// ── Canvas texture ───────────────────────────────────────────
-function hexShift(hex, amt) {
-  const h = hex.replace('#','')
-  const c = [0,2,4].map(i => Math.max(0,Math.min(255, parseInt(h.slice(i,i+2),16)+amt)))
-  return `rgb(${c[0]},${c[1]},${c[2]})`
-}
-function makeTexture({ emoji, label, color }) {
+// ── Canvas texture (dark glass card + SVG line icon) ─────────
+function makeTexture({ svg, label }) {
   const S = 256, cv = document.createElement('canvas')
   cv.width = cv.height = S
   const ctx = cv.getContext('2d')
-  const cx = S/2, cy = S/2, r = S*0.46
-  const g = ctx.createRadialGradient(cx-r*.3,cy-r*.3,r*.04, cx,cy, r)
-  g.addColorStop(0, hexShift(color, 65))
-  g.addColorStop(0.5, color)
-  g.addColorStop(1, hexShift(color, -50))
-  ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2)
-  ctx.fillStyle = g; ctx.fill()
-  const sh = ctx.createRadialGradient(cx-r*.25,cy-r*.42,0, cx-r*.1,cy-r*.28,r*.5)
-  sh.addColorStop(0,'rgba(255,255,255,0.58)')
-  sh.addColorStop(1,'rgba(255,255,255,0)')
-  ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2)
-  ctx.fillStyle = sh; ctx.fill()
-  ctx.font = `${Math.floor(S*.40)}px serif`
-  ctx.textAlign = 'center'; ctx.textBaseline = 'middle'
-  ctx.fillText(emoji, cx, cy - S*.04)
-  ctx.font = `700 ${Math.floor(S*.09)}px monospace`
-  ctx.fillStyle = 'rgba(255,255,255,0.88)'
-  ctx.textBaseline = 'alphabetic'
-  ctx.fillText(label, cx, cy + r*.76)
-  return new THREE.CanvasTexture(cv)
+  const cx = S / 2, cy = S / 2, r = S * 0.44
+
+  function drawBase() {
+    ctx.clearRect(0, 0, S, S)
+    // Dark glass base
+    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2)
+    ctx.fillStyle = 'rgba(14,14,12,0.90)'; ctx.fill()
+    // Top-left glass sheen
+    const shine = ctx.createRadialGradient(cx - r * 0.28, cy - r * 0.38, 0, cx, cy, r * 0.9)
+    shine.addColorStop(0, 'rgba(255,255,255,0.08)')
+    shine.addColorStop(1, 'rgba(255,255,255,0)')
+    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2)
+    ctx.fillStyle = shine; ctx.fill()
+    // Border
+    ctx.beginPath(); ctx.arc(cx, cy, r - 0.75, 0, Math.PI * 2)
+    ctx.strokeStyle = 'rgba(232,232,230,0.18)'; ctx.lineWidth = 1.5; ctx.stroke()
+    // Label
+    ctx.font = `600 ${Math.floor(S * 0.082)}px "Space Mono",monospace`
+    ctx.fillStyle = 'rgba(232,232,230,0.48)'
+    ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic'
+    ctx.fillText(label, cx, cy + r * 0.76)
+  }
+
+  drawBase()
+  const tex = new THREE.CanvasTexture(cv)
+
+  const img = new Image()
+  img.onload = () => {
+    drawBase()
+    const iSz = S * 0.40
+    ctx.drawImage(img, cx - iSz / 2, cy - iSz / 2 - S * 0.055, iSz, iSz)
+    tex.needsUpdate = true
+  }
+  img.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`
+
+  return tex
 }
 
 // ── Shaders ──────────────────────────────────────────────────
