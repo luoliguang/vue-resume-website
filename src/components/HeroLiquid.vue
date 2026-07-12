@@ -28,7 +28,7 @@ const STICKERS = [
   { svg: SVG_SHIRT,    label: '服装', x: -1.4, y: -2.4, rz: -0.14 },
 ]
 
-const TRAIL_N = 16
+const TRAIL_N    = 16
 const TRAIL_LIFE = 0.7
 
 // ── Canvas texture (dark glass card + SVG line icon) ─────────
@@ -40,19 +40,15 @@ function makeTexture({ svg, label }) {
 
   function drawBase() {
     ctx.clearRect(0, 0, S, S)
-    // Dark glass base
     ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2)
     ctx.fillStyle = 'rgba(14,14,12,0.90)'; ctx.fill()
-    // Top-left glass sheen
     const shine = ctx.createRadialGradient(cx - r * 0.28, cy - r * 0.38, 0, cx, cy, r * 0.9)
     shine.addColorStop(0, 'rgba(255,255,255,0.08)')
     shine.addColorStop(1, 'rgba(255,255,255,0)')
     ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2)
     ctx.fillStyle = shine; ctx.fill()
-    // Border
     ctx.beginPath(); ctx.arc(cx, cy, r - 0.75, 0, Math.PI * 2)
     ctx.strokeStyle = 'rgba(232,232,230,0.18)'; ctx.lineWidth = 1.5; ctx.stroke()
-    // Label
     ctx.font = `600 ${Math.floor(S * 0.082)}px "Space Mono",monospace`
     ctx.fillStyle = 'rgba(232,232,230,0.48)'
     ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic'
@@ -61,7 +57,6 @@ function makeTexture({ svg, label }) {
 
   drawBase()
   const tex = new THREE.CanvasTexture(cv)
-
   const img = new Image()
   img.onload = () => {
     drawBase()
@@ -70,36 +65,58 @@ function makeTexture({ svg, label }) {
     tex.needsUpdate = true
   }
   img.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`
-
   return tex
 }
 
 // ── Shaders ──────────────────────────────────────────────────
+// Vertex: Z-axis jelly membrane deformation on touch
 const VERT = /* glsl */`
   varying vec2 vUv;
+  uniform vec2  uContact;
   uniform float uRipple;
   uniform float uRippleStr;
-  uniform vec2  uContact;
+  // Jelly membrane
+  uniform vec2  uJellyOrig;
+  uniform float uJellyT;
+  uniform float uJellyAmp;
 
   void main() {
     vUv = uv;
     vec3 pos = position;
-    // Only ripple on exit — no other vertex deformation
+
+    // ── UV-plane ripple ring on exit (existing) ────────────
     if (uRippleStr > 0.001) {
-      float d    = length(pos.xy - uContact);
-      float infl = 0.60;
-      if (d < infl) {
+      float d = length(pos.xy - uContact);
+      if (d < 0.60) {
         vec2  dir  = d > 0.001 ? normalize(pos.xy - uContact) : vec2(0.0);
-        float rD   = abs(d / infl - uRipple);
+        float rD   = abs(d / 0.60 - uRipple);
         float ring = exp(-rD * 12.0) * uRippleStr * (1.0 - uRipple);
         pos.xy += dir * ring * 0.45;
       }
     }
+
+    // ── Z-axis jelly membrane (new) ────────────────────────
+    // Feels like tapping a soap bubble or rubber drumhead
+    if (uJellyAmp > 0.001) {
+      float r = length(pos.xy - uJellyOrig);
+
+      // 1. Gaussian press-in at contact origin (quick decay)
+      float press = -exp(-r * r * 7.0) * exp(-uJellyT * 5.5) * uJellyAmp;
+
+      // 2. Travelling ring wave propagating outward
+      //    phase = r*spatial_freq - t*wave_speed
+      float wave  = sin(r * 9.5 - uJellyT * 11.0)
+                    * exp(-r * 2.0)            // spatial envelope: decays with distance
+                    * exp(-uJellyT * 1.5)      // temporal envelope: decays over time
+                    * uJellyAmp;
+
+      pos.z += (press + wave) * 0.22;
+    }
+
     gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
   }
 `
 
-// Trail stored as TRAIL_N points: xy=UV coords, z=age (0=fresh → 1=dead)
 const FRAG = `
   precision highp float;
   varying vec2 vUv;
@@ -122,26 +139,21 @@ const FRAG = `
       if (uTrail[i].z >= 1.0) continue;
       vec2  delta = vUv - uTrail[i].xy;
       float d2    = dot(delta, delta);
-      float age   = 1.0 - uTrail[i].z;          // 1=fresh 0=faded
-      trailVal   += exp(-d2 / 0.0025) * age;     // crisp gaussian per point
+      float age   = 1.0 - uTrail[i].z;
+      trailVal   += exp(-d2 / 0.0025) * age;
     }
     trailVal = clamp(trailVal, 0.0, 1.0);
 
     if (trailVal > 0.01) {
-      // Perpendicular to wake direction = the two sides of the groove
       vec2  perp       = vec2(-uWakeDir.y, uWakeDir.x);
       float signedPerp = dot(vUv - uContactUV, perp);
-
-      // Part UVs outward from the trail (texture pushed apart)
       uv += sign(signedPerp) * perp * trailVal * 0.28;
-
-      // Strong bright highlight — this is the visible line
       bright += trailVal * 1.6;
     }
 
-    // ── Ripple on exit ────────────────────────────────────
+    // ── UV ripple on exit ─────────────────────────────────
     if (uRippleStr > 0.001) {
-      float d    = length(vUv - uContactUV);
+      float d   = length(vUv - uContactUV);
       float infl = 0.44;
       if (d < infl) {
         vec2  dir  = d > 0.001 ? normalize(vUv - uContactUV) : vec2(0.0);
@@ -155,12 +167,12 @@ const FRAG = `
     uv += sin(vUv.x * 9.0 + uTime * 1.4) * sin(vUv.y * 7.0 + uTime * 1.1) * 0.004;
 
     uv = clamp(uv, 0.01, 0.99);
-    vec2  c      = (vUv - 0.5) * 2.0;
-    float mask   = smoothstep(1.0, 0.78, length(c));
-    vec4  col    = texture2D(uMap, uv);
-    col.rgb     *= bright;
-    col.a       *= mask * uFadeIn;
-    gl_FragColor  = col;
+    vec2  c    = (vUv - 0.5) * 2.0;
+    float mask = smoothstep(1.0, 0.78, length(c));
+    vec4  col  = texture2D(uMap, uv);
+    col.rgb   *= bright;
+    col.a     *= mask * uFadeIn;
+    gl_FragColor = col;
   }
 `
 
@@ -170,16 +182,14 @@ const clock     = new THREE.Clock()
 const mouseNDC  = new THREE.Vector2(9999, 9999)
 const mouse3D   = new THREE.Vector3()
 const raycaster = new THREE.Raycaster()
-const zPlane    = new THREE.Plane(new THREE.Vector3(0,0,1), 0)
+const zPlane    = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0)
 let stickerObjs = []
 
-// 滚动速度（由 scroll 事件更新，每帧衰减）
 let scrollVelY = 0, _lastScrollY = 0, _scrollHandler = null
 
 function buildSticker(data) {
-  // Pre-create trail array as THREE.Vector3 so Three.js can upload as vec3[]
   const trailPts = Array.from({ length: TRAIL_N },
-    () => new THREE.Vector3(0.5, 0.5, 1.0))  // z=1 means dead/invisible
+    () => new THREE.Vector3(0.5, 0.5, 1.0))
 
   const mat = new THREE.ShaderMaterial({
     uniforms: {
@@ -192,6 +202,10 @@ function buildSticker(data) {
       uTrail:      { value: trailPts },
       uTime:       { value: 0 },
       uFadeIn:     { value: 0.0 },
+      // Jelly membrane deformation
+      uJellyOrig:  { value: new THREE.Vector2(0, 0) },
+      uJellyT:     { value: 0.0 },
+      uJellyAmp:   { value: 0.0 },
     },
     vertexShader:   VERT,
     fragmentShader: FRAG,
@@ -200,53 +214,61 @@ function buildSticker(data) {
     side: THREE.DoubleSide,
   })
 
-  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(1.44, 1.44, 16, 16), mat)
+  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(1.44, 1.44, 20, 20), mat)
   mesh.rotation.z = data.rz
   mesh.position.set(data.x, data.y, 0)
   scene.add(mesh)
 
   return {
     mesh,
-    pos:         new THREE.Vector3(data.x, data.y, 0),
-    baseRz:      data.rz,
-    driftX:      (Math.random() - 0.5) * 0.18,
-    driftY:      -(0.30 + Math.random() * 0.45),
-    angularVel:  (Math.random() - 0.5) * 0.75,
-    // 落叶摆动
-    swayAmp:     0.10 + Math.random() * 0.13,
-    swayFreq:    0.35 + Math.random() * 0.30,
-    swayPhase:   Math.random() * Math.PI * 2,
-    // 入场淡入 / 缩放
-    spawnAge:    0,
-    fadeIn:      true,
-    // hover
-    isHovered:   false,
-    rippling:    false,
-    rippleAge:   0,
-    rippleAmp:   0,
-    // trail history
+    pos:        new THREE.Vector3(data.x, data.y, 0),
+    baseRz:     data.rz,
+    driftX:     (Math.random() - 0.5) * 0.18,
+    driftY:     -(0.30 + Math.random() * 0.45),
+    angularVel: (Math.random() - 0.5) * 0.75,
+    swayAmp:    0.10 + Math.random() * 0.13,
+    swayFreq:   0.35 + Math.random() * 0.30,
+    swayPhase:  Math.random() * Math.PI * 2,
+    spawnAge:   0,
+    fadeIn:     true,
+    // ── 磁斥力弹簧（位置层面的物理碰撞感）
+    repulseX:   0, repulseY:   0,
+    repulseVX:  0, repulseVY:  0,
+    // ── 弹性膜涟漪（顶点 Z 轴形变）
+    jellyT:    0.0,
+    jellyAmp:  0.0,
+    jellyOX:   0.0,
+    jellyOY:   0.0,
+    isClose:   false,
+    // ── UV 涟漪（exit shader）
+    rippling:   false,
+    rippleAge:  0,
+    rippleAmp:  0,
+    // ── Trail
+    isHovered:  false,
     trailPts,
-    trailHead:   0,
-    lastUVx:     0.5,
-    lastUVy:     0.5,
-    wakeDir:     new THREE.Vector2(1, 0),
-    prevUVx:     0.5,
-    prevUVy:     0.5,
+    trailHead:  0,
+    lastUVx:    0.5,
+    lastUVy:    0.5,
+    wakeDir:    new THREE.Vector2(1, 0),
+    prevUVx:    0.5,
+    prevUVy:    0.5,
   }
 }
 
 // ── Per-frame ────────────────────────────────────────────────
 function step(s, t, dt) {
-  // 落叶摆动：正弦左右飘 + 缓慢水平漂移
+  // ── 落叶飘动 ─────────────────────────────────────────────
   const swayVx = Math.sin(t * s.swayFreq + s.swayPhase) * s.swayAmp
-  s.pos.x  += (s.driftX + swayVx) * dt
-  // 滚动加速：快速滚动页面时贴片跟着加速下落，有惯性感
-  s.pos.y  += (s.driftY - scrollVelY * 0.9) * dt
-  s.baseRz += s.angularVel * dt
+  s.pos.x += (s.driftX + swayVx) * dt
+  // 靠近时轻微减速（被"触碰住"的悬浮感）
+  const fallMul = s.isClose ? 0.18 : 1.0
+  s.pos.y += (s.driftY * fallMul - scrollVelY * 0.9) * dt
+  s.baseRz += s.angularVel * (s.isClose ? 0.06 : 1.0) * dt
 
+  // ── 边界反弹 ─────────────────────────────────────────────
   const X_LIMIT = 5.6, Y_DEAD = -3.9, Y_SPAWN = 4.5
   if (s.pos.y < Y_DEAD) {
-    // 重生：随机位置 + 重置运动参数
     s.pos.y      = Y_SPAWN
     s.pos.x      = (Math.random() - 0.5) * X_LIMIT * 1.8
     s.driftX     = (Math.random() - 0.5) * 0.18
@@ -255,17 +277,44 @@ function step(s, t, dt) {
     s.swayAmp    = 0.10 + Math.random() * 0.13
     s.swayFreq   = 0.35 + Math.random() * 0.30
     s.swayPhase  = Math.random() * Math.PI * 2
-    // 重新触发入场动画
     s.spawnAge   = 0
     s.fadeIn     = true
     s.mesh.scale.setScalar(0.55)
+    // 重生时重置磁斥力
+    s.repulseX = s.repulseY = s.repulseVX = s.repulseVY = 0
+    s.jellyAmp = 0
   }
   if (s.pos.x >  X_LIMIT) { s.pos.x =  X_LIMIT; s.driftX *= -0.6 }
   if (s.pos.x < -X_LIMIT) { s.pos.x = -X_LIMIT; s.driftX *= -0.6 }
-  s.mesh.position.copy(s.pos)
+
+  // ── 磁斥力：鼠标靠近时贴片被推开，弹回时有欠阻尼振荡 ────
+  // 效果像磁铁同极相斥，松手后橡皮筋拉回
+  const REPULSE_R = 1.55
+  const ex = mouse3D.x - (s.pos.x + s.repulseX)
+  const ey = mouse3D.y - (s.pos.y + s.repulseY)
+  const ed  = Math.sqrt(ex * ex + ey * ey)
+
+  if (ed < REPULSE_R && ed > 0.001) {
+    const t01  = 1 - ed / REPULSE_R
+    const force = t01 * t01 * 5.2          // quadratic: softer at edge, stronger at center
+    s.repulseVX -= (ex / ed) * force * dt
+    s.repulseVY -= (ey / ed) * force * dt
+  }
+  // 弹簧拉回（stiffness=82, damping=9 → ratio≈0.50，欠阻尼，约1.5次自然振荡）
+  s.repulseVX += (-s.repulseX * 82 - s.repulseVX * 9) * dt
+  s.repulseVY += (-s.repulseY * 82 - s.repulseVY * 9) * dt
+  s.repulseX  += s.repulseVX * dt
+  s.repulseY  += s.repulseVY * dt
+
+  // ── 实际渲染位置 = 落叶路径 + 磁斥力偏移 ────────────────
+  const effX = s.pos.x + s.repulseX
+  const effY = s.pos.y + s.repulseY
+  s.mesh.position.x = effX
+  s.mesh.position.y = effY
+  s.mesh.position.z = 0
   s.mesh.rotation.z = s.baseRz
 
-  // 入场淡入 + 缩放（ease-out，从 0.55→1.0，0.55s 内完成）
+  // ── 入场淡入 ─────────────────────────────────────────────
   const u = s.mesh.material.uniforms
   if (s.fadeIn) {
     s.spawnAge += dt
@@ -275,70 +324,89 @@ function step(s, t, dt) {
     if (p >= 1) { s.fadeIn = false; s.mesh.scale.setScalar(1) }
   }
 
-  // Contact point in local mesh space (rotate into sticker frame)
-  const dx  = mouse3D.x - s.pos.x
-  const dy  = mouse3D.y - s.pos.y
+  // ── 鼠标与实际渲染位置的距离（用于 hover 判断）──────────
+  const dx = mouse3D.x - effX
+  const dy = mouse3D.y - effY
+  const dist = Math.sqrt(dx * dx + dy * dy)
+
+  // 本地坐标（旋转到贴片坐标系）
   const cosR = Math.cos(-s.baseRz)
   const sinR = Math.sin(-s.baseRz)
-  const lx  =  dx * cosR - dy * sinR   // local x
-  const ly  =  dx * sinR + dy * cosR   // local y
-  const uvx =  lx / 1.44 + 0.5        // u: left=0, right=1
-  const uvy =  ly / 1.44 + 0.5        // v: bottom=0, top=1
+  const lx = dx * cosR - dy * sinR
+  const ly = dx * sinR + dy * cosR
+  const uvx =  lx / 1.44 + 0.5
+  const uvy =  ly / 1.44 + 0.5
 
-  // Hover detection
-  const dist = Math.sqrt(dx*dx + dy*dy)
-  const nowHovered = dist < 0.78
+  // ── 弹性膜触发（带滞后 hysteresis 避免抖动）────────────
+  const ENTER_R = 0.80, EXIT_R = 1.05
+  const nowClose = s.isClose ? dist < EXIT_R : dist < ENTER_R
 
-  if (!s.isHovered && nowHovered)  { s.isHovered = true;  s.rippling = false }
-  if ( s.isHovered && !nowHovered) {
-    s.isHovered = false
+  if (!s.isClose && nowClose) {
+    // 进入：强 jelly 冲击（指尖按压鼓面）
+    s.jellyT   = 0
+    s.jellyAmp = 1.0
+    s.jellyOX  = lx
+    s.jellyOY  = ly
+  }
+  if (s.isClose && !nowClose) {
+    // 离开：较弱 jelly（手指离开鼓面的回弹）
+    s.jellyT   = 0
+    s.jellyAmp = 0.58
+    s.jellyOX  = lx
+    s.jellyOY  = ly
+    // UV 涟漪保持
     s.rippling  = true
     s.rippleAge = 0
     s.rippleAmp = 0.85
   }
+  s.isClose   = nowClose
+  s.isHovered = nowClose   // trail 复用
 
+  // ── Jelly 时间推进（超过 2.4s 自动停止）─────────────────
+  if (s.jellyAmp > 0.001) {
+    s.jellyT += dt
+    if (s.jellyT > 2.4) s.jellyAmp = 0
+  }
+
+  // ── UV 涟漪时间推进 ───────────────────────────────────────
   if (s.rippling) {
     s.rippleAge += dt * 2.8
     if (s.rippleAge >= 1.0) { s.rippling = false; s.rippleAge = 0 }
   }
 
-  // ── Trail history ─────────────────────────────────────
-  // Age existing points
+  // ── Trail history ─────────────────────────────────────────
   for (let i = 0; i < TRAIL_N; i++) {
     const p = s.trailPts[i]
     if (p.z < 1.0) p.z = Math.min(1.0, p.z + dt / TRAIL_LIFE)
   }
-
   if (s.isHovered) {
-    // Add new point when mouse moved enough distance in UV space
     const movDx = uvx - s.lastUVx
     const movDy = uvy - s.lastUVy
-    const moved = Math.sqrt(movDx*movDx + movDy*movDy)
-
+    const moved = Math.sqrt(movDx * movDx + movDy * movDy)
     if (moved > 0.012) {
       s.trailPts[s.trailHead].set(uvx, uvy, 0.0)
       s.trailHead = (s.trailHead + 1) % TRAIL_N
       s.lastUVx = uvx
       s.lastUVy = uvy
-
-      // Update wake direction from actual movement
       const wdx = uvx - s.prevUVx
       const wdy = uvy - s.prevUVy
-      const wlen = Math.sqrt(wdx*wdx + wdy*wdy)
-      if (wlen > 0.001) s.wakeDir.set(wdx/wlen, wdy/wlen)
+      const wlen = Math.sqrt(wdx * wdx + wdy * wdy)
+      if (wlen > 0.001) s.wakeDir.set(wdx / wlen, wdy / wlen)
     }
     s.prevUVx = uvx
     s.prevUVy = uvy
   }
 
-  // ── Uniforms ──────────────────────────────────────────
-  u.uTime.value      = t
-  u.uContact.value.set(lx, ly)  // local space, matches pos.xy in vertex shader
+  // ── Uniforms 上传 ─────────────────────────────────────────
+  u.uTime.value          = t
+  u.uContact.value.set(lx, ly)
   u.uContactUV.value.set(uvx, uvy)
-  u.uRipple.value    = s.rippleAge
-  u.uRippleStr.value = s.rippling ? s.rippleAmp * (1 - s.rippleAge) : 0
+  u.uRipple.value        = s.rippleAge
+  u.uRippleStr.value     = s.rippling ? s.rippleAmp * (1 - s.rippleAge) : 0
   u.uWakeDir.value.copy(s.wakeDir)
-  // uTrail.value already points at trailPts — Three.js re-uploads each frame
+  u.uJellyOrig.value.set(s.jellyOX, s.jellyOY)
+  u.uJellyT.value        = s.jellyT
+  u.uJellyAmp.value      = s.jellyAmp
 }
 
 // ── Init / loop ───────────────────────────────────────────────
@@ -351,7 +419,7 @@ function init() {
   renderer.setSize(W, H, false)
   renderer.setClearColor(0, 0)
   scene  = new THREE.Scene()
-  camera = new THREE.PerspectiveCamera(50, W/H, 0.1, 100)
+  camera = new THREE.PerspectiveCamera(50, W / H, 0.1, 100)
   camera.position.z = 7
   stickerObjs = STICKERS.map(d => buildSticker(d))
 
@@ -370,7 +438,7 @@ function frame() {
   const t  = clock.getElapsedTime()
   const dt = Math.min(t - prevT, 0.05)
   prevT = t
-  scrollVelY = Math.max(0, scrollVelY - dt * 5)  // ~0.2s 惯性衰减
+  scrollVelY = Math.max(0, scrollVelY - dt * 5)
   raycaster.setFromCamera(mouseNDC, camera)
   if (!raycaster.ray.intersectPlane(zPlane, mouse3D)) mouse3D.set(9999, 9999, 0)
   stickerObjs.forEach(s => step(s, t, dt))
@@ -387,7 +455,7 @@ function onResize() {
   const cv = canvasRef.value; if (!cv || !renderer) return
   const W = cv.clientWidth, H = cv.clientHeight
   renderer.setSize(W, H, false)
-  camera.aspect = W/H; camera.updateProjectionMatrix()
+  camera.aspect = W / H; camera.updateProjectionMatrix()
 }
 
 onMounted(() => {
