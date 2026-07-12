@@ -146,11 +146,11 @@
             <div v-for="(cat, i) in skillCategories" :key="cat.name || i"
                  class="mv-skill-col"
                  :class="{ 'col-in': skillRevealCount > i }">
-              <h3 class="mv-skill-cat ui-label">{{ isChinese ? cat.name : (cat.nameEn || cat.name) }}</h3>
+              <h3 class="mv-skill-cat ui-label">{{ locText(cat.name) }}</h3>
               <ul class="mv-skill-list">
-                <li v-for="sk in (cat.skills || [])" :key="sk.name" class="mv-skill-row">
-                  <span class="mv-skill-name">{{ isChinese ? sk.name : (sk.nameEn || sk.name) }}</span>
-                  <span class="mv-skill-hl">{{ isChinese ? sk.highlight : (sk.highlightEn || sk.highlight) }}</span>
+                <li v-for="sk in (cat.skills || [])" :key="sk.id || sk.name" class="mv-skill-row">
+                  <span class="mv-skill-name">{{ locText(sk.name) }}</span>
+                  <span class="mv-skill-hl">{{ locText(sk.highlight) }}</span>
                 </li>
               </ul>
             </div>
@@ -332,6 +332,13 @@ const { data: cmsProjects } = useContent('projects')
 const displayProjects = computed(() =>
   cmsProjects.value?.length ? cmsProjects.value : staticProjects
 )
+// 统一处理字符串 / { zh, en } 对象两种数据格式
+const locText = (val) => {
+  if (!val) return ''
+  if (typeof val === 'object') return isChinese.value ? (val.zh ?? val.en ?? '') : (val.en ?? val.zh ?? '')
+  return String(val)
+}
+
 const getTitle = (proj) => {
   if (proj.title && typeof proj.title === 'object')
     return proj.title[isChinese.value ? 'zh' : 'en'] ?? proj.title.zh ?? ''
@@ -524,13 +531,13 @@ function initParallax() {
     const projP    = sceneProgress('projects')
     const contactP = sceneProgress('contact')
 
-    // ── L0: 背景网格 zoom（Hero 滚动时放大）
+    // ── L0: 背景网格 zoom（Hero 滚动时放大）· fixed 布局用负向位移
     if (l0Ref.value)
-      l0Ref.value.style.transform = `scale(${1 + heroP * 0.15}) translateY(${lerpY * 0.04}px)`
+      l0Ref.value.style.transform = `scale(${1 + heroP * 0.15}) translateY(${-lerpY * 0.04}px)`
 
-    // ── L1: 幽灵大字视差
+    // ── L1: 幽灵大字视差（保持 -50% 垂直居中基准）
     if (l1Ref.value)
-      l1Ref.value.style.transform = `translateY(${lerpY * 0.22}px)`
+      l1Ref.value.style.transform = `translateY(calc(-50% + ${-lerpY * 0.22}px))`
 
     // 判断某个 scene 是否在视口内
     const wh = window.innerHeight
@@ -548,21 +555,28 @@ function initParallax() {
       return Math.max(0, Math.min(1, (lerpY + wh - s.top) / wh))
     }
 
-    // ── Hero → About 推进（同一进度驱动双向）
+    // ── Hero → About 视差推进：About 以 ×1 盖上来，Hero 以 ×0.35 慢速后退（速度差 = 纵深）
     const aboutPushP = pushProgress('about')
+    // 用 targetY（真实滚动）计算 sticky 补偿，避免 lerpY 延迟与 native sticky 不同步导致的抖动
+    const aboutS = scenes['about']
+    const aboutPushReal = aboutS
+      ? Math.max(0, Math.min(1, (targetY + wh - aboutS.top) / wh))
+      : 0
+    const heroStickyEl = heroSceneRef.value?.querySelector('.mv-sticky')
+    if (heroStickyEl) {
+      // Hero 解除 pin 后本会以 ×1 滚走；反向补偿 0.65 → 净速度 ×0.35
+      heroStickyEl.style.transform = `translateY(${aboutPushReal * wh * 0.65}px)`
+    }
     if (heroInnerRef.value) {
-      heroInnerRef.value.style.opacity   = String(Math.max(0, 1 - aboutPushP * 1.6))
-      heroInnerRef.value.style.transform = `translateY(${-aboutPushP * 60}px)`
+      // 后退时逐渐变暗但保持可见（被盖住的过程本身就是效果）
+      heroInnerRef.value.style.opacity   = String(Math.max(0.25, 1 - aboutPushP * 0.75))
+      heroInnerRef.value.style.transform = ''
     }
     if (scrollHintRef.value)
       scrollHintRef.value.style.opacity = String(Math.max(0, 1 - aboutPushP * 4))
 
-    // About sticky 背景透明→实色：About 从透明底部升起，hero 在其后可见 = Push 感
-    const aboutStickyEl = aboutSceneRef.value?.querySelector('.mv-sticky')
-    if (aboutStickyEl)
-      aboutStickyEl.style.background = `rgba(10,10,8,${Math.min(1, aboutPushP * 2)})`
-
-    showAbout.value = inVP('about')
+    // About 内容在 pushP > 0.68 时才触发（68% 入画后再揭示文字，避免内容和 push 同时发生）
+    showAbout.value = aboutPushP > 0.68
     // scroll-driven: 红线延伸 + bg-num 漂移
     if (aboutSceneRef.value) {
       const line  = aboutSceneRef.value.querySelector('.mv-about-line')
@@ -659,7 +673,7 @@ function initCursor() {
     const dot = curDotRef.value, ring = curRingRef.value
     if (dot)  { dot.style.left  = mx + 'px'; dot.style.top  = my + 'px' }
     if (ring) {
-      rx = lerp(rx, mx, 0.10); ry = lerp(ry, my, 0.10)
+      rx = lerp(rx, mx, 0.08); ry = lerp(ry, my, 0.08)
       ring.style.left = rx + 'px'; ring.style.top = ry + 'px'
     }
     cursorRaf = requestAnimationFrame(cursorTick)
@@ -718,26 +732,23 @@ function initCanvasResize() {
   window.addEventListener('resize', resizeCanvasHandler)
 }
 
-// ── Hero 文字劈入（与扫描线对齐：扫描线 400ms 启动，expo-out 曲线）─────────
+// ── Hero 文字劈入（标准时间线：文字先出现，扫描线 400ms 扫过已有内容）────
 function revealHeroTitle() {
-  // eyebrow ~10% 位置，扫描线约 480ms 到达
+  // 80ms: eyebrow 系统标签淡入（系统层先亮起）
   setTimeout(() => {
     const eyebrow = heroInnerRef.value?.querySelector('.mv-eyebrow')
     if (eyebrow) { eyebrow.style.opacity = '1'; eyebrow.style.transform = 'none' }
-  }, 500)
-  // 大标题 ~30% 位置，扫描线约 600ms 到达
+  }, 80)
+  // 180ms: 大标题劈入 + 副标题（CSS transition-delay 控制字符/词组级联）
   setTimeout(() => {
     heroTitleRef.value?.querySelectorAll('.mv-char-inner').forEach(el => { el.style.transform = 'none' })
-  }, 630)
-  // 副标题 ~42% 位置
-  setTimeout(() => {
     heroInnerRef.value?.querySelectorAll('.mv-word-inner').forEach(el => { el.style.transform = 'none' })
-  }, 780)
-  // CTA 按钮 ~60% 位置
+  }, 180)
+  // 650ms: CTA 升起（扫描线 400ms 启动后，给用户「系统已就绪」感）
   setTimeout(() => {
     const cta = heroInnerRef.value?.querySelector('.mv-cta')
     if (cta) { cta.style.opacity = '1'; cta.style.transform = 'none' }
-  }, 1000)
+  }, 650)
 }
 
 // ── IO: Hero 数字计数 ─────────────────────────────────────────
@@ -767,6 +778,11 @@ onMounted(async () => {
   initCursor()
   initTrail()
   initCanvasResize()
+  // 50ms: 导航从上滑入（spec §二十）
+  setTimeout(() => {
+    const hdr = rootRef.value?.querySelector('.mv-header')
+    if (hdr) { hdr.style.transform = 'translateY(0)'; hdr.style.opacity = '1' }
+  }, 50)
   revealHeroTitle()
   await nextTick()
   cacheScenes()
@@ -835,7 +851,7 @@ onUnmounted(() => {
   pointer-events: none; z-index: 0;
 }
 .mv-grain {
-  position: fixed; inset: 0; z-index: 1; pointer-events: none;
+  position: fixed; inset: 0; z-index: 13; pointer-events: none;
   opacity: 0.045;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
   background-size: 200px 200px;
@@ -849,7 +865,7 @@ onUnmounted(() => {
 
 /* ── HUD ── */
 .mv-hud-grid {
-  position: fixed; inset: 0; pointer-events: none; z-index: 2;
+  position: fixed; inset: 0; pointer-events: none; z-index: 11;
 }
 .mv-hud-bar {
   position: fixed; bottom: 1.4rem; left: 0; right: 0;
@@ -860,7 +876,7 @@ onUnmounted(() => {
 
 /* ── L0/L1 ── */
 .mv-l0 {
-  position: fixed; inset: 0; z-index: 3; pointer-events: none;
+  position: fixed; inset: 0; z-index: 11; pointer-events: none;
   will-change: transform;
   background-image:
     linear-gradient(rgba(232,232,230,0.035) 1px, transparent 1px),
@@ -869,7 +885,7 @@ onUnmounted(() => {
 }
 .mv-l1 {
   position: fixed; left: 0; right: 0; top: 50%;
-  z-index: 4; pointer-events: none;
+  z-index: 12; pointer-events: none;
   will-change: transform;
   font-size: clamp(10rem, 28vw, 20rem);
   font-weight: 900; line-height: 1;
@@ -920,8 +936,11 @@ onUnmounted(() => {
   padding: 0 clamp(1.5rem, 4vw, 5rem);
   height: 52px;
   border-bottom: 1px solid var(--line);
-  background: rgba(10,10,8,0.85);
-  backdrop-filter: blur(12px);
+  background: rgba(10,10,8,0.80);
+  backdrop-filter: blur(20px) saturate(180%);
+  transform: translateY(-100%); opacity: 0;
+  transition: transform 0.75s var(--ease), opacity 0.5s var(--ease);
+  will-change: transform, opacity;
 }
 .mv-brand {
   font-family: 'Space Grotesk', sans-serif;
@@ -965,10 +984,16 @@ onUnmounted(() => {
   position: sticky; top: 0; height: 100vh; overflow: hidden;
   background: transparent; /* hero 层透明，露出 .mv 渐变背景 */
   z-index: 10;
+  will-change: transform;
 }
 
 /* 通用区块内容容器（非 Hero 需要实色背景，防透视到下层） */
-.mv-sec-bg { background: var(--bg); }
+.mv-sec-bg {
+  background:
+    radial-gradient(ellipse 120% 80% at 0% 0%, rgba(50,10,6,1) 0%, rgba(10,10,8,1) 55%),
+    radial-gradient(ellipse 80% 60% at 100% 100%, rgba(6,8,18,1) 0%, transparent 60%),
+    rgb(10,10,8);
+}
 .mv-sec-in {
   position: absolute; inset: 0;
   display: flex; flex-direction: column;
@@ -995,6 +1020,7 @@ onUnmounted(() => {
   transform: translateY(110%);
   will-change: transform;
   transition: transform 0.75s var(--ease) 0.1s;
+  font-optical-sizing: auto;
 }
 .sec-visible .mv-sec-h2 { transform: translateY(0); }
 
@@ -1021,17 +1047,20 @@ onUnmounted(() => {
   text-transform: uppercase; margin: 0;
   opacity: 0; transform: translateY(14px);
   transition: opacity 0.6s var(--ease), transform 0.6s var(--ease);
+  will-change: transform, opacity;
 }
 .mv-hero-title {
   font-size: clamp(4.5rem, 11vw, 10rem);
   font-weight: 900; line-height: 0.88;
   letter-spacing: -0.04em; margin: 0;
   display: flex; flex-wrap: wrap;
+  font-optical-sizing: auto;
 }
 .mv-char-outer { display: inline-block; overflow: hidden; vertical-align: bottom; }
 .mv-char-inner {
   display: block; transform: translateY(110%);
   transition: transform 0.75s var(--ease);
+  will-change: transform;
 }
 
 .mv-hero-sub {
@@ -1043,6 +1072,7 @@ onUnmounted(() => {
 .mv-word-inner {
   display: inline-block; transform: translateY(110%);
   transition: transform 0.65s var(--ease);
+  will-change: transform;
 }
 
 .mv-stats {
@@ -1060,6 +1090,7 @@ onUnmounted(() => {
   display: flex; flex-wrap: wrap; gap: 0.75rem;
   opacity: 0; transform: translateY(12px);
   transition: opacity 0.6s var(--ease), transform 0.6s var(--ease);
+  will-change: transform, opacity;
 }
 .mv-btn-fill {
   padding: 0.65rem 1.6rem;
@@ -1070,7 +1101,8 @@ onUnmounted(() => {
   transition: background 0.2s, color 0.2s;
   cursor: none; display: inline-block;
 }
-.mv-btn-fill:hover { background: rgba(232,232,230,0.85); }
+.mv-btn-fill:hover  { background: rgba(232,232,230,0.85); }
+.mv-btn-fill:active { opacity: 0.82; transform: scale(0.97); transition: transform 0.08s ease-out, opacity 0.08s ease-out; }
 .mv-btn-line {
   padding: 0.65rem 1.6rem;
   background: transparent; color: var(--l2);
@@ -1080,7 +1112,8 @@ onUnmounted(() => {
   transition: border-color 0.25s, color 0.25s;
   cursor: none; display: inline-block;
 }
-.mv-btn-line:hover { border-color: var(--l2); color: var(--l1); }
+.mv-btn-line:hover  { border-color: var(--l2); color: var(--l1); }
+.mv-btn-line:active { opacity: 0.75; transform: scale(0.97); transition: transform 0.08s ease-out, opacity 0.08s ease-out; }
 
 /* 跑马灯 */
 .mv-ticker {
@@ -1108,11 +1141,11 @@ onUnmounted(() => {
 /* 正文：从右侧滑入（与标题方向相反，产生张力） */
 .mv-about-body {
   display: flex; flex-direction: column; gap: 2rem;
-  opacity: 0; transform: translateX(64px);
+  opacity: 0; transform: translateY(32px);
   will-change: transform, opacity;
   transition: opacity 0.8s var(--ease) 0.28s, transform 0.8s var(--ease) 0.28s;
 }
-.sec-visible .mv-about-body { opacity: 1; transform: translateX(0); }
+.sec-visible .mv-about-body { opacity: 1; transform: translateY(0); }
 
 .mv-about-text {
   font-size: clamp(0.9rem, 1.6vw, 1.08rem); line-height: 1.7;
@@ -1340,6 +1373,7 @@ a.mv-contact-row:hover .mv-contact-arr { transform: translateX(4px); }
   }
   .mv-char-inner, .mv-word-inner { transform: none !important; }
   .mv-eyebrow, .mv-cta { opacity: 1 !important; transform: none !important; }
+  .mv-header { transform: none !important; opacity: 1 !important; }
   .mv-sec-h2 { transform: none !important; }
   .mv-contact-links { opacity: 1 !important; transform: none !important; }
 }
