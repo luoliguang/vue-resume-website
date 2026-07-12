@@ -393,10 +393,10 @@ const lightboxRef   = ref(null)
 const openProject   = (p) => { activeProject.value = p }
 const closeProject  = () => { activeProject.value = null; lightboxImg.value = null }
 
-// 灯箱打开时：锁定 body 滚动 + 自动 focus（使 ESC 生效）
-watch(lightboxImg, (val) => {
-  document.body.style.overflow = val ? 'hidden' : ''
-  if (val) nextTick(() => lightboxRef.value?.focus())
+// 详情弹窗或灯箱打开时：锁定 body 滚动；灯箱额外 auto-focus 使 ESC 生效
+watch([activeProject, lightboxImg], ([ap, lb]) => {
+  document.body.style.overflow = (ap || lb) ? 'hidden' : ''
+  if (lb) nextTick(() => lightboxRef.value?.focus())
 })
 
 function onKeyDown(e) {
