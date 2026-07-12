@@ -1475,11 +1475,11 @@ a.mv-contact-row:hover .mv-contact-arr { transform: translateX(4px); }
   /* 项目卡片：移动端缩小 */
   .mv-proj-card { flex: 0 0 82vw; }
 
-  /* HUD 坐标隐藏（移动端不动鼠标） */
-  .mv-hud-right { display: none; }
+  /* HUD 完整隐藏（时钟+坐标在触屏均无意义） */
+  .mv-hud-bar { display: none; }
 
-  /* 模式切换按钮调整位置，避免遮住内容 */
-  .mv-mode-pill { bottom: 1rem; right: 1rem; }
+  /* Footer 留出底部空间，避免被固定按钮遮挡 */
+  .mv-footer { padding-bottom: 5rem; }
 }
 
 /* ══ Reduced motion ══════════════════════════════════════════ */

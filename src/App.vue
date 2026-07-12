@@ -154,5 +154,11 @@ function switchMode () {
     padding: 9px 14px;
     font-size: 0.74rem;
   }
+
+  /* 动效模式下按钮上移，避开 ticker 和 footer 内容 */
+  .mode-toggle--motion {
+    bottom: 1.5rem;
+    right: 1rem;
+  }
 }
 </style>
