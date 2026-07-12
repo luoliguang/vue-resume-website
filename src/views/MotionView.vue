@@ -113,7 +113,7 @@
       <div class="mv-sticky mv-sec-bg">
         <div class="mv-sec-in" :class="{ 'sec-visible': showAbout }">
           <div class="mv-sec-head">
-            <span class="mv-sec-tag ui-label">{{ isChinese ? '关于我' : 'About' }}</span>
+            <span class="mv-sec-tag ui-label">{{ isChinese ? '01 / 关于我' : '01 / About' }}</span>
             <div class="mv-sec-title-clip"><h2 class="mv-sec-h2">{{ isChinese ? '关于我' : 'About Me' }}</h2></div>
           </div>
           <div class="mv-about-body">
@@ -139,7 +139,7 @@
       <div class="mv-sticky mv-sec-bg">
         <div class="mv-sec-in" :class="{ 'sec-visible': showSkills }">
           <div class="mv-sec-head">
-            <span class="mv-sec-tag ui-label">{{ isChinese ? '技能专长' : 'Skills' }}</span>
+            <span class="mv-sec-tag ui-label">{{ isChinese ? '02 / 技能专长' : '02 / Skills' }}</span>
             <div class="mv-sec-title-clip"><h2 class="mv-sec-h2">{{ isChinese ? '技能专长' : 'Skills' }}</h2></div>
           </div>
           <div class="mv-skills-grid">
@@ -165,7 +165,7 @@
       <div class="mv-sticky mv-sec-bg">
         <div class="mv-sec-in" :class="{ 'sec-visible': showJourney }">
           <div class="mv-sec-head">
-            <span class="mv-sec-tag ui-label">{{ isChinese ? '我的历程' : 'Journey' }}</span>
+            <span class="mv-sec-tag ui-label">{{ isChinese ? '03 / 我的历程' : '03 / Journey' }}</span>
             <div class="mv-sec-title-clip"><h2 class="mv-sec-h2">{{ isChinese ? '我的历程' : 'My Journey' }}</h2></div>
           </div>
           <div class="mv-timeline">
@@ -193,7 +193,7 @@
       <div class="mv-sticky mv-sec-bg mv-proj-sticky">
         <div class="mv-proj-head">
           <div>
-            <span class="mv-sec-tag ui-label">{{ isChinese ? '项目展示' : 'Projects' }}</span>
+            <span class="mv-sec-tag ui-label">{{ isChinese ? '04 / 项目展示' : '04 / Projects' }}</span>
             <div class="mv-sec-title-clip" :class="{ 'sec-visible': showProjects }">
               <h2 class="mv-sec-h2">{{ isChinese ? '项目展示' : 'Projects' }}</h2>
             </div>
@@ -237,7 +237,7 @@
     <div class="mv-scene" ref="contactSceneRef" style="min-height:220vh" id="contact">
       <div class="mv-sticky mv-sec-bg mv-contact-sticky">
         <div class="mv-sec-head">
-          <span class="mv-sec-tag ui-label">{{ isChinese ? '联系方式' : 'Contact' }}</span>
+          <span class="mv-sec-tag ui-label">{{ isChinese ? '05 / 联系方式' : '05 / Contact' }}</span>
         </div>
         <!-- 大字随滚动点亮 -->
         <div class="mv-contact-big" ref="contactBigRef" aria-hidden="true">
