@@ -83,9 +83,9 @@ import { computed, ref } from 'vue'
 import { contactInfo } from '../../data/contact.js'
 import { t, isChinese } from '../../composables/useI18n.js'
 import { deobfuscatePhone } from '../../utils/crypto.js'
-import { Mail, Phone, MapPin, Github } from 'lucide-vue-next'
+import { Mail, Phone, MapPin } from 'lucide-vue-next'
 
-const iconMap = { Mail, Phone, MapPin, Github }
+const iconMap = { Mail, Phone, MapPin }
 const contactList = computed(() => Object.values(contactInfo))
 
 const flippedState = ref({

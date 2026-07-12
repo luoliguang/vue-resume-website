@@ -254,11 +254,6 @@
             <span class="mv-contact-lbl ui-label">WECHAT</span>
             <span class="mv-contact-val">giluoo</span>
           </div>
-          <a href="https://github.com/luoliguang" target="_blank" rel="noopener" class="mv-contact-row magnetic">
-            <span class="mv-contact-lbl ui-label">GITHUB</span>
-            <span class="mv-contact-val">luoliguang</span>
-            <span class="mv-contact-arr">→</span>
-          </a>
           <div class="mv-contact-row">
             <span class="mv-contact-lbl ui-label">{{ isChinese ? '现居' : 'LOCATION' }}</span>
             <span class="mv-contact-val">{{ isChinese ? '广东 · 惠州' : 'Huizhou, Guangdong' }}</span>
