@@ -306,7 +306,10 @@
 
     <!-- 图片灯箱 -->
     <Transition name="mv-fade">
-      <div v-if="lightboxImg" class="mv-lightbox" @click="lightboxImg = null">
+      <div v-if="lightboxImg" class="mv-lightbox"
+           ref="lightboxRef" tabindex="-1"
+           @click="lightboxImg = null"
+           @keydown.esc.stop="lightboxImg = null">
         <img :src="lightboxImg" alt="" @click.stop>
         <button class="mv-lightbox-close" @click="lightboxImg = null">✕</button>
       </div>
@@ -316,7 +319,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
+import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { t, isChinese, toggleLanguage } from '../composables/useI18n.js'
 import HeroLiquid from '../components/HeroLiquid.vue'
 import { useContent } from '../composables/useContent.js'
@@ -386,8 +389,15 @@ const journeyRevealCount = ref(0)
 // ── 项目详情 ──────────────────────────────────────────────────
 const activeProject = ref(null)
 const lightboxImg   = ref(null)
+const lightboxRef   = ref(null)
 const openProject   = (p) => { activeProject.value = p }
 const closeProject  = () => { activeProject.value = null; lightboxImg.value = null }
+
+// 灯箱打开时：锁定 body 滚动 + 自动 focus（使 ESC 生效）
+watch(lightboxImg, (val) => {
+  document.body.style.overflow = val ? 'hidden' : ''
+  if (val) nextTick(() => lightboxRef.value?.focus())
+})
 
 function onKeyDown(e) {
   if (e.key !== 'Escape') return
@@ -811,6 +821,7 @@ onMounted(async () => {
 
 onUnmounted(() => {
   window.removeEventListener('keydown', onKeyDown)
+  document.body.style.overflow = ''
   cancelAnimationFrame(parallaxRaf)
   cancelAnimationFrame(cursorRaf)
   cancelAnimationFrame(trailRaf)
@@ -1242,8 +1253,12 @@ onUnmounted(() => {
 .mv-proj-head {
   position: absolute; top: 0; left: 0; right: 0;
   display: flex; justify-content: space-between; align-items: flex-end;
-  padding: 68px clamp(1.5rem,4vw,5rem) 0;
+  padding: 68px clamp(1.5rem,4vw,5rem) 2rem;
   z-index: 2;
+  background: linear-gradient(to bottom,
+    rgb(10,10,8) 0%,
+    rgb(10,10,8) 55%,
+    transparent 100%);
 }
 .mv-proj-counter { color: var(--l3); font-size: 0.75rem; }
 .mv-proj-total   { color: rgba(232,232,230,0.22); }
@@ -1257,7 +1272,7 @@ onUnmounted(() => {
 /* 水平轨道 */
 .mv-proj-track {
   display: flex; gap: 1.2rem;
-  padding: 130px clamp(1.5rem,4vw,5rem) 0;
+  padding: 160px clamp(1.5rem,4vw,5rem) 0;
   will-change: transform;
   height: 100%;
   align-items: stretch;
