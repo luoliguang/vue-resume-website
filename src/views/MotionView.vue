@@ -283,8 +283,10 @@
       <div v-if="activeProject" class="mv-overlay" @click.self="closeProject">
         <div class="mv-detail">
           <button class="mv-detail-close magnetic" @click="closeProject">✕</button>
-          <div class="mv-detail-img" v-if="getImage(activeProject)">
+          <div class="mv-detail-img" v-if="getImage(activeProject)"
+               @click="lightboxImg = getImage(activeProject)" title="点击查看大图">
             <img :src="getImage(activeProject)" :alt="getTitle(activeProject)" loading="lazy">
+            <span class="mv-detail-img-hint ui-label">点击查看大图</span>
           </div>
           <span class="mv-detail-type ui-label" v-if="activeProject.type">{{ activeProject.type.toUpperCase() }}</span>
           <h3 class="mv-detail-title">{{ getTitle(activeProject) }}</h3>
@@ -299,6 +301,14 @@
             </a>
           </div>
         </div>
+      </div>
+    </Transition>
+
+    <!-- 图片灯箱 -->
+    <Transition name="mv-fade">
+      <div v-if="lightboxImg" class="mv-lightbox" @click="lightboxImg = null">
+        <img :src="lightboxImg" alt="" @click.stop>
+        <button class="mv-lightbox-close" @click="lightboxImg = null">✕</button>
       </div>
     </Transition>
 
@@ -375,8 +385,15 @@ const journeyRevealCount = ref(0)
 
 // ── 项目详情 ──────────────────────────────────────────────────
 const activeProject = ref(null)
+const lightboxImg   = ref(null)
 const openProject   = (p) => { activeProject.value = p }
-const closeProject  = () => { activeProject.value = null }
+const closeProject  = () => { activeProject.value = null; lightboxImg.value = null }
+
+function onKeyDown(e) {
+  if (e.key !== 'Escape') return
+  if (lightboxImg.value) { lightboxImg.value = null; return }
+  if (activeProject.value) closeProject()
+}
 
 // ── DOM Refs ──────────────────────────────────────────────────
 const rootRef         = ref(null)
@@ -770,6 +787,7 @@ function initObservers() {
 let navRef = ref(null)  // declared early for use in initParallax
 
 onMounted(async () => {
+  window.addEventListener('keydown', onKeyDown)
   injectFont()
   startClock()
   setTimeout(runScanLine, 400)
@@ -792,6 +810,7 @@ onMounted(async () => {
 })
 
 onUnmounted(() => {
+  window.removeEventListener('keydown', onKeyDown)
   cancelAnimationFrame(parallaxRaf)
   cancelAnimationFrame(cursorRaf)
   cancelAnimationFrame(trailRaf)
@@ -1352,12 +1371,46 @@ a.mv-contact-row:hover .mv-contact-arr { transform: translateX(4px); }
   transition: border-color 0.2s, color 0.2s;
 }
 .mv-detail-close:hover { border-color: var(--l2); color: var(--l1); }
-.mv-detail-img img { width: 100%; height: 200px; object-fit: cover; display: block; }
+.mv-detail-img {
+  position: relative; cursor: zoom-in; overflow: hidden;
+  background: rgba(0,0,0,0.5); border: 1px solid var(--line);
+}
+.mv-detail-img img {
+  width: 100%; aspect-ratio: 16/9; object-fit: contain; display: block;
+  transition: transform 0.35s var(--ease);
+}
+.mv-detail-img:hover img { transform: scale(1.03); }
+.mv-detail-img-hint {
+  position: absolute; bottom: 0.5rem; right: 0.6rem;
+  color: rgba(232,232,230,0.4); font-size: 0.55rem; letter-spacing: 0.08em;
+  pointer-events: none;
+}
 .mv-detail-type  { color: var(--l3); }
 .mv-detail-title { font-size: clamp(1.4rem, 3vw, 2rem); font-weight: 900; letter-spacing: -0.03em; margin: 0; }
 .mv-detail-desc  { font-size: 0.88rem; line-height: 1.7; color: var(--l2); margin: 0; }
 .mv-detail-techs { display: flex; flex-wrap: wrap; gap: 0.35rem; }
 .mv-detail-actions { display: flex; gap: 0.75rem; margin-top: 0.5rem; }
+
+/* ── 图片灯箱 ── */
+.mv-lightbox {
+  position: fixed; inset: 0; z-index: 6000;
+  background: rgba(0,0,0,0.96);
+  display: flex; align-items: center; justify-content: center;
+  padding: 2rem; cursor: zoom-out;
+}
+.mv-lightbox img {
+  max-width: 100%; max-height: 100%;
+  object-fit: contain; cursor: default;
+  box-shadow: 0 0 80px rgba(0,0,0,0.8);
+}
+.mv-lightbox-close {
+  position: absolute; top: 1.5rem; right: 1.5rem;
+  background: transparent; border: 1px solid rgba(232,232,230,0.25);
+  color: rgba(232,232,230,0.6); width: 36px; height: 36px;
+  font-size: 0.85rem; cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+.mv-lightbox-close:hover { border-color: rgba(232,232,230,0.7); color: #e8e8e6; }
 
 /* ── Transition ── */
 .mv-fade-enter-active, .mv-fade-leave-active { transition: opacity 0.3s ease; }
